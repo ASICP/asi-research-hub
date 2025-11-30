@@ -21,3 +21,5 @@ asi_research_hub.db
 
 # Sensitive data
 contacts.csv
+REPLIT_SECRETS_PRIVATE.txt
+*PRIVATE*
