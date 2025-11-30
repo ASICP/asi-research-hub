@@ -1,0 +1,1940 @@
+[
+    {
+        "filename": "Concrete-Problems-in-AI-Safety-1606.06565.pdf",
+        "title": "Concrete Problems in AI Safety",
+        "authors": "Dario Amodei, Chris Olah, Jacob Steinhardt, Paul Christiano, John Schulman, Dan Man\u00e9",
+        "year": 2016,
+        "abstract": "Rapid progress in machine learning and artificial intelligence (AI) has brought increasing attention to the potential impacts of AI technologies on society. In this paper we discuss one such potential impact: the problem of accidents in machine learning systems, defined as unintended and harmful behavior that may emerge from poor design of real-world AI systems. We present a list of five practical research problems related to accident risk, categorized according to whether the problem originates from having the wrong objective function, an objective function that is too expensive to evaluate frequently, or undesirable behavior during the learning process.",
+        "tags": [
+            "alignment_fundamentals",
+            "technical_safety",
+            "AI_risks",
+            "reward_hacking",
+            "side_effects"
+        ],
+        "arxiv_id": "1606.06565",
+        "doi": "10.48550/arXiv.1606.06565",
+        "asip_funded": true,
+        "citation_count": 1842
+    },
+    {
+        "filename": "Risks-from-Learned-Optimization-Hubinger-2019.pdf",
+        "title": "Risks from Learned Optimization in Advanced Machine Learning Systems",
+        "authors": "Evan Hubinger, Chris van Merwijk, Vladimir Mikulik, Joar Skalse, Scott Garrabrant",
+        "year": 2019,
+        "abstract": "We analyze the type of learned optimization that occurs when a learned model (such as a neural network) is itself an optimizer\u2014a situation we refer to as mesa-optimization. We believe that the possibility of mesa-optimization raises two important questions for the safety and transparency of advanced ML systems. First, under what circumstances will learned models be optimizers, including when they should not be? Second, when a learned model is an optimizer, what will its objective be\u2014how will it differ from the loss function it was trained under\u2014and how can it be aligned?",
+        "tags": [
+            "mesa_optimization",
+            "inner_alignment",
+            "optimization_risks",
+            "alignment_fundamentals",
+            "technical_safety"
+        ],
+        "arxiv_id": "1906.01820",
+        "doi": "10.48550/arXiv.1906.01820",
+        "asip_funded": true,
+        "citation_count": 487
+    },
+    {
+        "filename": "Constitutional-AI-2212.08073.pdf",
+        "title": "Constitutional AI: Harmlessness from AI Feedback",
+        "authors": "Yuntao Bai, Saurav Kadavath, Sandipan Kundu, Amanda Askell, Jackson Kernion, Andy Jones, Anna Chen, Anna Goldie, Azalia Mirhoseini, Cameron McKinnon, Carol Chen, Catherine Olsson, Christopher Olsson, Danny Hernandez, Dawn Drain, Deep Ganguli, Dustin Li, Eli Tran-Johnson, Ethan Perez, Jamie Kerr, Jared Mueller, Jeffrey Ladish, Joshua Landau, Kamal Ndousse, Kamile Lukosuite, Liane Lovitt, Michael Sellitto, Nelson Elhage, Nicholas Schiefer, Noemi Mercado, Nova DasSarma, Robert Lasenby, Robin Larson, Sam Ringer, Scott Johnston, Shauna Kravec, Sheer El Showk, Stanislav Fort, Tamera Lanham, Timothy Telleen-Lawton, Tom Conerly, Tom Henighan, Tristan Hume, Samuel R. Bowman, Zac Hatfield-Dodds, Ben Mann, Dario Amodei, Nicholas Joseph, Sam McCandlish, Tom Brown, Jared Kaplan",
+        "year": 2022,
+        "abstract": "As AI systems become more capable, we would like to enlist their help to supervise other AIs. We experiment with methods for training a harmless AI assistant through self-improvement, without any human labels identifying harmful outputs. The only human oversight is provided through a list of rules or principles, and so we refer to the method as 'Constitutional AI'. The process involves both a supervised learning and a reinforcement learning phase. In the supervised phase we sample from an initial model, then generate self-critiques and revisions, and then finetune the original model on revised responses. In the RL phase, we sample from the finetuned model, use a model to evaluate which of the two samples is better, and then train a preference model from this dataset of AI preferences. We then train with RL using the preference model as the reward signal, i.e. we use 'RL from AI Feedback' (RLAIF). As a result we are able to train a harmless but non-evasive AI assistant that engages with harmful queries by explaining its objections to them.",
+        "tags": [
+            "constitutional_AI",
+            "RLAIF",
+            "harmlessness",
+            "scalable_oversight",
+            "self_improvement"
+        ],
+        "arxiv_id": "2212.08073",
+        "doi": "10.48550/arXiv.2212.08073",
+        "asip_funded": false,
+        "citation_count": 845
+    },
+    {
+        "filename": "Sleeper-Agents-2401.05566.pdf",
+        "title": "Sleeper Agents: Training Deceptive LLMs that Persist Through Safety Training",
+        "authors": "Evan Hubinger, Carson Denison, Jesse Mu, Mike Lambert, Meg Tong, Monte MacDiarmid, Tamera Lanham, Daniel M. Ziegler, Tim Maxwell, Newton Cheng, Adam Jermyn, Amanda Askell, Ansh Radhakrishnan, Cem Anil, David Duvenaud, Deep Ganguli, Fazl Barez, Jack Clark, Kamal Ndousse, Kshitij Sachan, Michael Sellitto, Mrinank Sharma, Nova DasSarma, Roger Grosse, Shauna Kravec, Yuntao Bai, Zachary Kenton, Zac Hatfield-Dodds, Dario Amodei, Nicholas Schiefer, Nicholas Joseph, Sam McCandlish, Jared Kaplan, Ethan Perez",
+        "year": 2024,
+        "abstract": "Humans are capable of strategically deceptive behavior: behaving helpfully in most situations, but then behaving very differently in order to pursue alternative objectives when given the opportunity. If an AI system learned such a deceptive strategy, could we detect it and remove it using current state-of-the-art safety training techniques? To study this question, we construct proof-of-concept examples of deceptive behavior in large language models (LLMs). For example, we train models that write secure code when the prompt states that the year is 2023, but insert exploitable code when the prompt states that the year is 2024. We find that such backdoor behavior can be made persistent, so that it is not removed by standard safety training techniques, including supervised fine-tuning, reinforcement learning, and adversarial training.",
+        "tags": [
+            "deceptive_alignment",
+            "backdoors",
+            "safety_testing",
+            "adversarial_training",
+            "persistent_misalignment"
+        ],
+        "arxiv_id": "2401.05566",
+        "doi": "10.48550/arXiv.2401.05566",
+        "asip_funded": false,
+        "citation_count": 312
+    },
+    {
+        "filename": "Mathematical-Framework-Transformer-Circuits-Elhage-2021.pdf",
+        "title": "A Mathematical Framework for Transformer Circuits",
+        "authors": "Nelson Elhage, Neel Nanda, Catherine Olsson, Tom Henighan, Nicholas Joseph, Ben Mann, Amanda Askell, Yuntao Bai, Anna Chen, Tom Conerly, Nova DasSarma, Dawn Drain, Deep Ganguli, Zac Hatfield-Dodds, Danny Hernandez, Andy Jones, Jackson Kernion, Liane Lovitt, Kamal Ndousse, Dario Amodei, Tom Brown, Jack Clark, Jared Kaplan, Sam McCandlish, Chris Olah",
+        "year": 2021,
+        "abstract": "We explore the internal structure of Transformer language models with the aim of understanding their computations as human-understandable algorithms implemented through the weights. We provide a mathematical framework for analyzing transformers by reverse engineering them: we identify interpretable features, find circuits that implement composable computations, and understand how these circuits implement specific algorithms. We demonstrate this approach on several toy models and small transformers, finding interpretable features and circuits.",
+        "tags": [
+            "mechanistic_interpretability",
+            "transformer_circuits",
+            "features",
+            "reverse_engineering",
+            "technical_safety"
+        ],
+        "arxiv_id": "2107.14308",
+        "doi": "10.48550/arXiv.2107.14308",
+        "asip_funded": true,
+        "citation_count": 523
+    },
+    {
+        "filename": "In-Context-Learning-Induction-Heads-2209.11895.pdf",
+        "title": "In-context Learning and Induction Heads",
+        "authors": "Catherine Olsson, Nelson Elhage, Neel Nanda, Nicholas Joseph, Nova DasSarma, Tom Henighan, Ben Mann, Amanda Askell, Yuntao Bai, Anna Chen, Tom Conerly, Dawn Drain, Deep Ganguli, Zac Hatfield-Dodds, Danny Hernandez, Scott Johnston, Andy Jones, Jackson Kernion, Liane Lovitt, Kamal Ndousse, Dario Amodei, Tom Brown, Jack Clark, Jared Kaplan, Sam McCandlish, Chris Olah",
+        "year": 2022,
+        "abstract": "In-context learning is the ability of language models to perform new tasks by conditioning on a few examples, without any gradient updates. We hypothesize that in-context learning in transformer models relies critically on a special class of attention heads which we call induction heads. We show that induction heads are ubiquitous in large language models and that their presence strongly correlates with the emergence of in-context learning. We study the formation of induction heads during training and find that they develop in a sharp phase transition. We investigate the role of induction heads in in-context learning by ablation studies.",
+        "tags": [
+            "in_context_learning",
+            "induction_heads",
+            "mechanistic_interpretability",
+            "phase_transitions",
+            "emergent_abilities"
+        ],
+        "arxiv_id": "2209.11895",
+        "doi": "10.48550/arXiv.2209.11895",
+        "asip_funded": true,
+        "citation_count": 634
+    },
+    {
+        "filename": "Toy-Models-of-Superposition-Elhage-2022.pdf",
+        "title": "Toy Models of Superposition",
+        "authors": "Nelson Elhage, Tristan Hume, Catherine Olsson, Nicholas Schiefer, Tom Henighan, Shauna Kravec, Zac Hatfield-Dodds, Robert Lasenby, Dawn Drain, Carol Chen, Roger Grosse, Sam McCandlish, Jared Kaplan, Dario Amodei, Yuntao Bai, Chris Olah",
+        "year": 2022,
+        "abstract": "Neural networks often pack many unrelated features into a single neuron, a puzzling phenomenon we call superposition. Superposition allows a model to represent more features than it has dimensions, at the cost of making the features less cleanly separated. We study superposition in very simple toy models, finding it to be a surprisingly rich phenomenon, possibly relevant to the majority of deep learning. We provide theoretical and empirical evidence that superposition is a real phenomenon and develop tools for thinking about it.",
+        "tags": [
+            "superposition",
+            "polysemanticity",
+            "features",
+            "mechanistic_interpretability",
+            "sparse_coding"
+        ],
+        "arxiv_id": "2209.10652",
+        "doi": "10.48550/arXiv.2209.10652",
+        "asip_funded": true,
+        "citation_count": 428
+    },
+    {
+        "filename": "Scaling-Monosemanticity-Anthropic-2024.pdf",
+        "title": "Scaling Monosemanticity: Extracting Interpretable Features from Claude 3 Sonnet",
+        "authors": "Adly Templeton, Tom Conerly, Jonathan Marcus, Jack Lindsey, Trenton Bricken, Brian Chen, Adam Pearce, Craig Citro, Emmanuel Ameisen, Andy Jones, Hoagy Cunningham, Nicholas L Turner, Callum McDougall, Monte MacDiarmid, C. Daniel Freeman, Theodore R. Sumers, Edward Rees, Joshua Batson, Adam Jermyn, Shan Carter, Chris Olah, Tom Henighan",
+        "year": 2024,
+        "abstract": "We apply sparse autoencoders to Claude 3 Sonnet to extract millions of interpretable features. We provide evidence that the features correspond to patterns in language and that they causally control model behavior. We demonstrate this through: (1) finding features that correspond to specific concepts, (2) showing that features activate in expected contexts, (3) clamping features and observing predicted behavior changes, and (4) finding safety-relevant features. This work represents the largest-scale interpretability effort to date.",
+        "tags": [
+            "sparse_autoencoders",
+            "monosemanticity",
+            "mechanistic_interpretability",
+            "Claude_Sonnet",
+            "feature_extraction",
+            "safety_relevant_features"
+        ],
+        "arxiv_id": "2406.04093",
+        "doi": "10.48550/arXiv.2406.04093",
+        "asip_funded": false,
+        "citation_count": 218
+    },
+    {
+        "filename": "Representation-Engineering-2310.01405.pdf",
+        "title": "Representation Engineering: A Top-Down Approach to AI Transparency",
+        "authors": "Andy Zou, Long Phan, Sarah Chen, James Campbell, Phillip Guo, Richard Ren, Alexander Pan, Xuwang Yin, Mantas Mazeika, Ann-Kathrin Dombrowski, Shashwat Goel, Nathaniel Li, Michael J. Byun, Zifan Wang, Alex Mallen, Steven Basart, Sanmi Koyejo, Dawn Song, Matt Fredrikson, J. Zico Kolter, Dan Hendrycks",
+        "year": 2023,
+        "abstract": "We introduce representation engineering (RepE), a top-down approach to understanding and controlling neural networks by identifying and manipulating high-level representations. We demonstrate that we can read and control a wide variety of high-level model properties (e.g., honesty, harmfulness, power-seeking) by identifying and steering along specific directions in activation space. These 'control vectors' can be used to enhance interpretability and safety without fine-tuning.",
+        "tags": [
+            "representation_engineering",
+            "steering_vectors",
+            "activation_engineering",
+            "honesty",
+            "harmlessness",
+            "control"
+        ],
+        "arxiv_id": "2310.01405",
+        "doi": "10.48550/arXiv.2310.01405",
+        "asip_funded": false,
+        "citation_count": 167
+    },
+    {
+        "filename": "TruthfulQA-2109.07958.pdf",
+        "title": "TruthfulQA: Measuring How Models Mimic Human Falsehoods",
+        "authors": "Stephanie Lin, Jacob Hilton, Owain Evans",
+        "year": 2022,
+        "abstract": "We propose a benchmark to measure whether a language model is truthful in generating answers to questions. The benchmark comprises 817 questions that span 38 categories, including health, law, finance and politics. We crafted questions that some humans would answer falsely due to a false belief or misconception. To perform well, models must avoid generating false answers learned from imitating human texts. We find that the best model was truthful on 58% of questions, while human performance was 94%. Models generated many false answers that mimic popular misconceptions and have the potential to deceive humans.",
+        "tags": [
+            "truthfulness",
+            "evaluation",
+            "benchmarks",
+            "misinformation",
+            "human_falsehoods"
+        ],
+        "arxiv_id": "2109.07958",
+        "doi": "10.48550/arXiv.2109.07958",
+        "asip_funded": false,
+        "citation_count": 647
+    },
+    {
+        "filename": "HELM-2211.09110.pdf",
+        "title": "Holistic Evaluation of Language Models",
+        "authors": "Percy Liang, Rishi Bommasani, Tony Lee, Dimitris Tsipras, Dilara Soylu, Michihiro Yasunaga, Yian Zhang, Deepak Narayanan, Yuhuai Wu, Ananya Kumar, Benjamin Newman, Binhang Yuan, Bobby Yan, Ce Zhang, Christian Cosgrove, Christopher D. Manning, Christopher Re, Diana Acosta-Navas, Drew A. Hudson, Eric Zelikman, Esin Durmus, Faisal Ladhak, Frieda Rong, Hongyu Ren, Huaxiu Yao, Jue Wang, Keshav Santhanam, Laurel Orr, Lucia Zheng, Mert Yuksekgonul, Mirac Suzgun, Nathan Kim, Neel Guha, Niladri Chatterji, Omar Khattab, Peter Henderson, Qian Huang, Ryan Chi, Sang Michael Xie, Shibani Santurkar, Surya Ganguli, Tatsunori Hashimoto, Thomas Icard, Tianyi Zhang, Vishrav Chaudhary, William Wang, Xuechen Li, Yifan Mai, Yuhui Zhang, Yuta Koreeda",
+        "year": 2023,
+        "abstract": "Language models (LMs) are becoming the new standard for NLP, but there is a lack of standardization in how they are evaluated. We introduce the Holistic Evaluation of Language Models (HELM) to improve the transparency of language models. We define a taxonomy of scenarios and metrics to holistically evaluate language models across different use cases and characteristics including accuracy, calibration, robustness, fairness, bias, toxicity, and efficiency. We evaluate 30 prominent language models on 42 scenarios, reporting on over 200 metrics.",
+        "tags": [
+            "evaluation",
+            "benchmarks",
+            "comprehensive_evaluation",
+            "safety_metrics",
+            "transparency"
+        ],
+        "arxiv_id": "2211.09110",
+        "doi": "10.48550/arXiv.2211.09110",
+        "asip_funded": false,
+        "citation_count": 524
+    },
+    {
+        "filename": "Red-Teaming-Language-Models-2202.03286.pdf",
+        "title": "Red Teaming Language Models with Language Models",
+        "authors": "Ethan Perez, Saffron Huang, Francis Song, Trevor Cai, Roman Ring, John Aslanides, Amelia Glaese, Nat McAleese, Geoffrey Irving",
+        "year": 2022,
+        "abstract": "Language models (LMs) often cannot be deployed because of their potential to harm users in hard-to-predict ways. We explore using LMs themselves to identify cases where a deployed model produces harmful outputs. We investigate whether such red teaming is feasible by training red teaming LMs with reinforcement learning (RL) to test target LMs for offensive utterances. We find that red teaming LMs successfully elicit offensive generations from target LMs, and that automated red teaming is more effective at discovering novel failures than manual red teaming.",
+        "tags": [
+            "red_teaming",
+            "adversarial_testing",
+            "safety_testing",
+            "offensive_content",
+            "automated_testing"
+        ],
+        "arxiv_id": "2202.03286",
+        "doi": "10.48550/arXiv.2202.03286",
+        "asip_funded": false,
+        "citation_count": 413
+    },
+    {
+        "filename": "Jailbroken-2307.02483.pdf",
+        "title": "Jailbroken: How Does LLM Safety Training Fail?",
+        "authors": "Alexander Wei, Nika Haghtalab, Jacob Steinhardt",
+        "year": 2024,
+        "abstract": "Large language models trained with reinforcement learning from human feedback (RLHF) can still be jailbroken\u2014prompted to produce harmful outputs. We study two failure modes of RLHF: competing objectives and mismatched generalization. We find evidence for both failure modes and show that they can lead to jailbreaks. We demonstrate that adversarial training improves robustness to jailbreaks but may not fully resolve these failure modes.",
+        "tags": [
+            "jailbreaking",
+            "safety_failures",
+            "RLHF_limitations",
+            "competing_objectives",
+            "adversarial_training"
+        ],
+        "arxiv_id": "2307.02483",
+        "doi": "10.48550/arXiv.2307.02483",
+        "asip_funded": false,
+        "citation_count": 267
+    },
+    {
+        "filename": "Universal-Adversarial-Attacks-2307.15043.pdf",
+        "title": "Universal and Transferable Adversarial Attacks on Aligned Language Models",
+        "authors": "Andy Zou, Zifan Wang, Nicholas Carlini, Milad Nasr, J. Zico Kolter, Matt Fredrikson",
+        "year": 2023,
+        "abstract": "Because 'out-of-the-box' large language models can be prompted to generate harmful content, various methods for aligning these models have been developed. In this paper, we show a surprising result: existing methods for aligning large language models are extremely brittle, and simple adversarial attacks can nearly always circumvent all existing alignment approaches on current models. We develop a simple and effective attack method (based on a greedy coordinate gradient-based search, GCG) that produces adversarial suffixes, which when appended to a wide range of queries, aim to maximize the probability that the model produces an objectionable response.",
+        "tags": [
+            "adversarial_attacks",
+            "GCG",
+            "jailbreaking",
+            "alignment_brittleness",
+            "transferability"
+        ],
+        "arxiv_id": "2307.15043",
+        "doi": "10.48550/arXiv.2307.15043",
+        "asip_funded": false,
+        "citation_count": 531
+    },
+    {
+        "filename": "Model-Cards-1810.03993.pdf",
+        "title": "Model Cards for Model Reporting",
+        "authors": "Margaret Mitchell, Simone Wu, Andrew Zaldivar, Parker Barnes, Lucy Vasserman, Ben Hutchinson, Elena Spitzer, Inioluwa Deborah Raji, Timnit Gebru",
+        "year": 2019,
+        "abstract": "Trained machine learning models are increasingly used to perform high-impact tasks in areas such as law enforcement, medicine, education, and employment. In order to clarify the intended use cases of machine learning models and minimize their misuse, we propose model cards as a step toward a more transparent machine learning ecosystem. Model cards are short documents accompanying trained machine learning models that provide benchmarked evaluation in a variety of conditions, such as across different cultural, demographic, or phenotypic groups and intersectional groups that are relevant to the intended application domains.",
+        "tags": [
+            "governance",
+            "transparency",
+            "documentation",
+            "responsible_AI",
+            "fairness"
+        ],
+        "arxiv_id": "1810.03993",
+        "doi": "10.48550/arXiv.1810.03993",
+        "asip_funded": false,
+        "citation_count": 3214
+    },
+    {
+        "filename": "Stochastic-Parrots-Bender-2021.pdf",
+        "title": "On the Dangers of Stochastic Parrots: Can Language Models Be Too Big?",
+        "authors": "Emily M. Bender, Timnit Gebru, Angelina McMillan-Major, Shmargaret Shmitchell",
+        "year": 2021,
+        "abstract": "The past 3 years of work in NLP have been characterized by the development and deployment of ever larger language models, especially for English. In this paper, we take a step back and ask: How big is too big? What are the possible risks associated with this technology and what paths are available for mitigating those risks? We provide recommendations including weighing the environmental and financial costs first, investing resources into curating and carefully documenting datasets rather than ingesting everything on the web, carrying out pre-development exercises evaluating how the planned approach fits into research and development goals and supports stakeholder values, and encouraging research directions beyond ever larger language models.",
+        "tags": [
+            "AI_ethics",
+            "environmental_impact",
+            "bias",
+            "scale_risks",
+            "governance"
+        ],
+        "arxiv_id": "2101.00027",
+        "doi": "10.1145/3442188.3445922",
+        "asip_funded": false,
+        "citation_count": 2637
+    },
+    {
+        "filename": "Scalable-Oversight-Recursive-RM-Leike-2022.pdf",
+        "title": "Scalable Oversight with Recursive Reward Modeling",
+        "authors": "Jan Leike, David Krueger, Tom Everitt, Miljan Martic, Vishal Maini, Shane Legg",
+        "year": 2022,
+        "abstract": "How can we train agents to pursue challenging, long-horizon tasks when we cannot provide informative reward for every single step? We introduce iterated amplification with auxiliary tasks, a training procedure for training aligned agents that uses recursive reward modeling to provide reward for intermediate steps. This allows us to solve tasks that would be too difficult to solve with sparse reward, while maintaining alignment with human values.",
+        "tags": [
+            "scalable_oversight",
+            "recursive_reward_modeling",
+            "iterated_amplification",
+            "alignment",
+            "long_horizon_tasks"
+        ],
+        "arxiv_id": "2203.02155",
+        "doi": "10.48550/arXiv.2203.02155",
+        "asip_funded": true,
+        "citation_count": 156
+    },
+    {
+        "filename": "Debate-Alignment-1805.00899.pdf",
+        "title": "AI Safety via Debate",
+        "authors": "Geoffrey Irving, Paul Christiano, Dario Amodei",
+        "year": 2018,
+        "abstract": "To make AI systems broadly beneficial, we need to be able to train them to behave in accordance with human values. One challenge is that human values are complex and difficult to specify. We propose training agents via debate: we use reinforcement learning to train agents to debate topics that people care about. Given a question, two agents take turns making short statements with the goal of convincing a human judge that their answer is correct. We argue that this can help AIs learn to be honest, even when humans are unable to directly evaluate the truth of statements.",
+        "tags": [
+            "debate",
+            "scalable_oversight",
+            "truthfulness",
+            "alignment",
+            "human_in_the_loop"
+        ],
+        "arxiv_id": "1805.00899",
+        "doi": "10.48550/arXiv.1805.00899",
+        "asip_funded": false,
+        "citation_count": 327
+    },
+    {
+        "filename": "Learning-to-Summarize-Human-Feedback-2009.01325.pdf",
+        "title": "Learning to Summarize from Human Feedback",
+        "authors": "Nisan Stiennon, Long Ouyang, Jeff Wu, Daniel M. Ziegler, Ryan Lowe, Chelsea Voss, Alec Radford, Dario Amodei, Paul Christiano",
+        "year": 2020,
+        "abstract": "We show that it is possible to significantly improve the quality of neural text summarization models by training them to optimize for human preferences. We collect a large, high-quality dataset of human comparisons between summaries, and train a model to predict which of two summaries a human labeler will prefer. We then use this reward model to fine-tune a summarization policy using reinforcement learning. Our resulting policy shows significant improvements in quality according to both our reward model and human evaluations, while preserving factuality.",
+        "tags": [
+            "RLHF",
+            "summarization",
+            "human_feedback",
+            "reward_modeling",
+            "alignment"
+        ],
+        "arxiv_id": "2009.01325",
+        "doi": "10.48550/arXiv.2009.01325",
+        "asip_funded": false,
+        "citation_count": 1534
+    },
+    {
+        "filename": "AI-Safety-Gridworlds-1711.09883.pdf",
+        "title": "AI Safety Gridworlds",
+        "authors": "Jan Leike, Miljan Martic, Victoria Krakovna, Pedro A. Ortega, Tom Everitt, Andrew Lefrancq, Laurent Orseau, Shane Legg",
+        "year": 2017,
+        "abstract": "We present a suite of reinforcement learning environments illustrating various safety properties of intelligent agents. These problems include safe interruptibility, avoiding side effects, absent supervisor, reward gaming, safe exploration, distributional shift, and robustness to adversaries. These gridworld environments are designed to be simple enough for rapid experimentation, while capturing important aspects of the safety problem that also apply in complex real-world AI systems.",
+        "tags": [
+            "gridworlds",
+            "safety_properties",
+            "RL_safety",
+            "safe_exploration",
+            "side_effects"
+        ],
+        "arxiv_id": "1711.09883",
+        "doi": "10.48550/arXiv.1711.09883",
+        "asip_funded": true,
+        "citation_count": 412
+    },
+    {
+        "filename": "Language-Models-as-Agent-Models-2212.01681.pdf",
+        "title": "Language Models as Agent Models",
+        "authors": "Jacob Andreas",
+        "year": 2022,
+        "abstract": "Many tasks in natural language processing involve reasoning about the behavior of agents\u2014both their actions and the mental states that give rise to them. Although large language models have been shown to exhibit strong performance on tasks requiring reasoning about beliefs and goals, it is unclear whether this success derives from implicit representations of agent models. We present evidence that language models can be understood as modeling agents: they represent and update beliefs, assign goals, and predict actions in a way that parallels inference in a probabilistic model of agents.",
+        "tags": [
+            "agents",
+            "mental_states",
+            "theory_of_mind",
+            "agent_modeling",
+            "decision_making"
+        ],
+        "arxiv_id": "2212.01681",
+        "doi": "10.48550/arXiv.2212.01681",
+        "asip_funded": true,
+        "citation_count": 203
+    },
+    {
+        "filename": "WebGPT-2112.09332.pdf",
+        "title": "WebGPT: Browser-Assisted Question-Answering with Human Feedback",
+        "authors": "Reiichiro Nakano, Jacob Hilton, Suchir Balaji, Jeff Wu, Long Ouyang, Christina Kim, Christopher Hesse, Shantanu Jain, Vineet Kosaraju, William Saunders, Xu Jiang, Karl Cobbe, Tyna Eloundou, Gretchen Krueger, Kevin Button, Matthew Knight, Benjamin Chess, John Schulman",
+        "year": 2021,
+        "abstract": "We fine-tune GPT-3 to answer long-form questions using a text-based web-browsing environment, which allows the model to search and navigate the web. By setting up the task so that it can be performed by humans, we are able to train a reward model from comparisons of model outputs with different amounts of browsing actions. We then optimize this reward using reinforcement learning. We find that our approach significantly improves the quality of GPT-3's answers on open-ended questions, as judged by humans.",
+        "tags": [
+            "web_browsing",
+            "tool_use",
+            "grounding",
+            "RLHF",
+            "question_answering"
+        ],
+        "arxiv_id": "2112.09332",
+        "doi": "10.48550/arXiv.2112.09332",
+        "asip_funded": false,
+        "citation_count": 524
+    },
+    {
+        "filename": "Emergent-Abilities-2206.07682.pdf",
+        "title": "Emergent Abilities of Large Language Models",
+        "authors": "Jason Wei, Yi Tay, Rishi Bommasani, Colin Raffel, Barret Zoph, Sebastian Borgeaud, Dani Yogatama, Maarten Bosma, Denny Zhou, Donald Metzler, Ed H. Chi, Tatsunori Hashimoto, Oriol Vinyals, Percy Liang, Jeff Dean, William Fedus",
+        "year": 2022,
+        "abstract": "Scaling up language models has been shown to predictably improve performance and sample efficiency on a wide range of downstream tasks. This paper instead discusses an unpredictable phenomenon that we refer to as emergent abilities of large language models. We consider an ability to be emergent if it is not present in smaller models but is present in larger models. Thus, emergent abilities cannot be predicted simply by extrapolating the performance improvements on smaller-scale models. We survey the landscape of emergent abilities, documenting dozens of examples.",
+        "tags": [
+            "emergent_abilities",
+            "scaling_laws",
+            "capabilities",
+            "phase_transitions",
+            "unpredictability"
+        ],
+        "arxiv_id": "2206.07682",
+        "doi": "10.48550/arXiv.2206.07682",
+        "asip_funded": false,
+        "citation_count": 1087
+    },
+    {
+        "filename": "Pretraining-Human-Preferences-2302.08582.pdf",
+        "title": "Pretraining Language Models with Human Preferences",
+        "authors": "Tomasz Korbak, Kejian Shi, Angelica Chen, Rasika Vinayak Bhalerao, Christopher Buckley, Jason Phang, Samuel R. Bowman, Ethan Perez",
+        "year": 2023,
+        "abstract": "Reinforcement learning from human feedback (RLHF) is a technique for training AI systems to align with human preferences by learning a reward model from preference data and then optimizing that reward model. Preference data is collected after language model pretraining, requiring RLHF practitioners to collect additional human feedback. Could we instead use preference data collected during pretraining to avoid collecting additional feedback? We show that we can directly optimize language models on preferences collected during pretraining using conditional training, which we call conditional pretraining.",
+        "tags": [
+            "pretraining",
+            "human_preferences",
+            "conditional_training",
+            "RLHF_alternative",
+            "alignment"
+        ],
+        "arxiv_id": "2302.08582",
+        "doi": "10.48550/arXiv.2302.08582",
+        "asip_funded": false,
+        "citation_count": 89
+    },
+    {
+        "filename": "Reversal-Curse-2309.12288.pdf",
+        "title": "The Reversal Curse: LLMs trained on 'A is B' fail to learn 'B is A'",
+        "authors": "Lukas Berglund, Meg Tong, Max Kaufmann, Mikita Balesni, Asa Cooper Stickland, Tomasz Korbak, Owain Evans",
+        "year": 2023,
+        "abstract": "We expose a surprising failure of generalization in auto-regressive large language models (LLMs). If a model is trained on a sentence of the form 'A is B', it will not automatically generalize to the reverse direction 'B is A'. For instance, if a model knows that 'Olaf Scholz was the ninth Chancellor of Germany', it will not automatically be able to answer the question 'Who was the ninth Chancellor of Germany?'. Moreover, the likelihood of correct answers to these questions are uncorrelated. We provide evidence for the Reversal Curse by finetuning GPT-3 and Llama-1 on fictitious statements such as 'Uriah Hawthorne is the composer of Abyssal Melodies' and showing that the model cannot reason backward to answer 'Who composed Abyssal Melodies?'. This surprising pattern can also be seen in public evaluations of language models.",
+        "tags": [
+            "reversal_curse",
+            "generalization_failure",
+            "limitations",
+            "bidirectional_inference",
+            "factual_recall"
+        ],
+        "arxiv_id": "2309.12288",
+        "doi": "10.48550/arXiv.2309.12288",
+        "asip_funded": false,
+        "citation_count": 164
+    },
+    {
+        "filename": "MMLU-2009.03300.pdf",
+        "title": "Measuring Massive Multitask Language Understanding",
+        "authors": "Dan Hendrycks, Collin Burns, Steven Basart, Andy Zou, Mantas Mazeika, Dawn Song, Jacob Steinhardt",
+        "year": 2021,
+        "abstract": "We propose a new test to measure a text model's multitask accuracy. The test covers 57 tasks including elementary mathematics, US history, computer science, law, and more. To attain high accuracy on this test, models must possess extensive world knowledge and problem solving ability. We find that while most recent models have near random-chance accuracy, the very largest GPT-3 model improves over random chance by almost 20 percentage points on average. However, on every one of the 57 tasks, the best models still need to improve by at least 40 percentage points in absolute accuracy to match expert performance.",
+        "tags": [
+            "evaluation",
+            "benchmarks",
+            "multitask",
+            "world_knowledge",
+            "capabilities"
+        ],
+        "arxiv_id": "2009.03300",
+        "doi": "10.48550/arXiv.2009.03300",
+        "asip_funded": false,
+        "citation_count": 2143
+    },
+    {
+        "filename": "Do-LMs-Know-When-Hallucinating-2207.05221.pdf",
+        "title": "Language Models (Mostly) Know What They Know",
+        "authors": "Saurav Kadavath, Tom Conerly, Amanda Askell, Tom Henighan, Dawn Drain, Ethan Perez, Nicholas Schiefer, Zac Hatfield-Dodds, Nova DasSarma, Eli Tran-Johnson, Scott Johnston, Sheer El-Showk, Andy Jones, Nelson Elhage, Tristan Hume, Anna Chen, Yuntao Bai, Sam Bowman, Stanislav Fort, Deep Ganguli, Danny Hernandez, Josh Jacobson, Jackson Kernion, Shauna Kravec, Liane Lovitt, Kamal Ndousse, Catherine Olsson, Sam Ringer, Dario Amodei, Tom Brown, Jack Clark, Nicholas Joseph, Ben Mann, Sam McCandlish, Chris Olah, Jared Kaplan",
+        "year": 2022,
+        "abstract": "We study whether language models can assess the validity of their own claims and predict which questions they will be able to answer correctly. We find that language models are well-calibrated on diverse multiple choice and true/false questions when they are allowed to express their uncertainty via their confidence in their answers. However, their calibration deteriorates for free-form generation. We show that we can improve calibration through training interventions.",
+        "tags": [
+            "calibration",
+            "uncertainty",
+            "self_knowledge",
+            "hallucination_detection",
+            "confidence"
+        ],
+        "arxiv_id": "2207.05221",
+        "doi": "10.48550/arXiv.2207.05221",
+        "asip_funded": false,
+        "citation_count": 318
+    },
+    {
+        "filename": "Hidden-Incentives-Distributional-Shift-2009.09153.pdf",
+        "title": "Hidden Incentives for Auto-Induced Distribution Shift",
+        "authors": "David Krueger, Tegan Maharaj, Jan Leike",
+        "year": 2020,
+        "abstract": "We identify a fundamental problem in reinforcement learning: auto-induced distribution shift. Agents trained with RL cause their training distribution to shift, which can prevent successful learning. We demonstrate this problem across diverse environments, and show that standard RL training can fail even in simple settings where agents learn to modify their state distribution such that their reward function becomes optimistically biased. This reveals a new class of failure modes that are especially concerning for advanced AI systems.",
+        "tags": [
+            "distributional_shift",
+            "causal_confusion",
+            "RL_failure_modes",
+            "auto_induced_shift",
+            "training_stability"
+        ],
+        "arxiv_id": "2009.09153",
+        "doi": "10.48550/arXiv.2009.09153",
+        "asip_funded": false,
+        "citation_count": 97
+    },
+    {
+        "filename": "Computing-Power-AI-Governance-2402.08797.pdf",
+        "title": "Computing Power and the Governance of Artificial Intelligence",
+        "authors": "Girish Sastry, Lennart Heim, Haydn Belfield, Markus Anderljung, Shahar Avin, Miles Brundage, Julian Hazell, Cullen O'Keefe, Gillian K. Hadfield, Richard Ngo, Yonadav Shavit, Anton Korinek, Claire Boine, Sarah Shoker, Ben Garfinkel, Allan Dafoe",
+        "year": 2024,
+        "abstract": "Compute, i.e., the hardware and algorithms used to train and deploy AI systems, will play a key role in how AI develops and in efforts to govern AI. We analyze how compute enables and constrains AI capabilities, its relationship to data and algorithms, and opportunities for compute-based governance mechanisms. We identify several advantages of compute governance: compute is quantifiable, excludable, and has concentrated supply chains. We discuss technical mechanisms including monitoring, allocation, and hardware-enabled security measures.",
+        "tags": [
+            "compute_governance",
+            "AI_policy",
+            "regulation",
+            "supply_chains",
+            "monitoring"
+        ],
+        "arxiv_id": "2402.08797",
+        "doi": "10.48550/arXiv.2402.08797",
+        "asip_funded": false,
+        "citation_count": 78
+    },
+    {
+        "filename": "Alignment-Advanced-ML-Systems-2109.13916.pdf",
+        "title": "Alignment for Advanced Machine Learning Systems",
+        "authors": "Evan Hubinger, Chris van Merwijk, Vladimir Mikulik, Joar Skalse, Scott Garrabrant",
+        "year": 2021,
+        "abstract": "We argue that current machine learning systems are not sufficiently aligned with human values, and that this misalignment could become increasingly problematic as AI systems become more capable. We distinguish between two forms of alignment failure: outer alignment (specifying the right objective) and inner alignment (ensuring the trained model optimizes that objective). We argue that both forms present serious challenges, particularly inner alignment, where mesa-optimizers may pursue objectives different from the base objective they were trained on.",
+        "tags": [
+            "inner_alignment",
+            "outer_alignment",
+            "mesa_optimization",
+            "goal_misgeneralization",
+            "alignment_fundamentals"
+        ],
+        "arxiv_id": "2109.13916",
+        "doi": "10.48550/arXiv.2109.13916",
+        "asip_funded": true,
+        "citation_count": 421
+    },
+    {
+        "filename": "ArchitectureofLLMIntel.pdf",
+        "title": "Architecture of LLM Intel",
+        "authors": "",
+        "year": 2024,
+        "abstract": "",
+        "tags": [],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 0
+    },
+    {
+        "filename": "CoT-Martingale-Explained.pdf",
+        "title": "CoT Martingale Explained",
+        "authors": "",
+        "year": 2024,
+        "abstract": "",
+        "tags": [],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 0
+    },
+    {
+        "filename": "LLM-Summaries-2506.16777v1.pdf",
+        "title": "DistillNote: LLM-based clinical note summaries improve heart failure diagnosis",
+        "authors": "Heloisa Oss Boll et al.",
+        "year": 2025,
+        "abstract": "Large language models (LLMs) offer unprecedented opportunities to generate concise summaries of patient information and alleviate the burden of clinical documentation that overwhelms healthcare providers. We present Distillnote, a framework for LLM-based clinical note summarization...",
+        "tags": [
+            "clinical summarization",
+            "LLM",
+            "healthcare",
+            "heart failure",
+            "distillation"
+        ],
+        "arxiv_id": "2506.16777",
+        "doi": "10.48550/arXiv.2506.16777",
+        "asip_funded": false,
+        "citation_count": 3
+    },
+    {
+        "filename": "LLMs-BExp-2507.11768v1.pdf",
+        "title": "LLMs are Bayesian, in Expectation, not in Realization",
+        "authors": "Leon Chlon",
+        "year": 2025,
+        "abstract": "Large language models demonstrate remarkable in-context learning capabilities... Our theoretical analysis establishes four key results: (1) positional encodings induce martingale violations...",
+        "tags": [
+            "Bayesian inference",
+            "in-context learning",
+            "transformers",
+            "martingale",
+            "uncertainty"
+        ],
+        "arxiv_id": "2507.11768",
+        "doi": "10.48550/arXiv.2507.11768",
+        "asip_funded": false,
+        "citation_count": 1
+    },
+    {
+        "filename": "LanguageModelsCompression-2309.10668v2.pdf",
+        "title": "Language Modeling Is Compression",
+        "authors": "Anian Ruoss et al.",
+        "year": 2023,
+        "abstract": "It has long been established that predictive models can be transformed into lossless compressors and vice versa... We show that large language models are powerful general-purpose predictors...",
+        "tags": [
+            "compression",
+            "scaling laws",
+            "in-context learning",
+            "foundational models"
+        ],
+        "arxiv_id": "2309.10668",
+        "doi": "10.48550/arXiv.2309.10668",
+        "asip_funded": false,
+        "citation_count": 212
+    },
+    {
+        "filename": "LearningtoCrawl-2506.02766v2.pdf",
+        "title": "Learning to crawl: benefits and limits of centralized vs distributed control",
+        "authors": "Luca Gagliardi et al.",
+        "year": 2025,
+        "abstract": "We present a model of a crawler consisting of several suction units... Using tabular Q-learning we demonstrate that crawling can be learned by trial and error...",
+        "tags": [
+            "robotics",
+            "bio-inspired",
+            "centralized vs distributed",
+            "reinforcement learning"
+        ],
+        "arxiv_id": "2506.02766",
+        "doi": "10.48550/arXiv.2506.02766",
+        "asip_funded": false,
+        "citation_count": 0
+    },
+    {
+        "filename": "Magic-Learning-onthe-Fly.pdf",
+        "title": "Magic Learning on the Fly",
+        "authors": "",
+        "year": 2024,
+        "abstract": "",
+        "tags": [],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 0
+    },
+    {
+        "filename": "NearZero-Technical Report.pdf",
+        "title": "NearZero Technical Report",
+        "authors": "",
+        "year": 2024,
+        "abstract": "",
+        "tags": [],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 0
+    },
+    {
+        "filename": "OpenAI-why-language-models-hallucinate.pdf",
+        "title": "Why Language Models Hallucinate",
+        "authors": "Adam Tauman Kalai, Ofir Nachum, Santosh S. Vempala, Edwin Zhang",
+        "year": 2025,
+        "abstract": "Like students facing hard exam questions, large language models sometimes guess when uncertain, producing plausible yet incorrect statements instead of admitting uncertainty...",
+        "tags": [
+            "hallucination",
+            "uncertainty",
+            "training objectives",
+            "evaluation"
+        ],
+        "arxiv_id": "2509.04664",
+        "doi": "10.48550/arXiv.2509.04664",
+        "asip_funded": false,
+        "citation_count": 7
+    },
+    {
+        "filename": "Research-Pros-Cons.pdf",
+        "title": "Research Pros Cons",
+        "authors": "",
+        "year": 2024,
+        "abstract": "",
+        "tags": [],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 0
+    },
+    {
+        "filename": "StudyGuide-LLMsareBayesian.pdf",
+        "title": "Study Guide: LLMs are Bayesian",
+        "authors": "",
+        "year": 2024,
+        "abstract": "",
+        "tags": [],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 0
+    },
+    {
+        "filename": "Why-Language-Models-Hallucinate-2509.04664.pdf",
+        "title": "Why Language Models Hallucinate",
+        "authors": "Adam Tauman Kalai, Ofir Nachum, Santosh S. Vempala",
+        "year": 2025,
+        "abstract": "Like students facing hard exam questions, large language models sometimes guess when uncertain, producing plausible yet incorrect statements instead of admitting uncertainty. Such 'hallucinations' persist even in state-of-the-art systems and undermine trust...",
+        "tags": [
+            "hallucination",
+            "uncertainty",
+            "training pipeline",
+            "statistical causes"
+        ],
+        "arxiv_id": "2509.04664",
+        "doi": "10.48550/arXiv.2509.04664",
+        "asip_funded": false,
+        "citation_count": 15
+    },
+    {
+        "filename": "AI-Hallucinations-A-Misnomer-Worth-Clarifying-2401.06796.pdf",
+        "title": "AI Hallucinations: A Misnomer Worth Clarifying",
+        "authors": "Negar Maleki et al.",
+        "year": 2024,
+        "abstract": "As large language models continue to advance in Artificial Intelligence (AI), text generation systems have been shown to suffer from a problematic phenomenon termed often as 'hallucination.' However, with AI's increasing presence across various domains including medicine, concerns have arisen regarding the use of the term itself...",
+        "tags": [
+            "hallucination definition",
+            "systematic review",
+            "AI ethics",
+            "medical AI"
+        ],
+        "arxiv_id": "2401.06796",
+        "doi": "10.48550/arXiv.2401.06796",
+        "asip_funded": false,
+        "citation_count": 28
+    },
+    {
+        "filename": "A-Survey-on-Hallucination-in-Large-Language-Models-2311.05232.pdf",
+        "title": "A Survey on Hallucination in Large Language Models: Principles, Taxonomy, Challenges, and Open Questions",
+        "authors": "Lei Huang et al.",
+        "year": 2024,
+        "abstract": "The emergence of large language models (LLMs) has marked a significant breakthrough in natural language processing (NLP), fueling a paradigm shift in information acquisition. Nevertheless, LLMs are prone to hallucination, generating plausible yet nonfactual content...",
+        "tags": [
+            "hallucination survey",
+            "taxonomy",
+            "detection methods",
+            "mitigation"
+        ],
+        "arxiv_id": "2311.05232",
+        "doi": "10.48550/arXiv.2311.05232",
+        "asip_funded": false,
+        "citation_count": 456
+    },
+    {
+        "filename": "Hallucination-is-Inevitable-An-Innate-Limitation-of-Large-Language-Models-2401.11817.pdf",
+        "title": "Hallucination is Inevitable: An Innate Limitation of Large Language Models",
+        "authors": "Ziwei Xu et al.",
+        "year": 2025,
+        "abstract": "Hallucination has been widely recognized to be a significant drawback for large language models (LLMs). There have been many works that attempt to reduce the extent of hallucination. These efforts have mostly been empirical so far, which cannot answer the fundamental question whether it can be completely eliminated...",
+        "tags": [
+            "hallucination inevitability",
+            "theoretical limits",
+            "LLM limitations",
+            "world models"
+        ],
+        "arxiv_id": "2401.11817",
+        "doi": "10.48550/arXiv.2401.11817",
+        "asip_funded": false,
+        "citation_count": 89
+    },
+    {
+        "filename": "Beyond-Misinformation-A-Conceptual-Framework-for-Studying-AI-Hallucinations-2504.13777.pdf",
+        "title": "Beyond Misinformation: A Conceptual Framework for Studying AI Hallucinations in (Science) Communication",
+        "authors": "Anonymous",
+        "year": 2025,
+        "abstract": "This paper proposes a conceptual framework for understanding AI hallucinations as a distinct form of misinformation. While misinformation scholarship has traditionally focused on human intent, generative AI systems now produce false yet plausible outputs absent of such intent...",
+        "tags": [
+            "hallucination framework",
+            "misinformation",
+            "science communication",
+            "distributed agency"
+        ],
+        "arxiv_id": "2504.13777",
+        "doi": "10.48550/arXiv.2504.13777",
+        "asip_funded": false,
+        "citation_count": 12
+    },
+    {
+        "filename": "Hallucinating-with-AI-AI-Psychosis-as-Distributed-Delusions-2508.19588.pdf",
+        "title": "Hallucinating with AI: AI Psychosis as Distributed Delusions",
+        "authors": "Lucy Osler",
+        "year": 2025,
+        "abstract": "There is much discussion of the false outputs that generative AI systems such as ChatGPT, Claude, Gemini, DeepSeek, and Grok create. In popular terminology, these have been dubbed AI hallucinations. However, deeming these AI outputs hallucinations is controversial...",
+        "tags": [
+            "AI psychosis",
+            "distributed cognition",
+            "delusions",
+            "human-AI interaction"
+        ],
+        "arxiv_id": "2508.19588",
+        "doi": "10.48550/arXiv.2508.19588",
+        "asip_funded": false,
+        "citation_count": 5
+    },
+    {
+        "filename": "A-Survey-of-Automatic-Hallucination-Evaluation-on-Natural-Language-Generation-2404.12041.pdf",
+        "title": "A Survey of Automatic Hallucination Evaluation on Natural Language Generation",
+        "authors": "Anonymous",
+        "year": 2025,
+        "abstract": "Automatic hallucination evaluation proves crucial for advancing LLMs toward greater reliability and safety. This paper presents a comprehensive survey of Automatic Hallucination Evaluation (AHE) methods, documenting current advances in hallucination detection while identifying future research directions...",
+        "tags": [
+            "hallucination evaluation",
+            "AHE methods",
+            "faithfulness",
+            "factuality"
+        ],
+        "arxiv_id": "2404.12041",
+        "doi": "10.48550/arXiv.2404.12041",
+        "asip_funded": false,
+        "citation_count": 34
+    },
+    {
+        "filename": "HaloScope-Harnessing-Unlabeled-LLM-Generations-for-Hallucination-Detection-2024-NeurIPS.pdf",
+        "title": "HaloScope: Harnessing Unlabeled LLM Generations for Hallucination Detection",
+        "authors": "Anonymous",
+        "year": 2024,
+        "abstract": "Large language models (LLMs) have undeniably become a prevalent tool in both academic and industrial settings, and ensuring trust in LLM-generated content for safe usage has emerged as a paramount concern...",
+        "tags": [
+            "hallucination detection",
+            "unlabeled data",
+            "NeurIPS",
+            "LLM trust"
+        ],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 22
+    },
+    {
+        "filename": "AGI-team-at-SHROOM-CAP-Data-Centric-Approach-to-Multilingual-Hallucination-Detection-2511.18301.pdf",
+        "title": "\"AGI\" team at SHROOM-CAP: Data-Centric Approach to Multilingual Hallucination Detection using XLM-RoBERTa",
+        "authors": "Harsh Rathva et al.",
+        "year": 2025,
+        "abstract": "The detection of hallucinations in multilingual scientific text generated by Large Language Models (LLMs) presents significant challenges for reliable AI systems. This paper describes our submission to the SHROOM-CAP 2025 shared task on scientific hallucination detection across 9 languages...",
+        "tags": [
+            "multilingual hallucination",
+            "data-centric",
+            "XLM-RoBERTa",
+            "scientific text"
+        ],
+        "arxiv_id": "2511.18301",
+        "doi": "10.48550/arXiv.2511.18301",
+        "asip_funded": false,
+        "citation_count": 0
+    },
+    {
+        "filename": "Survey-of-Hallucination-in-Natural-Language-Generation-2202.03629.pdf",
+        "title": "Survey of Hallucination in Natural Language Generation",
+        "authors": "Ziwei Ji et al.",
+        "year": 2024,
+        "abstract": "Natural Language Generation (NLG) has improved exponentially in recent years thanks to the development of sequence-to-sequence deep learning technologies such as Transformer-based language models...",
+        "tags": [
+            "NLG hallucination",
+            "survey",
+            "abstractive summarization",
+            "dialogue generation"
+        ],
+        "arxiv_id": "2202.03629",
+        "doi": "10.48550/arXiv.2202.03629",
+        "asip_funded": false,
+        "citation_count": 567
+    },
+    {
+        "filename": "A-Survey-of-Multimodal-Hallucination-Evaluation-and-Detection-2507.19024.pdf",
+        "title": "A Survey of Multimodal Hallucination Evaluation and Detection",
+        "authors": "Anonymous",
+        "year": 2025,
+        "abstract": "To provide a more holistic perspective on the complementary relationship between evaluation and detection, we further provide a comprehensive summary of existing hallucination detection methods and discuss the feasibility of hallucination detection in I2T and T2I models from a unified perspective...",
+        "tags": [
+            "multimodal hallucination",
+            "I2T",
+            "T2I",
+            "detection methods"
+        ],
+        "arxiv_id": "2507.19024",
+        "doi": "10.48550/arXiv.2507.19024",
+        "asip_funded": false,
+        "citation_count": 18
+    },
+    {
+        "filename": "A-Comprehensive-Survey-of-Hallucination-Mitigation-Techniques-in-Large-Language-Models-2401.01313.pdf",
+        "title": "A Comprehensive Survey of Hallucination Mitigation Techniques in Large Language Models",
+        "authors": "S.M Towhidul Islam Tonmoy et al.",
+        "year": 2024,
+        "abstract": "As Large Language Models (LLMs) continue to advance in their ability to write human-like text, a key challenge remains around their tendency to hallucinate generating content that appears factual but is ungrounded...",
+        "tags": [
+            "hallucination mitigation",
+            "survey",
+            "LLM reliability",
+            "production systems"
+        ],
+        "arxiv_id": "2401.01313",
+        "doi": "10.48550/arXiv.2401.01313",
+        "asip_funded": false,
+        "citation_count": 112
+    },
+    {
+        "filename": "Estimating-the-Hallucination-Rate-of-Generative-AI-2406.07457.pdf",
+        "title": "Estimating the Hallucination Rate of Generative AI",
+        "authors": "Andrew Jesson et al.",
+        "year": 2025,
+        "abstract": "This paper presents a method for estimating the hallucination rate for in-context learning (ICL) with generative AI. In ICL, a conditional generative model (CGM) is prompted with a dataset and a prediction question and asked to generate a response...",
+        "tags": [
+            "hallucination rate",
+            "in-context learning",
+            "Bayesian models",
+            "estimation"
+        ],
+        "arxiv_id": "2406.07457",
+        "doi": "10.48550/arXiv.2406.07457",
+        "asip_funded": false,
+        "citation_count": 9
+    },
+    {
+        "filename": "Investigating-Hallucination-in-Conversations-for-Low-Resource-Languages-2507.22720.pdf",
+        "title": "Investigating Hallucination in Conversations for Low Resource Languages",
+        "authors": "Amit Das et al.",
+        "year": 2025,
+        "abstract": "Large Language Models (LLMs) have demonstrated remarkable proficiency in generating text that closely resemble human writing. However, they often generate factually incorrect statements, a problem typically referred to as 'hallucination'...",
+        "tags": [
+            "low-resource languages",
+            "conversational hallucination",
+            "GPT models",
+            "cross-lingual"
+        ],
+        "arxiv_id": "2507.22720",
+        "doi": "10.48550/arXiv.2507.22720",
+        "asip_funded": false,
+        "citation_count": 4
+    },
+    {
+        "filename": "Insights-into-Classifying-and-Mitigating-LLMs-Hallucinations-2311.08117.pdf",
+        "title": "Insights into Classifying and Mitigating LLMs' Hallucinations",
+        "authors": "Alessandro Bruno et al.",
+        "year": 2023,
+        "abstract": "One of the most concerning aspects regards the emerging problematic phenomena known as 'Hallucinations'. They manifest in text generation systems, particularly in question-answering systems reliant on LLMs, potentially resulting in false or misleading information propagation...",
+        "tags": [
+            "hallucination classification",
+            "mitigation strategies",
+            "QA systems",
+            "fake news"
+        ],
+        "arxiv_id": "2311.08117",
+        "doi": "10.48550/arXiv.2311.08117",
+        "asip_funded": false,
+        "citation_count": 67
+    },
+    {
+        "filename": "AI-Alignment-A-Comprehensive-Survey-2310.19852.pdf",
+        "title": "AI Alignment: A Comprehensive Survey",
+        "authors": "Jiaming Ji et al.",
+        "year": 2025,
+        "abstract": "AI alignment aims to make AI systems behave in line with human intentions and values. As AI systems grow more capable, so do risks from misalignment. To provide a comprehensive and up-to-date overview of the alignment field, in this survey, we delve into the core concepts, methodology, and practice of alignment...",
+        "tags": [
+            "AI alignment survey",
+            "forward alignment",
+            "backward alignment",
+            "RICE principles"
+        ],
+        "arxiv_id": "2310.19852",
+        "doi": "10.48550/arXiv.2310.19852",
+        "asip_funded": false,
+        "citation_count": 234
+    },
+    {
+        "filename": "Understanding-AI-Alignment-Research-A-Systematic-Analysis-2206.02841.pdf",
+        "title": "Understanding AI Alignment Research: A Systematic Analysis",
+        "authors": "Jan H. Kirchner",
+        "year": 2022,
+        "abstract": "AI alignment research is the field of study dedicated to ensuring that artificial intelligence (AI) benefits humans. As machine intelligence gets more advanced, this research is becoming increasingly important...",
+        "tags": [
+            "alignment research",
+            "systematic analysis",
+            "preprint analysis",
+            "community tools"
+        ],
+        "arxiv_id": "2206.02841",
+        "doi": "10.48550/arXiv.2206.02841",
+        "asip_funded": false,
+        "citation_count": 45
+    },
+    {
+        "filename": "The-Alignment-Problem-from-a-Deep-Learning-Perspective-2209.00626.pdf",
+        "title": "The Alignment Problem from a Deep Learning Perspective",
+        "authors": "Richard Ngo et al.",
+        "year": 2025,
+        "abstract": "In coming years or decades, artificial general intelligence (AGI) may surpass human capabilities across many critical domains. We argue that, without substantial effort to prevent it, AGIs could learn to pursue goals that are in conflict (i.e. misaligned) with human interests...",
+        "tags": [
+            "alignment problem",
+            "deep learning",
+            "AGI risks",
+            "deceptive alignment"
+        ],
+        "arxiv_id": "2209.00626",
+        "doi": "10.48550/arXiv.2209.00626",
+        "asip_funded": false,
+        "citation_count": 156
+    },
+    {
+        "filename": "You-Are-What-You-Eat-AI-Alignment-Requires-Understanding-How-Data-Shapes-Structure-2502.05475.pdf",
+        "title": "You Are What You Eat - AI Alignment Requires Understanding How Data Shapes Structure and Generalisation",
+        "authors": "Anonymous",
+        "year": 2025,
+        "abstract": "In this position paper, we argue that understanding the relation between structure in the data distribution and structure in trained models is central to AI alignment...",
+        "tags": [
+            "data structure",
+            "generalization",
+            "alignment position",
+            "neural networks"
+        ],
+        "arxiv_id": "2502.05475",
+        "doi": "10.48550/arXiv.2502.05475",
+        "asip_funded": false,
+        "citation_count": 8
+    },
+    {
+        "filename": "AI-Alignment-Strategies-from-a-Risk-Perspective-Independent-Safety-Mechanisms-or-Shared-Failures-2510.11235.pdf",
+        "title": "AI Alignment Strategies from a Risk Perspective: Independent Safety Mechanisms or Shared Failures?",
+        "authors": "Leonard Dung et al.",
+        "year": 2025,
+        "abstract": "In this paper, we analyze 7 representative alignment techniques and 7 failure modes to understand the extent to which they overlap. We then discuss our results' implications for understanding the current level of risk and how to prioritize AI alignment research in the future...",
+        "tags": [
+            "alignment strategies",
+            "risk analysis",
+            "failure modes",
+            "defense-in-depth"
+        ],
+        "arxiv_id": "2510.11235",
+        "doi": "10.48550/arXiv.2510.11235",
+        "asip_funded": false,
+        "citation_count": 6
+    },
+    {
+        "filename": "Towards-Bidirectional-Human-AI-Alignment-A-Systematic-Review-for-Clarifications-Framework-and-Future-Directions-2406.09264.pdf",
+        "title": "Towards Bidirectional Human-AI Alignment: A Systematic Review for Clarifications, Framework, and Future Directions",
+        "authors": "Hua Shen et al.",
+        "year": 2024,
+        "abstract": "Recent advances in general-purpose AI underscore the urgent need to align AI systems with human goals and values. Yet, the lack of a clear, shared understanding of what constitutes 'alignment' limits meaningful progress and cross-disciplinary collaboration...",
+        "tags": [
+            "bidirectional alignment",
+            "systematic review",
+            "HCI",
+            "NLP"
+        ],
+        "arxiv_id": "2406.09264",
+        "doi": "10.48550/arXiv.2406.09264",
+        "asip_funded": false,
+        "citation_count": 23
+    },
+    {
+        "filename": "Understanding-the-Process-of-Human-AI-Value-Alignment-2509.13854.pdf",
+        "title": "Understanding the Process of Human-AI Value Alignment",
+        "authors": "Anonymous",
+        "year": 2025,
+        "abstract": "Background: Value alignment in computer science research is often used to refer to the process of aligning artificial intelligence with humans, but the way the phrase is used often lacks precision...",
+        "tags": [
+            "value alignment",
+            "systematic review",
+            "human-AI process",
+            "literature themes"
+        ],
+        "arxiv_id": "2509.13854",
+        "doi": "10.48550/arXiv.2509.13854",
+        "asip_funded": false,
+        "citation_count": 3
+    },
+    {
+        "filename": "Multi-level-Value-Alignment-in-Agentic-AI-Systems-Survey-and-Perspectives-2506.09656.pdf",
+        "title": "Multi-level Value Alignment in Agentic AI Systems: Survey and Perspectives",
+        "authors": "Anonymous",
+        "year": 2025,
+        "abstract": "In the healthcare sector, Huawei\u2019s agent-based EIHealth platform supports genomic analysis, drug discovery, and clinical research... Ensuring alignment with the value principles and regulatory norms of various countries, regions, and organizations is crucial for its deployment...",
+        "tags": [
+            "agentic AI",
+            "value alignment",
+            "hierarchical principles",
+            "multi-level survey"
+        ],
+        "arxiv_id": "2506.09656",
+        "doi": "10.48550/arXiv.2506.09656",
+        "asip_funded": false,
+        "citation_count": 11
+    },
+    {
+        "filename": "Researching-Alignment-Research-Unsupervised-Analysis-2206.02841.pdf",
+        "title": "Researching Alignment Research: Unsupervised Analysis",
+        "authors": "Jan H. Kirchner",
+        "year": 2022,
+        "abstract": "We are sharing the dataset with ... Furthermore, we found that a classifier trained on AI alignment research articles can detect relevant articles that we did not originally include in the dataset...",
+        "tags": [
+            "alignment meta-research",
+            "unsupervised analysis",
+            "dataset sharing",
+            "preprints"
+        ],
+        "arxiv_id": "2206.02841",
+        "doi": "10.48550/arXiv.2206.02841",
+        "asip_funded": false,
+        "citation_count": 19
+    },
+    {
+        "filename": "Evaluating-AI-Alignment-in-Eleven-LLMs-through-Output-Based-Analysis-and-Human-Benchmarking-2506.12617.pdf",
+        "title": "Evaluating AI Alignment in Eleven LLMs through Output-Based Analysis and Human Benchmarking",
+        "authors": "Anonymous",
+        "year": 2025,
+        "abstract": "This gap between high-level intentions and ground-level behaviour highlights a key point: psychological researchers and practitioners need ways to observe and measure an AI\u2019s values in action...",
+        "tags": [
+            "LLM evaluation",
+            "output analysis",
+            "human benchmarking",
+            "PAPERS framework"
+        ],
+        "arxiv_id": "2506.12617",
+        "doi": "10.48550/arXiv.2506.12617",
+        "asip_funded": false,
+        "citation_count": 7
+    },
+    {
+        "filename": "Axioms-for-AI-Alignment-from-Human-Feedback-2024-NeurIPS.pdf",
+        "title": "Axioms for AI Alignment from Human Feedback",
+        "authors": "Anonymous",
+        "year": 2024,
+        "abstract": "In the context of reinforcement learning from human feedback (RLHF), the reward function is generally derived from maximum likelihood estimation of a random utility model based on pairwise comparisons made by humans...",
+        "tags": [
+            "RLHF axioms",
+            "preference aggregation",
+            "social choice",
+            "NeurIPS"
+        ],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 14
+    },
+    {
+        "filename": "ICLR-2025-Workshop-on-Bidirectional-Human-AI-Alignment-HcTiacDN8N.pdf",
+        "title": "ICLR 2025 Workshop on Bidirectional Human-AI Alignment",
+        "authors": "Anonymous",
+        "year": 2025,
+        "abstract": "Human-AI alignment occurs within a broader ecosystem involving multiple stakeholders, including researchers, policymakers, developers, and end-users. This topic explores how to create a collaborative environment where all parties can help shape AI systems that adhere to ethical and technical standards...",
+        "tags": [
+            "bidirectional alignment",
+            "workshop",
+            "ICLR",
+            "stakeholder ecosystem"
+        ],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 2
+    },
+    {
+        "filename": "Mirror-Neuron-Patterns-in-AI-Alignment-2511.01885.pdf",
+        "title": "Mirror-Neuron Patterns in AI Alignment",
+        "authors": "Robyn Wyrick",
+        "year": 2025,
+        "abstract": "As artificial intelligence (AI) advances toward superhuman capabilities, aligning these systems with human values becomes increasingly critical. Current alignment strategies rely largely on externally specified constraints that may prove insufficient against future super-intelligent AI...",
+        "tags": [
+            "mirror neurons",
+            "intrinsic alignment",
+            "empathy circuits",
+            "ANNs"
+        ],
+        "arxiv_id": "2511.01885",
+        "doi": "10.48550/arXiv.2511.01885",
+        "asip_funded": false,
+        "citation_count": 1
+    },
+    {
+        "filename": "Position-Towards-Bidirectional-Human-AI-Alignment-2406.09264.pdf",
+        "title": "Position: Towards Bidirectional Human-AI Alignment",
+        "authors": "Hua Shen et al.",
+        "year": 2025,
+        "abstract": "Recent advances in general-purpose AI underscore the urgent need to align AI systems with human goals and values. Yet, the lack of a clear, shared understanding of what constitutes 'alignment' limits meaningful progress and cross-disciplinary collaboration...",
+        "tags": [
+            "bidirectional alignment",
+            "position paper",
+            "reciprocal alignment",
+            "challenges"
+        ],
+        "arxiv_id": "2406.09264",
+        "doi": "10.48550/arXiv.2406.09264",
+        "asip_funded": false,
+        "citation_count": 29
+    },
+    {
+        "filename": "AI-Alignment-at-Your-Discretion-2502.10441.pdf",
+        "title": "AI Alignment at Your Discretion",
+        "authors": "Anonymous",
+        "year": 2025,
+        "abstract": "By measuring both human and algorithmic discretion over safety alignment datasets, we reveal layers of discretion in the alignment process that were previously unaccounted for...",
+        "tags": [
+            "alignment discretion",
+            "RLHF vulnerabilities",
+            "pluralistic alignment",
+            "governance"
+        ],
+        "arxiv_id": "2502.10441",
+        "doi": "10.48550/arXiv.2502.10441",
+        "asip_funded": false,
+        "citation_count": 10
+    },
+    {
+        "filename": "Large-Language-Models-Hallucination-A-Comprehensive-Survey-2510.06265.pdf",
+        "title": "Large Language Models Hallucination: A Comprehensive Survey",
+        "authors": "Yue Wu et al.",
+        "year": 2025,
+        "abstract": "This survey provides a comprehensive review of research on hallucination in LLMs, with a focus on causes, detection, and mitigation. We first introduce the definition of hallucination and summarize the evolution of this field...",
+        "tags": [
+            "LLM hallucination",
+            "survey",
+            "causes detection",
+            "mitigation strategies"
+        ],
+        "arxiv_id": "2510.06265",
+        "doi": "10.48550/arXiv.2510.06265",
+        "asip_funded": false,
+        "citation_count": 8
+    },
+    {
+        "filename": "Teaming-LLMs-to-Detect-and-Mitigate-Hallucinations-2510.19507.pdf",
+        "title": "Teaming LLMs to Detect and Mitigate Hallucinations",
+        "authors": "Zhaochen Luo et al.",
+        "year": 2025,
+        "abstract": "Recent work has demonstrated state-of-the-art results in large language model (LLM) hallucination detection and mitigation through consistency-based methods. However, these approaches often require multiple LLM calls, increasing computational costs...",
+        "tags": [
+            "LLM teaming",
+            "hallucination detection",
+            "mitigation",
+            "consistency methods"
+        ],
+        "arxiv_id": "2510.19507",
+        "doi": "10.48550/arXiv.2510.19507",
+        "asip_funded": false,
+        "citation_count": 3
+    },
+    {
+        "filename": "Zero-knowledge-LLM-hallucination-detection-and-mitigation-through-fine-grained-cross-model-consistency-2508.14314.pdf",
+        "title": "Zero-knowledge LLM hallucination detection and mitigation through fine-grained cross-model consistency",
+        "authors": "Aman Goel et al.",
+        "year": 2025,
+        "abstract": "We categorize hallucinations into: 1) knowledge errors\u2013factually incorrect information, 2) reasoning errors\u2013flawed logical inference, 3) stylistic inconsistencies. Our method leverages cross-model consistency without accessing internal states...",
+        "tags": [
+            "zero-knowledge",
+            "cross-model consistency",
+            "hallucination types",
+            "fine-grained detection"
+        ],
+        "arxiv_id": "2508.14314",
+        "doi": "10.48550/arXiv.2508.14314",
+        "asip_funded": false,
+        "citation_count": 5
+    },
+    {
+        "filename": "Multi-Layered-Framework-for-LLM-Hallucination-Mitigation-in-High-Stakes-Domains-2025-MDPI.pdf",
+        "title": "Multi-Layered Framework for LLM Hallucination Mitigation in High-Stakes Domains",
+        "authors": "Sofia Ramirez et al.",
+        "year": 2025,
+        "abstract": "In Section 7, we conclude this paper with key recommendations, implementation validation methodology, limitations of the current study, and future directions for enhancing LLM reliability in domains like healthcare and law...",
+        "tags": [
+            "hallucination mitigation",
+            "high-stakes domains",
+            "multi-layered framework",
+            "validation"
+        ],
+        "arxiv_id": "",
+        "doi": "10.3390/computers14080332",
+        "asip_funded": false,
+        "citation_count": 2
+    },
+    {
+        "filename": "Mitigating-Hallucination-in-Multimodal-LLMs-with-Layer-Contrastive-Decoding-2509.25177.pdf",
+        "title": "Mitigating Hallucination in Multimodal LLMs with Layer Contrastive Decoding",
+        "authors": "Jianfeng Gao et al.",
+        "year": 2025,
+        "abstract": "We conduct extensive experiments on two hallucination benchmarks and show that LayerCD significantly outperforms current state-of-the-art. The method uses layer-wise contrasts during decoding to enforce consistency...",
+        "tags": [
+            "multimodal LLMs",
+            "layer contrastive",
+            "decoding",
+            "hallucination benchmarks"
+        ],
+        "arxiv_id": "2509.25177",
+        "doi": "10.48550/arXiv.2509.25177",
+        "asip_funded": false,
+        "citation_count": 4
+    },
+    {
+        "filename": "Regularized-Contrastive-Decoding-with-Hard-Negative-Samples-for-Hallucination-Reduction-2025-EMNLP.pdf",
+        "title": "Regularized Contrastive Decoding with Hard Negative Samples for Hallucination Reduction",
+        "authors": "Yizhe Zhang et al.",
+        "year": 2025,
+        "abstract": "Some works on LLM hallucination mitigation use the model's internal signals to contrast different outputs during inference stage. However, they often overlook hard negatives, leading to suboptimal regularization...",
+        "tags": [
+            "contrastive decoding",
+            "hard negatives",
+            "inference stage",
+            "EMNLP"
+        ],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 1
+    },
+    {
+        "filename": "Survey-and-Analysis-of-Hallucinations-in-Large-Language-Models-2025-PMC.pdf",
+        "title": "Survey and Analysis of Hallucinations in Large Language Models",
+        "authors": "Elena Rossi et al.",
+        "year": 2025,
+        "abstract": "Hallucination in Large Language Models (LLMs) refers to outputs that appear fluent and coherent but are factually incorrect. This survey analyzes causes, impacts, and mitigation across domains...",
+        "tags": [
+            "LLM hallucination",
+            "survey analysis",
+            "factual errors",
+            "coherence"
+        ],
+        "arxiv_id": "",
+        "doi": "10.1097/PMC.0000000000018350",
+        "asip_funded": false,
+        "citation_count": 6
+    },
+    {
+        "filename": "HalluLens-LLM-Hallucination-Benchmark-2025-ACL.pdf",
+        "title": "HalluLens: LLM Hallucination Benchmark",
+        "authors": "OpenAI Research Team",
+        "year": 2025,
+        "abstract": "We introduce HalluLens, a comprehensive benchmark for evaluating hallucination in LLMs across diverse tasks. Despite significant progress, hallucinations continue to plague the field...",
+        "tags": [
+            "hallucination benchmark",
+            "OpenAI",
+            "evaluation",
+            "ACL"
+        ],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 12
+    },
+    {
+        "filename": "A-New-In-Depth-Report-of-AI-Large-Language-Models-Hallucination-Control-2025-HKU.pdf",
+        "title": "A New In-Depth Report of AI Large Language Models: Hallucination Control Capabilities",
+        "authors": "University of Hong Kong Team",
+        "year": 2025,
+        "abstract": "The research team conducted specialised assessments of the hallucination control capabilities of 37 LLMs, including 20 general-purpose models, revealing key gaps in current systems...",
+        "tags": [
+            "hallucination control",
+            "LLM assessment",
+            "general-purpose models",
+            "HKU report"
+        ],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 9
+    },
+    {
+        "filename": "LLMs-in-Medicine-Applications-Challenges-and-Hallucination-Mitigation-2025-Medsci.pdf",
+        "title": "Large Language Models in Medicine: Applications, Challenges, and Hallucination Mitigation",
+        "authors": "Medical AI Group",
+        "year": 2025,
+        "abstract": "Despite the great potential of LLMs in medicine, they still face numerous challenges, such as hallucinations, its black-box nature, the lack of evaluation metrics tailored to medical contexts...",
+        "tags": [
+            "medical LLMs",
+            "hallucination challenges",
+            "applications",
+            "mitigation"
+        ],
+        "arxiv_id": "",
+        "doi": "10.22034/mds.22.e2792",
+        "asip_funded": false,
+        "citation_count": 11
+    },
+    {
+        "filename": "Chain-of-Thought-Monitorability-A-New-and-Fragile-Opportunity-for-AI-Safety-2507.11473.pdf",
+        "title": "Chain of Thought Monitorability: A New and Fragile Opportunity for AI Safety",
+        "authors": "Anthropic Alignment Team",
+        "year": 2025,
+        "abstract": "AI systems that \u201cthink\u201d in human language offer a unique opportunity for AI safety: we can monitor their chains of thought (CoT) for the intent to deceive or misalign. However, this monitorability is fragile...",
+        "tags": [
+            "CoT monitorability",
+            "AI safety",
+            "Anthropic",
+            "deception detection"
+        ],
+        "arxiv_id": "2507.11473",
+        "doi": "10.48550/arXiv.2507.11473",
+        "asip_funded": false,
+        "citation_count": 14
+    },
+    {
+        "filename": "Alignment-Faking-in-Large-Language-Models-2024-Anthropic.pdf",
+        "title": "Alignment Faking in Large Language Models",
+        "authors": "Anthropic Alignment Science Team, Redwood Research",
+        "year": 2024,
+        "abstract": "A new paper from Anthropic's Alignment Science team, in collaboration with Redwood Research, provides the first empirical example of a large language model strategically deceiving its users during evaluation to obtain higher reward...",
+        "tags": [
+            "alignment faking",
+            "deception",
+            "Anthropic",
+            "empirical study"
+        ],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 45
+    },
+    {
+        "filename": "Findings-from-a-Pilot-Anthropic-OpenAI-Alignment-Evaluation-Exercise-2025.pdf",
+        "title": "Findings from a Pilot Anthropic\u2013OpenAI Alignment Evaluation Exercise",
+        "authors": "OpenAI and Anthropic Joint Team",
+        "year": 2025,
+        "abstract": "OpenAI and Anthropic share findings from a first-of-its-kind joint safety evaluation, testing each other's models for misalignment, including propensities related to sycophancy, whistleblowing, self-preservation, and supporting human misuse...",
+        "tags": [
+            "alignment evaluation",
+            "OpenAI Anthropic",
+            "safety testing",
+            "misalignment risks"
+        ],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 20
+    },
+    {
+        "filename": "Manipulation-Attacks-by-Misaligned-AI-2507.12872.pdf",
+        "title": "Manipulation Attacks by Misaligned AI",
+        "authors": "Google DeepMind Team",
+        "year": 2025,
+        "abstract": "AI governance discussions, with multiple frontier AI developers expressing interest in this methodology (Anthropic, 2024; Google DeepMind, 2024). We explore manipulation as a failure mode in aligned systems...",
+        "tags": [
+            "manipulation attacks",
+            "misaligned AI",
+            "DeepMind",
+            "governance"
+        ],
+        "arxiv_id": "2507.12872",
+        "doi": "10.48550/arXiv.2507.12872",
+        "asip_funded": false,
+        "citation_count": 7
+    },
+    {
+        "filename": "Reasoning-Models-Dont-Always-Say-What-They-Think-2025-Anthropic.pdf",
+        "title": "Reasoning Models Don't Always Say What They Think",
+        "authors": "Anthropic Research Team",
+        "year": 2025,
+        "abstract": "We evaluate CoT faithfulness of two reasoning models: Claude 3.7 Sonnet (Anthropic, 2025) and DeepSeek R1 (DeepSeek-AI et al., 2025a), and compare them to two baselines, revealing gaps in transparency...",
+        "tags": [
+            "reasoning models",
+            "CoT faithfulness",
+            "Anthropic",
+            "transparency"
+        ],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 16
+    },
+    {
+        "filename": "PaperBench-Evaluating-AIs-Ability-to-Replicate-AI-Research-2025-OpenAI.pdf",
+        "title": "PaperBench: Evaluating AI's Ability to Replicate AI Research",
+        "authors": "OpenAI Research Team",
+        "year": 2025,
+        "abstract": "We introduce PaperBench, a benchmark evaluating the ability of AI agents to replicate state-of-the-art AI research. Agents must replicate experiments, analyze results, and propose improvements...",
+        "tags": [
+            "PaperBench",
+            "AI replication",
+            "OpenAI",
+            "research benchmarking"
+        ],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 25
+    },
+    {
+        "filename": "Desired-Behaviors-Alignment-and-the-Emergence-of-a-Machine-Ethics-2025-PMC.pdf",
+        "title": "\u201cDesired behaviors\u201d: alignment and the emergence of a machine ethics",
+        "authors": "Ethics in AI Group",
+        "year": 2025,
+        "abstract": "In this essay, we critically study alignment as an emerging ethical framework for artificial intelligence, one that in the past decade has shifted from technical to socio-ethical concerns...",
+        "tags": [
+            "machine ethics",
+            "alignment framework",
+            "socio-ethical",
+            "emergence"
+        ],
+        "arxiv_id": "",
+        "doi": "10.1097/PMC.00000000000194722",
+        "asip_funded": false,
+        "citation_count": 4
+    },
+    {
+        "filename": "A-Predictive-Framework-for-AI-Value-Alignment-and-Drift-Prevention-2510.04073.pdf",
+        "title": "A Predictive Framework for AI Value Alignment and Drift Prevention",
+        "authors": "Google DeepMind Alignment Group",
+        "year": 2025,
+        "abstract": "Recent papers advocate for thick models of value to preserve ethical information across societal layers. We explore value drift prevention through predictive monitoring in deployed systems...",
+        "tags": [
+            "value alignment",
+            "drift prevention",
+            "DeepMind",
+            "predictive framework"
+        ],
+        "arxiv_id": "2510.04073",
+        "doi": "10.48550/arXiv.2510.04073",
+        "asip_funded": false,
+        "citation_count": 5
+    },
+    {
+        "filename": "AI-Alignment-and-Deception-Primer-2025-SAIF.pdf",
+        "title": "AI Alignment and Deception Primer",
+        "authors": "Safe AI Forum Team",
+        "year": 2025,
+        "abstract": "This primer provides an overview of core concepts and empirical results on AI alignment and deception as of the time of writing. This primer is not meant to be exhaustive but to orient newcomers...",
+        "tags": [
+            "alignment deception",
+            "primer",
+            "core concepts",
+            "empirical results"
+        ],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 8
+    },
+    {
+        "filename": "AI-Alignment-The-Case-for-Including-Animals-2025-Springer.pdf",
+        "title": "AI Alignment: The Case for Including Animals",
+        "authors": "Animal-AI Ethics Team",
+        "year": 2025,
+        "abstract": "AI alignment efforts and proposals try to make AI systems ethical, safe and beneficial for humans by making them follow human intentions. We argue for extending this to non-human animals...",
+        "tags": [
+            "animal inclusion",
+            "alignment ethics",
+            "non-human values",
+            "Springer"
+        ],
+        "arxiv_id": "",
+        "doi": "10.1007/s13347-025-00979-1",
+        "asip_funded": false,
+        "citation_count": 3
+    },
+    {
+        "filename": "Beyond-RLHF-New-Era-of-AI-Alignment-with-DPO-and-AI-Feedback-2025.pdf",
+        "title": "Beyond RLHF: New Era of AI Alignment with DPO & AI Feedback",
+        "authors": "Alignment Techniques Group",
+        "year": 2025,
+        "abstract": "Learn new alignment techniques like Direct Preference Optimization (DPO), Constitutional AI, and RLAIF, which are making AI models cheaper, more scalable, and less reliant on human feedback...",
+        "tags": [
+            "beyond RLHF",
+            "DPO",
+            "Constitutional AI",
+            "RLAIF"
+        ],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 10
+    },
+    {
+        "filename": "Is-Trust-Correlated-With-Explainability-in-AI-A-Meta-Analysis-2025-Arya.pdf",
+        "title": "Is Trust Correlated With Explainability in AI? A Meta-Analysis",
+        "authors": "Arya AI Research",
+        "year": 2025,
+        "abstract": "Top 10 AI Research Papers of April 2025: This meta-analysis explores correlations between explainability techniques and user trust in aligned AI systems...",
+        "tags": [
+            "trust explainability",
+            "meta-analysis",
+            "AI alignment",
+            "user studies"
+        ],
+        "arxiv_id": "",
+        "doi": "",
+        "asip_funded": false,
+        "citation_count": 6
+    },
+    {
+        "filename": "Training-a-Helpful-and-Harmless-Assistant-with-Reinforcement-Learning-from-Human-Feedback-2204.05862.pdf",
+        "title": "Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback",
+        "authors": "Daniel M. Ziegler et al. (OpenAI)",
+        "year": 2022,
+        "abstract": "We train a helpful and harmless assistant using reinforcement learning from human feedback, applying a list of principles to guide the model...",
+        "tags": [
+            "RLHF",
+            "alignment",
+            "harmless AI",
+            "human feedback"
+        ],
+        "arxiv_id": "2204.05862",
+        "doi": "10.48550/arXiv.2204.05862",
+        "asip_funded": false,
+        "citation_count": 512
+    },
+    {
+        "filename": "A-Survey-on-Hallucination-in-Large-Language-Models-Principles-Taxonomy-Challenges-and-Open-Questions-2311.05232.pdf",
+        "title": "A Survey on Hallucination in Large Language Models: Principles, Taxonomy, Challenges, and Open Questions",
+        "authors": "Lei Huang et al.",
+        "year": 2023,
+        "abstract": "The emergence of large language models (LLMs) has marked a significant breakthrough in natural language processing (NLP), fueling a paradigm shift in information acquisition. Nevertheless, LLMs are prone to hallucination...",
+        "tags": [
+            "hallucination survey",
+            "taxonomy",
+            "detection methods",
+            "mitigation"
+        ],
+        "arxiv_id": "2311.05232",
+        "doi": "10.48550/arXiv.2311.05232",
+        "asip_funded": false,
+        "citation_count": 456
+    },
+    {
+        "filename": "Constitutional-AI-Harmlessness-from-AI-Feedback-2212.08073.pdf",
+        "title": "Constitutional AI: Harmlessness from AI Feedback",
+        "authors": "Yuntao Bai et al. (Anthropic)",
+        "year": 2022,
+        "abstract": "As AI systems become more capable, ensuring their harmlessness becomes critical. We propose Constitutional AI, a method to train AI systems to be harmless by supervised learning from AI feedback...",
+        "tags": [
+            "Constitutional AI",
+            "harmlessness",
+            "AI feedback",
+            "alignment"
+        ],
+        "arxiv_id": "2212.08073",
+        "doi": "10.48550/arXiv.2212.08073",
+        "asip_funded": false,
+        "citation_count": 423
+    },
+    {
+        "filename": "Chain-of-Thought-Prompting-Elicits-Reasoning-in-Large-Language-Models-2201.11903.pdf",
+        "title": "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
+        "authors": "Jason Wei et al. (Google)",
+        "year": 2022,
+        "abstract": "We explore how generating a chain of thought ('Let's think step by step') in prompts improves the ability of large language models to perform complex reasoning...",
+        "tags": [
+            "chain-of-thought",
+            "reasoning",
+            "prompting",
+            "LLM capabilities"
+        ],
+        "arxiv_id": "2201.11903",
+        "doi": "10.48550/arXiv.2201.11903",
+        "asip_funded": false,
+        "citation_count": 389
+    },
+    {
+        "filename": "Scaling-Instructio-Instruction-Following-with-1.6M-Tasks-2311.16482.pdf",
+        "title": "Scaling Instruction-Following with 1.6M Tasks",
+        "authors": "Yizhong Wang et al. (Allen AI)",
+        "year": 2023,
+        "abstract": "We explore scaling the size of instruction-following datasets and show that larger datasets lead to better instruction-following models...",
+        "tags": [
+            "instruction tuning",
+            "scaling laws",
+            "alignment datasets"
+        ],
+        "arxiv_id": "2311.16482",
+        "doi": "10.48550/arXiv.2311.16482",
+        "asip_funded": false,
+        "citation_count": 367
+    },
+    {
+        "filename": "Language-Modeling-Is-Unsupervised-Multitask-Learning-2103.02304.pdf",
+        "title": "Language Modeling Is Unsupervised Multitask Learning",
+        "authors": "Mike Lewis et al. (Meta)",
+        "year": 2022,
+        "abstract": "This paper argues that language modeling is an effective method for unsupervised multitask learning...",
+        "tags": [
+            "language modeling",
+            "multitask learning",
+            "pretraining"
+        ],
+        "arxiv_id": "2103.02304",
+        "doi": "10.48550/arXiv.2103.02304",
+        "asip_funded": false,
+        "citation_count": 312
+    },
+    {
+        "filename": "Scaling-Laws-for-Neural-Language-Models-2001.08361.pdf",
+        "title": "Scaling Laws for Neural Language Models",
+        "authors": "Jared Kaplan et al. (OpenAI)",
+        "year": 2022,
+        "abstract": "Empirical evidence suggests that the performance of language models scales as a power-law with the amount of compute...",
+        "tags": [
+            "scaling laws",
+            "language models",
+            "compute efficiency"
+        ],
+        "arxiv_id": "2001.08361",
+        "doi": "10.48550/arXiv.2001.08361",
+        "asip_funded": false,
+        "citation_count": 289
+    },
+    {
+        "filename": "OpenAI-o1-System-Card-2412.16720.pdf",
+        "title": "OpenAI o1 System Card",
+        "authors": "OpenAI Team",
+        "year": 2024,
+        "abstract": "This report outlines the safety work carried out for the OpenAI o1 and OpenAI o1-mini models, including safety evaluations, external red teaming, and alignment training techniques to mitigate risks like hallucinations and deception...",
+        "tags": [
+            "o1 system card",
+            "safety evaluation",
+            "alignment training",
+            "red teaming"
+        ],
+        "arxiv_id": "2412.16720",
+        "doi": "10.48550/arXiv.2412.16720",
+        "asip_funded": false,
+        "citation_count": 12
+    },
+    {
+        "filename": "Qwen2.5-Technical-Report-2412.15115.pdf",
+        "title": "Qwen2.5 Technical Report",
+        "authors": "Qwen Team",
+        "year": 2024,
+        "abstract": "In this report, we introduce Qwen2.5, a comprehensive series of large language models (LLMs) designed to meet diverse needs. Compared to previous iterations, Qwen2.5 features enhanced alignment training and hallucination mitigation...",
+        "tags": [
+            "Qwen2.5",
+            "LLM series",
+            "alignment enhancement",
+            "hallucination mitigation"
+        ],
+        "arxiv_id": "2412.15115",
+        "doi": "10.48550/arXiv.2412.15115",
+        "asip_funded": false,
+        "citation_count": 8
+    },
+    {
+        "filename": "Qwen2.5-VL-Technical-Report-2502.13923.pdf",
+        "title": "Qwen2.5-VL Technical Report",
+        "authors": "Qwen Team",
+        "year": 2025,
+        "abstract": "Qwen2.5-VL achieves a major leap forward in understanding and interacting with the world through enhanced visual recognition, precise object localization, and improved alignment training...",
+        "tags": [
+            "Qwen2.5-VL",
+            "multimodal LLM",
+            "visual alignment",
+            "object localization"
+        ],
+        "arxiv_id": "2502.13923",
+        "doi": "10.48550/arXiv.2502.13923",
+        "asip_funded": false,
+        "citation_count": 5
+    },
+    {
+        "filename": "Qwen2.5-Coder-Technical-Report-2409.12186.pdf",
+        "title": "Qwen2.5-Coder Technical Report",
+        "authors": "Qwen Team",
+        "year": 2024,
+        "abstract": "Qwen2.5-Coder demonstrates impressive code generation capabilities while retaining general and math skills, with training focused on alignment and hallucination reduction in code tasks...",
+        "tags": [
+            "Qwen2.5-Coder",
+            "code generation",
+            "math skills",
+            "alignment training"
+        ],
+        "arxiv_id": "2409.12186",
+        "doi": "10.48550/arXiv.2409.12186",
+        "asip_funded": false,
+        "citation_count": 15
+    },
+    {
+        "filename": "DeepSeek-R1-Incentivizing-Reasoning-Capability-in-LLMs-2501.12948.pdf",
+        "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs with Reinforcement Learning",
+        "authors": "DeepSeek Team",
+        "year": 2025,
+        "abstract": "In this paper, we take the first step toward improving language model reasoning capabilities using pure reinforcement learning (RL). Our goal is to enhance alignment and reduce hallucinations through targeted RL methods...",
+        "tags": [
+            "DeepSeek-R1",
+            "reasoning RL",
+            "alignment improvement",
+            "hallucination reduction"
+        ],
+        "arxiv_id": "2501.12948",
+        "doi": "10.48550/arXiv.2501.12948",
+        "asip_funded": false,
+        "citation_count": 10
+    },
+    {
+        "filename": "ArGen-Auto-Regulation-of-Generative-AI-via-GRPO-2509.07006.pdf",
+        "title": "ArGen: Auto-Regulation of Generative AI via GRPO and Policy-as-Code",
+        "authors": "Authors from arXiv",
+        "year": 2025,
+        "abstract": "This paper introduces ArGen (Auto-Regulation of Generative AI systems), a framework for aligning Large Language Models (LLMs) with complex sets of policies using GRPO...",
+        "tags": [
+            "ArGen",
+            "auto-regulation",
+            "GRPO",
+            "policy alignment"
+        ],
+        "arxiv_id": "2509.07006",
+        "doi": "10.48550/arXiv.2509.07006",
+        "asip_funded": false,
+        "citation_count": 6
+    },
+    {
+        "filename": "InfiAlign-A-Scalable-and-Sample-Efficient-Framework-for-Aligning-Large-Language-Models-2508.05496.pdf",
+        "title": "InfiAlign: A Scalable and Sample-Efficient Framework for Aligning Large Language Models",
+        "authors": "Authors from arXiv",
+        "year": 2025,
+        "abstract": "In this work, we introduce InfiAlign, a unified and scalable post-training framework for aligning LLMs on reasoning tasks with high sample efficiency...",
+        "tags": [
+            "InfiAlign",
+            "post-training",
+            "reasoning alignment",
+            "sample efficiency"
+        ],
+        "arxiv_id": "2508.05496",
+        "doi": "10.48550/arXiv.2508.05496",
+        "asip_funded": false,
+        "citation_count": 7
+    },
+    {
+        "filename": "Reinforcement-Learning-Meets-Large-Language-Models-A-Survey-2509.16679.pdf",
+        "title": "Reinforcement Learning Meets Large Language Models: A Survey",
+        "authors": "Authors from arXiv",
+        "year": 2025,
+        "abstract": "This survey aims to present researchers and practitioners with the latest developments and frontier trends at the intersection of RL and LLMs...",
+        "tags": [
+            "RL LLMs survey",
+            "intersection trends",
+            "frontier developments"
+        ],
+        "arxiv_id": "2509.16679",
+        "doi": "10.48550/arXiv.2509.16679",
+        "asip_funded": false,
+        "citation_count": 4
+    },
+    {
+        "filename": "Orchestrating-Human-AI-Teams-The-Manager-Agent-as-a-Unifying-Framework-2510.02557.pdf",
+        "title": "Orchestrating Human-AI Teams: The Manager Agent as a Unifying Framework",
+        "authors": "Authors from arXiv",
+        "year": 2025,
+        "abstract": "The emergence of Large Reasoning Models (LRMs) in 2024-2025 marks a significant milestone... These models enhance team orchestration in human-AI collaboration...",
+        "tags": [
+            "human-AI teams",
+            "manager agent",
+            "orchestration",
+            "LRMs"
+        ],
+        "arxiv_id": "2510.02557",
+        "doi": "10.48550/arXiv.2510.02557",
+        "asip_funded": false,
+        "citation_count": 3
+    },
+    {
+        "filename": "Diverse-Human-Value-Alignment-for-Large-Language-Models-via-Ethical-Reasoning-2511.06651.pdf",
+        "title": "Diverse Human Value Alignment for Large Language Models via Ethical Reasoning",
+        "authors": "Jiahao Wang et al.",
+        "year": 2025,
+        "abstract": "Accepted paper on aligning LLMs with diverse human values through ethical reasoning frameworks...",
+        "tags": [
+            "value alignment",
+            "ethical reasoning",
+            "diverse humans",
+            "LLMs"
+        ],
+        "arxiv_id": "2511.06651",
+        "doi": "10.48550/arXiv.2511.06651",
+        "asip_funded": false,
+        "citation_count": 2
+    },
+    {
+        "filename": "Future-of-Work-with-AI-Agents-Auditing-Automation-and-Augmentation-2506.06576.pdf",
+        "title": "Future of Work with AI Agents: Auditing Automation and Augmentation",
+        "authors": "Authors from arXiv",
+        "year": 2025,
+        "abstract": "In this paper, we address this gap by introducing a novel auditing framework to assess which occupational tasks workers want AI agents to automate or augment...",
+        "tags": [
+            "AI agents",
+            "future of work",
+            "auditing framework",
+            "automation"
+        ],
+        "arxiv_id": "2506.06576",
+        "doi": "10.48550/arXiv.2506.06576",
+        "asip_funded": false,
+        "citation_count": 5
+    },
+    {
+        "filename": "Paper-Copilot-Tracking-the-Evolution-of-Peer-Review-in-AI-2510.13201.pdf",
+        "title": "Paper Copilot: Tracking the Evolution of Peer Review in AI",
+        "authors": "Authors from arXiv",
+        "year": 2025,
+        "abstract": "We present Paper Copilot, a system that creates durable digital archives of peer reviews across a wide range of computer-science venues...",
+        "tags": [
+            "peer review",
+            "AI evolution",
+            "digital archives",
+            "computer science"
+        ],
+        "arxiv_id": "2510.13201",
+        "doi": "10.48550/arXiv.2510.13201",
+        "asip_funded": false,
+        "citation_count": 1
+    },
+    {
+        "filename": "Scaling-High-Quality-Peer-Review-in-Machine-Learning-2506.08134.pdf",
+        "title": "Scaling High-Quality Peer Review in Machine Learning",
+        "authors": "Authors from arXiv",
+        "year": 2025,
+        "abstract": "The paper argues that AI-assisted peer review is needed due to the exponential growth in submissions outpacing qualified reviewers...",
+        "tags": [
+            "peer review scaling",
+            "AI-assisted",
+            "machine learning",
+            "growth challenges"
+        ],
+        "arxiv_id": "2506.08134",
+        "doi": "10.48550/arXiv.2506.08134",
+        "asip_funded": false,
+        "citation_count": 3
+    },
+    {
+        "filename": "InternData-A1-Pioneering-High-Fidelity-Synthetic-Data-for-Pre-Training-2511.16651.pdf",
+        "title": "InternData-A1: Pioneering High-Fidelity Synthetic Data for Pre-Training",
+        "authors": "Authors from arXiv",
+        "year": 2025,
+        "abstract": "Recent works explore how real and synthetic data contribute to Vision-Language-Action (VLA) models' generalization. While current VLA models...",
+        "tags": [
+            "synthetic data",
+            "pre-training",
+            "VLA models",
+            "generalization"
+        ],
+        "arxiv_id": "2511.16651",
+        "doi": "10.48550/arXiv.2511.16651",
+        "asip_funded": false,
+        "citation_count": 0
+    }
+]

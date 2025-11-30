@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASI Research Hub - API Test Interface</title>
+    <style>
+        :root {
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --container-bg: white;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-tertiary: #555;
+            --section-bg: #f8f9fa;
+            --border-color: #ddd;
+            --result-bg: white;
+            --result-border: #e9ecef;
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #1a1a2e;
+            --bg-gradient-end: #16213e;
+            --container-bg: #0f3460;
+            --text-primary: #e9ecef;
+            --text-secondary: #adb5bd;
+            --text-tertiary: #ced4da;
+            --section-bg: #1a1a2e;
+            --border-color: #495057;
+            --result-bg: #16213e;
+            --result-border: #495057;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--container-bg);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .theme-toggle {
+            background: var(--section-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        h1 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            font-size: 32px;
+            transition: color 0.3s ease;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--section-bg);
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            transition: background 0.3s ease;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: var(--result-bg);
+            color: var(--text-primary);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: var(--result-bg);
+            border-radius: 8px;
+            border: 2px solid var(--result-border);
+            max-height: 400px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+        }
+
+        .success {
+            border-color: #28a745;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            border-color: #dc3545;
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status-online {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>🔬 ASI Research Hub</h1>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
+        </div>
+        <p class="subtitle">API Test Interface - Version 1.0</p>
+
+        <div class="info-box">
+            <strong>📡 API Status:</strong> <span id="status-text">Checking...</span>
+            <span id="status-badge" class="status-badge">●</span>
+        </div>
+
+        <!-- Registration Section -->
+        <div class="section">
+            <h2>👤 User Registration</h2>
+            <div class="input-group">
+                <label>First Name</label>
+                <input type="text" id="reg-firstname" placeholder="John">
+            </div>
+            <div class="input-group">
+                <label>Last Name</label>
+                <input type="text" id="reg-lastname" placeholder="Doe">
+            </div>
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="reg-email" placeholder="john@example.com">
+            </div>
+            <div class="input-group">
+                <label>Password (8+ characters)</label>
+                <input type="password" id="reg-password" placeholder="••••••••">
+            </div>
+            <div class="input-group">
+                <label>Tier</label>
+                <select id="reg-tier">
+                    <option value="student">Student</option>
+                    <option value="researcher" selected>Researcher</option>
+                    <option value="institutional">Institutional</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Reason for Access</label>
+                <textarea id="reg-reason" rows="2" placeholder="I'm researching AI alignment..."></textarea>
+            </div>
+            <button onclick="register()">Register Account</button>
+            <div id="register-result" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- Login Section -->
+        <div class="section">
+            <h2>🔐 User Login</h2>
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="login-email" placeholder="john@example.com">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="login-password" placeholder="••••••••">
+            </div>
+            <button onclick="login()">Login</button>
+            <div id="login-result" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="section">
+            <h2>🔍 Search Papers</h2>
+            <div class="input-group">
+                <label>Search Query</label>
+                <input type="text" id="search-query" placeholder="interpretability">
+            </div>
+            <div class="input-group">
+                <label>Sources</label>
+                <div>
+                    <label style="display: inline; margin-right: 15px;">
+                        <input type="checkbox" id="source-internal" checked> Internal Database
+                    </label>
+                    <label style="display: inline;">
+                        <input type="checkbox" id="source-scholar"> Google Scholar
+                    </label>
+                </div>
+            </div>
+            <button onclick="search()">Search</button>
+            <div id="search-result" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- Featured Papers Section -->
+        <div class="section">
+            <h2>⭐ ASI Featured Research</h2>
+            <button onclick="getFeatured()">Load Featured Papers</button>
+            <div id="featured-result" class="result" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin + '/api';
+        let accessToken = null;
+
+        // Check API status on load
+        window.onload = async () => {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                if (data.status === 'healthy') {
+                    document.getElementById('status-text').textContent = 'Online';
+                    document.getElementById('status-badge').className = 'status-badge status-online';
+                }
+            } catch (error) {
+                document.getElementById('status-text').textContent = 'Offline';
+                document.getElementById('status-badge').className = 'status-badge status-offline';
+            }
+        };
+
+        async function register() {
+            const resultDiv = document.getElementById('register-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Processing...';
+
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('reg-email').value,
+                        password: document.getElementById('reg-password').value,
+                        first_name: document.getElementById('reg-firstname').value,
+                        last_name: document.getElementById('reg-lastname').value,
+                        tier: document.getElementById('reg-tier').value,
+                        reason: document.getElementById('reg-reason').value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `<strong>✅ Success!</strong><br>${data.message}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>❌ Error:</strong><br>${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>❌ Error:</strong><br>${error.message}`;
+            }
+        }
+
+        async function login() {
+            const resultDiv = document.getElementById('login-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Authenticating...';
+
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('login-email').value,
+                        password: document.getElementById('login-password').value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    accessToken = data.access_token;
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `<strong>✅ Login Successful!</strong><br>
+                        Welcome, ${data.user.first_name} ${data.user.last_name}!<br>
+                        <small>Token saved for search requests</small>`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>❌ Error:</strong><br>${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>❌ Error:</strong><br>${error.message}`;
+            }
+        }
+
+        async function search() {
+            if (!accessToken) {
+                alert('Please login first!');
+                return;
+            }
+
+            const resultDiv = document.getElementById('search-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Searching...';
+
+            try {
+                const sources = [];
+                if (document.getElementById('source-internal').checked) sources.push('internal');
+                if (document.getElementById('source-scholar').checked) sources.push('scholar');
+
+                const response = await fetch(`${API_URL}/search`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({
+                        query: document.getElementById('search-query').value,
+                        sources: sources
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    let html = `<strong>✅ Found ${data.total_count} papers</strong><br>`;
+                    html += `<small>Sources: ${data.sources_used.join(', ')} | Time: ${data.execution_time}s</small><br><br>`;
+
+                    data.papers.slice(0, 5).forEach(paper => {
+                        html += `<div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
+                            <strong>${paper.title}</strong><br>
+                            <small>${paper.authors} (${paper.year})</small><br>
+                            ${paper.asip_funded ? '<span style="background: #667eea; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px;">ASI Featured</span> ' : ''}
+                            ${paper.arxiv_id ? `<a href="https://arxiv.org/abs/${paper.arxiv_id}" target="_blank" style="font-size: 11px; color: #667eea;">📄 arXiv:${paper.arxiv_id}</a> ` : ''}
+                            ${paper.doi ? `<a href="https://doi.org/${paper.doi}" target="_blank" style="font-size: 11px; color: #667eea;">🔗 DOI</a>` : ''}
+                        </div>`;
+                    });
+
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>❌ Error:</strong><br>${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>❌ Error:</strong><br>${error.message}`;
+            }
+        }
+
+        async function getFeatured() {
+            const resultDiv = document.getElementById('featured-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Loading...';
+
+            try {
+                const response = await fetch(`${API_URL}/papers/featured`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    let html = `<strong>✅ ASI Featured Research</strong><br><br>`;
+
+                    data.papers.forEach(paper => {
+                        html += `<div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
+                            <strong>${paper.title}</strong><br>
+                            <small>${paper.authors} (${paper.year})</small><br>
+                            <span style="background: #667eea; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px;">ASI Featured</span>
+                            ${paper.arxiv_id ? ` <a href="https://arxiv.org/abs/${paper.arxiv_id}" target="_blank" style="font-size: 11px; color: #667eea;">📄 arXiv:${paper.arxiv_id}</a>` : ''}
+                            ${paper.doi ? ` <a href="https://doi.org/${paper.doi}" target="_blank" style="font-size: 11px; color: #667eea;">🔗 DOI</a>` : ''}
+                        </div>`;
+                    });
+
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>❌ Error:</strong><br>Could not load featured papers`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>❌ Error:</strong><br>${error.message}`;
+            }
+        }
+
+        // Dark mode toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            const button = document.querySelector('.theme-toggle');
+
+            html.setAttribute('data-theme', newTheme);
+            button.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+
+            // Save preference
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Load saved theme on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const button = document.querySelector('.theme-toggle');
+
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            button.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        });
+    </script>
+</body>
+
+</html>

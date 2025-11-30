@@ -1,0 +1,23 @@
+ASI Research Hub - Missing Papers Report
+========================================
+
+Total Missing PDFs: 18
+
+- HaloScope: Harnessing Unlabeled LLM Generations for Hallucination Detection
+- Axioms for AI Alignment from Human Feedback
+- ICLR 2025 Workshop on Bidirectional Human-AI Alignment
+- Multi-Layered Framework for LLM Hallucination Mitigation in High-Stakes Domains
+- Regularized Contrastive Decoding with Hard Negative Samples for Hallucination Reduction
+- Survey and Analysis of Hallucinations in Large Language Models
+- HalluLens: LLM Hallucination Benchmark
+- A New In-Depth Report of AI Large Language Models: Hallucination Control Capabilities
+- Large Language Models in Medicine: Applications, Challenges, and Hallucination Mitigation
+- Alignment Faking in Large Language Models
+- Findings from a Pilot Anthropic–OpenAI Alignment Evaluation Exercise
+- Reasoning Models Don't Always Say What They Think
+- PaperBench: Evaluating AI's Ability to Replicate AI Research
+- “Desired behaviors”: alignment and the emergence of a machine ethics
+- AI Alignment and Deception Primer
+- AI Alignment: The Case for Including Animals
+- Beyond RLHF: New Era of AI Alignment with DPO & AI Feedback
+- Is Trust Correlated With Explainability in AI? A Meta-Analysis
