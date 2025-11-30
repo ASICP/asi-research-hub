@@ -1,7 +1,23 @@
+# Python
 venv/
 __pycache__/
 *.pyc
+
+# Environment variables and secrets
 .env
-.DS_Store
+*.env.local
+
+# Database
 asi_research_hub.db
+*.db
+
+# System files
+.DS_Store
 .gemini/
+
+# Backup and archive files
+*.bak
+*.zip
+
+# Sensitive data
+contacts.csv
