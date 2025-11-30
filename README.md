@@ -8,21 +8,20 @@ The ASI Research Hub is an AI alignment research portal that allows verified use
 - Future: Perplexity, You.com, and other research databases
 
 **Version**: 1.0.0  
-**Cost**: ~$20/month (Replit Hacker Plan only)  
 **Tech Stack**: Python Flask (backend) + React (frontend)
 
 ---
 
-## 🚀 Quick Start (Replit Deployment)
+## 🚀 Quick Start (Deployment)
 
-### Step 1: Create Replit Project
+### Step 1: Create Project
 
 1. Go to [Replit.com](https://replit.com)
 2. Click "Create Repl"
-3. Select "Python" template
+3. Use a "Python" template
 4. Name it: `asi-research-hub`
 
-### Step 2: Upload Files
+### Step 2: Upload these Pre-Tested Files
 
 Upload all files from this package to your Replit:
 - `app.py` - Main Flask application
@@ -37,7 +36,7 @@ Upload all files from this package to your Replit:
 
 ### Step 3: Set Environment Variables
 
-In Replit, go to "Tools" → "Secrets" and add:
+In Replit (other), go to "Tools" → "Secrets" and add:
 
 ```
 SECRET_KEY = your-secret-key-here-change-in-production
@@ -348,17 +347,6 @@ cp asi_research_hub.db backups/backup_$(date +%Y%m%d).db
 ```bash
 pip install -r requirements.txt
 ```
-
----
-
-## 💰 Cost Breakdown
-
-| Service | Cost | Notes |
-|---------|------|-------|
-| Replit Hacker | $20/month | Always-on, 4GB RAM |
-| SendGrid | $0 | Free tier: 100 emails/day |
-| hCaptcha | $0 | Free bot protection |
-| **Total** | **$20/month** | |
 
 ---
 
