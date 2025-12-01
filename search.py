@@ -45,7 +45,7 @@ class SearchService:
             
             sql += " ORDER BY year DESC, citation_count DESC LIMIT 50"
             
-            cursor.execute(sql, params)
+            cursor.execute(sql, tuple(params))
             rows = cursor.fetchall()
             
             return [Paper.from_db_row(row) for row in rows]
@@ -186,5 +186,5 @@ class SearchService:
             cursor = conn.cursor(cursor_factory=RealDictCursor)
             cursor.execute("""
                 INSERT INTO search_logs (user_id, query, sources, result_count)
-                VALUES (?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s)
             """, (user_id, query, json.dumps(sources), result_count))
