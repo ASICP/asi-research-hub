@@ -19,8 +19,8 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=24)
     JWT_ALGORITHM = 'HS256'
     
-    # Database settings
-    DATABASE_PATH = os.getenv('DATABASE_PATH', 'asi_research_hub.db')
+    # Database settings (PostgreSQL)
+    DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://user:password@localhost/asi_research_hub')
     
     # SendGrid settings
     SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY', '')
