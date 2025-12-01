@@ -35,9 +35,9 @@ def expired_token_callback(jwt_header, jwt_payload):
     print(f"❌ Expired Token: {jwt_payload}")
     return jsonify({'error': 'Token has expired', 'details': 'token_expired'}), 401
 
-# Initialize database on first run
-if not os.path.exists(Config.DATABASE_PATH):
-    init_db()
+# Database is already initialized in PostgreSQL - no need to create tables
+# if not os.path.exists(Config.DATABASE_PATH):
+#     init_db()
 
 # ============================================================================
 # AUTHENTICATION ROUTES
