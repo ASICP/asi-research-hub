@@ -57,29 +57,36 @@ class SearchService:
         
         try:
             search_query = scholarly.search_pubs(query)
+            count = 0
             
-            for i, pub in enumerate(search_query):
-                if i >= max_results:
+            for pub in search_query:
+                if count >= max_results:
                     break
                 
-                bib = pub.get('bib', {})
-                
-                # Extract year safely
-                year = bib.get('pub_year', 'N/A')
-                if year == 'N/A':
-                    year = 2024  # Default for display purposes
-                
-                results.append({
-                    'title': bib.get('title', 'N/A'),
-                    'authors': ', '.join(bib.get('author', [])),
-                    'abstract': bib.get('abstract', '')[:500],
-                    'year': year,
-                    'source': 'Google Scholar',
-                    'url': pub.get('pub_url', ''),
-                    'citation_count': pub.get('num_citations', 0)
-                })
+                try:
+                    bib = pub.get('bib', {})
+                    
+                    # Extract year safely
+                    year = bib.get('pub_year', 'N/A')
+                    if year == 'N/A':
+                        year = 2024  # Default for display purposes
+                    
+                    results.append({
+                        'title': bib.get('title', 'N/A'),
+                        'authors': ', '.join(bib.get('author', [])) if bib.get('author') else 'Unknown',
+                        'abstract': bib.get('abstract', '')[:500] if bib.get('abstract') else '',
+                        'year': year,
+                        'source': 'Google Scholar',
+                        'url': pub.get('pub_url', ''),
+                        'citation_count': pub.get('num_citations', 0)
+                    })
+                    count += 1
+                except Exception as pub_error:
+                    print(f"⚠️ Error parsing Google Scholar result: {pub_error}")
+                    continue
+                    
         except Exception as e:
-            print(f"❌ Google Scholar search error: {e}")
+            print(f"⚠️ Google Scholar API error (may be rate-limited): {type(e).__name__}: {str(e)[:100]}")
         
         return results
     

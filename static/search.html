@@ -543,8 +543,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1><img src="/static/asi-logo.png" alt="ASI"
-                    style="height: 32px; vertical-align: middle; margin-right: 8px;">ASI Research Hub</h1>
+            <h1 style="display: flex; align-items: center; gap: 8px;"><img src="/static/asi-logo.png" alt="ASI" style="height: 32px;">ASI Research Hub</h1>
             <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
         </div>
 
@@ -697,6 +696,7 @@
             window.lastSearchResults = data;
 
             const container = document.getElementById('results-container');
+            container.innerHTML = '';  // Clear container first
 
             if (data.total_count === 0) {
                 container.innerHTML = `
@@ -714,7 +714,15 @@
                 <div class="results">
             `;
 
+            const uniquePapers = {};
             data.papers.forEach(paper => {
+                const key = `${paper.title}-${paper.source}`;
+                if (!uniquePapers[key]) {
+                    uniquePapers[key] = paper;
+                }
+            });
+
+            Object.values(uniquePapers).forEach(paper => {
                 html += `
                     <div class="result-card" onclick="viewPaper(${paper.id})">
                         <div class="result-title">${paper.title}</div>
