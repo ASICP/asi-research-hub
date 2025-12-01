@@ -356,11 +356,13 @@
             padding: 24px;
             display: flex;
             gap: 24px;
+            flex-wrap: wrap;
         }
 
         .modal-main {
             flex: 1;
             min-width: 0;
+            min-width: 300px;
         }
 
         .modal-sidebar {
@@ -370,6 +372,34 @@
             padding: 16px;
             max-height: 600px;
             overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+            .modal-body {
+                flex-direction: column;
+                padding: 16px;
+                gap: 16px;
+            }
+
+            .modal-main {
+                min-width: 100%;
+            }
+
+            .modal-sidebar {
+                width: 100%;
+                max-height: 400px;
+            }
+
+            .paper-abstract {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+
+            .modal-content {
+                width: 95%;
+                max-height: 95vh;
+            }
         }
 
         .sidebar-title {

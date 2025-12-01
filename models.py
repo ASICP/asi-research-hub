@@ -65,6 +65,7 @@ class Paper:
             'asip_funded': self.asip_funded,
             'tags': self.tags,
             'citation_count': self.citation_count,
+            'url': self.url,
             'bibtex': self.generate_bibtex()
         }
     
