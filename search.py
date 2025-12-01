@@ -154,9 +154,11 @@ class SearchService:
                     arxiv_id=None,
                     doi=None,
                     pdf_path=None,
+                    pdf_text=None,
                     asip_funded=False,
                     tags=[],
                     citation_count=result['citation_count'],
+                    added_by=None,
                     created_at=''
                 )
                 all_papers.append(paper)
