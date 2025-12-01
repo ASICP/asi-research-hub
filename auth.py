@@ -39,7 +39,7 @@ class AuthService:
             cursor = conn.cursor()
             
             # Check if email already exists
-            cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
+            cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
             if cursor.fetchone():
                 return {'success': False, 'error': 'Email already registered'}
             
@@ -47,10 +47,12 @@ class AuthService:
             cursor.execute("""
                 INSERT INTO users (email, password_hash, first_name, last_name, 
                                  tier, region, reason, verification_token)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING id
             """, (email, password_hash, first_name, last_name, tier, region, reason, verification_token))
             
-            user_id = cursor.lastrowid
+            result = cursor.fetchone()
+            user_id = result['id'] if result else None
         
         # Send verification email
         AuthService.send_verification_email(email, first_name, verification_token)
@@ -123,7 +125,7 @@ class AuthService:
             
             cursor.execute("""
                 SELECT id, email FROM users 
-                WHERE verification_token = ? AND is_verified = FALSE
+                WHERE verification_token = %s AND is_verified = FALSE
             """, (token,))
             
             user = cursor.fetchone()
@@ -134,7 +136,7 @@ class AuthService:
             cursor.execute("""
                 UPDATE users 
                 SET is_verified = TRUE, verification_token = NULL 
-                WHERE id = ?
+                WHERE id = %s
             """, (user['id'],))
         
         return {'success': True, 'email': user['email']}
@@ -149,7 +151,7 @@ class AuthService:
                 SELECT id, email, password_hash, first_name, last_name, 
                        tier, is_verified 
                 FROM users 
-                WHERE email = ?
+                WHERE email = %s
             """, (email,))
             
             user = cursor.fetchone()
@@ -165,7 +167,7 @@ class AuthService:
             
             # Update last login
             cursor.execute("""
-                UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?
+                UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = %s
             """, (user['id'],))
         
         return {
