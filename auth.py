@@ -185,7 +185,7 @@ class AuthService:
         with get_db() as conn:
             cursor = conn.cursor()
             
-            cursor.execute("SELECT id, first_name FROM users WHERE email = ?", (email,))
+            cursor.execute("SELECT id, first_name FROM users WHERE email = %s", (email,))
             user = cursor.fetchone()
             
             if not user:
@@ -197,8 +197,8 @@ class AuthService:
             
             cursor.execute("""
                 UPDATE users 
-                SET password_reset_token = ?, password_reset_expires = datetime('now', '+1 hour')
-                WHERE id = ?
+                SET password_reset_token = %s, password_reset_expires = NOW() + INTERVAL '1 hour'
+                WHERE id = %s
             """, (reset_token, user['id']))
         
         # Send reset email
@@ -272,8 +272,8 @@ class AuthService:
             
             cursor.execute("""
                 SELECT id, email FROM users 
-                WHERE password_reset_token = ? 
-                AND password_reset_expires > datetime('now')
+                WHERE password_reset_token = %s 
+                AND password_reset_expires > NOW()
             """, (token,))
             
             user = cursor.fetchone()
@@ -287,10 +287,10 @@ class AuthService:
             # Update password and clear reset token
             cursor.execute("""
                 UPDATE users 
-                SET password_hash = ?, 
+                SET password_hash = %s, 
                     password_reset_token = NULL,
                     password_reset_expires = NULL
-                WHERE id = ?
+                WHERE id = %s
             """, (password_hash, user['id']))
         
         return {'success': True, 'message': 'Password reset successful'}
