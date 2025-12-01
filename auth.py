@@ -4,6 +4,7 @@ import os
 import certifi
 from datetime import datetime
 from database import get_db
+from psycopg2.extras import RealDictCursor
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from config import Config
@@ -36,7 +37,7 @@ class AuthService:
         verification_token = AuthService.generate_verification_token()
         
         with get_db() as conn:
-            cursor = conn.cursor()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
             
             # Check if email already exists
             cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
@@ -121,7 +122,7 @@ class AuthService:
     def verify_email(token: str) -> dict:
         """Verify user email with token"""
         with get_db() as conn:
-            cursor = conn.cursor()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
             
             cursor.execute("""
                 SELECT id, email FROM users 
@@ -145,7 +146,7 @@ class AuthService:
     def login(email: str, password: str) -> dict:
         """Authenticate user and return JWT token"""
         with get_db() as conn:
-            cursor = conn.cursor()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
             
             cursor.execute("""
                 SELECT id, email, password_hash, first_name, last_name, 
@@ -185,7 +186,7 @@ class AuthService:
     def request_password_reset(email: str) -> dict:
         """Generate password reset token and send email"""
         with get_db() as conn:
-            cursor = conn.cursor()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
             
             cursor.execute("SELECT id, first_name FROM users WHERE email = %s", (email,))
             user = cursor.fetchone()
@@ -270,7 +271,7 @@ class AuthService:
     def reset_password(token: str, new_password: str) -> dict:
         """Reset password using valid token"""
         with get_db() as conn:
-            cursor = conn.cursor()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
             
             cursor.execute("""
                 SELECT id, email FROM users 

@@ -4,6 +4,7 @@ import re
 from typing import List, Dict, Optional
 from scholarly import scholarly
 from database import get_db
+from psycopg2.extras import RealDictCursor
 from models import Paper, SearchResult
 from config import Config
 
@@ -15,7 +16,7 @@ class SearchService:
                        asip_funded_only: bool = False) -> List[Paper]:
         """Search internal PDF database"""
         with get_db() as conn:
-            cursor = conn.cursor()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
             
             # Build SQL query dynamically
             sql = """
@@ -88,7 +89,7 @@ class SearchService:
         current_month = time.strftime('%Y-%m')
         
         with get_db() as conn:
-            cursor = conn.cursor()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
             
             cursor.execute("""
                 SELECT call_count FROM api_usage 
@@ -113,7 +114,7 @@ class SearchService:
         current_month = time.strftime('%Y-%m')
         
         with get_db() as conn:
-            cursor = conn.cursor()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
             cursor.execute("""
                 UPDATE api_usage 
                 SET call_count = call_count + 1, updated_at = CURRENT_TIMESTAMP 
@@ -182,7 +183,7 @@ class SearchService:
     def log_search(user_id: int, query: str, sources: List[str], result_count: int):
         """Log search for analytics"""
         with get_db() as conn:
-            cursor = conn.cursor()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
             cursor.execute("""
                 INSERT INTO search_logs (user_id, query, sources, result_count)
                 VALUES (?, ?, ?, ?)

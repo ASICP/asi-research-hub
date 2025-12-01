@@ -1,13 +1,13 @@
-import sqlite3
+import psycopg2
+from psycopg2.extras import RealDictCursor
 import json
 from contextlib import contextmanager
 from config import Config
 
 @contextmanager
 def get_db():
-    """Context manager for database connections"""
-    conn = sqlite3.connect(Config.DATABASE_PATH)
-    conn.row_factory = sqlite3.Row  # Return rows as dictionaries
+    """Context manager for PostgreSQL database connections"""
+    conn = psycopg2.connect(Config.DATABASE_URL)
     try:
         yield conn
         conn.commit()

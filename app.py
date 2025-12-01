@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from psycopg2.extras import RealDictCursor
 import requests
 import os
 from config import Config
@@ -178,7 +179,7 @@ def get_current_user():
     user_id = int(get_jwt_identity())
     
     with get_db() as conn:
-        cursor = conn.cursor()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""
             SELECT id, email, first_name, last_name, tier, created_at 
             FROM users WHERE id = %s
@@ -264,7 +265,7 @@ def search():
 def get_featured_papers():
     """Get ASIP-funded research highlights"""
     with get_db() as conn:
-        cursor = conn.cursor()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""
             SELECT * FROM papers 
             WHERE asip_funded = TRUE 
@@ -282,7 +283,7 @@ def get_featured_papers():
 def get_paper(paper_id):
     """Get single paper details"""
     with get_db() as conn:
-        cursor = conn.cursor()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("SELECT * FROM papers WHERE id = %s", (paper_id,))
         row = cursor.fetchone()
     
@@ -298,7 +299,7 @@ def get_paper(paper_id):
 def get_paper_references(paper_id):
     """Get related papers (references) based on shared tags"""
     with get_db() as conn:
-        cursor = conn.cursor()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         
         # Get the current paper's tags
         cursor.execute("SELECT tags FROM papers WHERE id = %s", (paper_id,))
@@ -355,7 +356,7 @@ def get_bookmarks():
     user_id = int(get_jwt_identity())
     
     with get_db() as conn:
-        cursor = conn.cursor()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""
             SELECT p.*, b.notes, b.created_at as bookmarked_at
             FROM papers p
@@ -384,7 +385,7 @@ def add_bookmark():
     
     try:
         with get_db() as conn:
-            cursor = conn.cursor()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
             cursor.execute("""
                 INSERT INTO user_bookmarks (user_id, paper_id, notes)
                 VALUES (%s, %s, %s)
@@ -401,7 +402,7 @@ def remove_bookmark(paper_id):
     user_id = int(get_jwt_identity())
     
     with get_db() as conn:
-        cursor = conn.cursor()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""
             DELETE FROM user_bookmarks 
             WHERE user_id = %s AND paper_id = %s
@@ -422,13 +423,13 @@ def get_search_analytics():
     # TODO: Add admin check in V2
     
     with get_db() as conn:
-        cursor = conn.cursor()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         
         # Top searches
         cursor.execute("""
             SELECT query, COUNT(*) as count 
             FROM search_logs 
-            WHERE created_at >= date('now', '-30 days')
+            WHERE created_at >= NOW() - INTERVAL '30 days'
             GROUP BY query 
             ORDER BY count DESC 
             LIMIT 10
@@ -440,7 +441,7 @@ def get_search_analytics():
             SELECT u.tier, COUNT(*) as count 
             FROM search_logs s 
             JOIN users u ON s.user_id = u.id 
-            WHERE s.created_at >= date('now', '-30 days')
+            WHERE s.created_at >= NOW() - INTERVAL '30 days'
             GROUP BY u.tier
         """)
         by_tier = [dict(row) for row in cursor.fetchall()]
@@ -449,7 +450,7 @@ def get_search_analytics():
         cursor.execute("""
             SELECT COUNT(*) as total 
             FROM search_logs 
-            WHERE created_at >= date('now', '-30 days')
+            WHERE created_at >= NOW() - INTERVAL '30 days'
         """)
         total = cursor.fetchone()['total']
     
