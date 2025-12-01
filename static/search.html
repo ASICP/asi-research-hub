@@ -763,10 +763,16 @@
                 linksHTML += `<a href="https://doi.org/${paper.doi}" target="_blank" class="paper-link-btn">🔗 View DOI</a>`;
             }
 
-            // Explore Paper button - opens PDF in new window
-            const pdfUrl = paper.pdf_url || (paper.arxiv_id ? `https://arxiv.org/pdf/${paper.arxiv_id}.pdf` : null);
-            if (pdfUrl) {
-                linksHTML += `<a href="${pdfUrl}" target="_blank" class="paper-link-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🔬 Explore Paper</a>`;
+            // Explore Paper button - for Google Scholar, use the URL; otherwise use PDF
+            let exploreUrl = null;
+            if (paper.source === 'Google Scholar' && paper.url) {
+                exploreUrl = paper.url;
+            } else {
+                exploreUrl = paper.pdf_url || (paper.arxiv_id ? `https://arxiv.org/pdf/${paper.arxiv_id}.pdf` : null);
+            }
+            
+            if (exploreUrl) {
+                linksHTML += `<a href="${exploreUrl}" target="_blank" class="paper-link-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🔬 Explore Paper</a>`;
             }
 
             document.getElementById('paper-links').innerHTML = linksHTML;

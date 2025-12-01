@@ -33,6 +33,7 @@ class Paper:
     citation_count: int
     added_by: Optional[int]
     created_at: str
+    url: Optional[str] = None
     
     @staticmethod
     def from_db_row(row):

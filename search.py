@@ -160,7 +160,8 @@ class SearchService:
                     tags=[],
                     citation_count=result['citation_count'],
                     added_by=None,
-                    created_at=''
+                    created_at='',
+                    url=result.get('url', '')
                 )
                 all_papers.append(paper)
             sources_used.append('Google Scholar')
