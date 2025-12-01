@@ -181,7 +181,7 @@ def get_current_user():
         cursor = conn.cursor()
         cursor.execute("""
             SELECT id, email, first_name, last_name, tier, created_at 
-            FROM users WHERE id = ?
+            FROM users WHERE id = %s
         """, (user_id,))
         user = cursor.fetchone()
     
@@ -283,7 +283,7 @@ def get_paper(paper_id):
     """Get single paper details"""
     with get_db() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM papers WHERE id = ?", (paper_id,))
+        cursor.execute("SELECT * FROM papers WHERE id = %s", (paper_id,))
         row = cursor.fetchone()
     
     if row:
@@ -301,7 +301,7 @@ def get_paper_references(paper_id):
         cursor = conn.cursor()
         
         # Get the current paper's tags
-        cursor.execute("SELECT tags FROM papers WHERE id = ?", (paper_id,))
+        cursor.execute("SELECT tags FROM papers WHERE id = %s", (paper_id,))
         row = cursor.fetchone()
         
         if not row:
@@ -316,7 +316,7 @@ def get_paper_references(paper_id):
         # This is a simple implementation - in production, you'd have a proper citations table
         cursor.execute("""
             SELECT * FROM papers 
-            WHERE id != ? 
+            WHERE id != %s 
             AND tags IS NOT NULL 
             AND tags != ''
             ORDER BY citation_count DESC, year DESC
@@ -360,7 +360,7 @@ def get_bookmarks():
             SELECT p.*, b.notes, b.created_at as bookmarked_at
             FROM papers p
             JOIN user_bookmarks b ON p.id = b.paper_id
-            WHERE b.user_id = ?
+            WHERE b.user_id = %s
             ORDER BY b.created_at DESC
         """, (user_id,))
         rows = cursor.fetchall()
@@ -387,7 +387,7 @@ def add_bookmark():
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO user_bookmarks (user_id, paper_id, notes)
-                VALUES (?, ?, ?)
+                VALUES (%s, %s, %s)
             """, (user_id, paper_id, notes))
         
         return jsonify({'message': 'Bookmark added successfully'}), 201
@@ -404,7 +404,7 @@ def remove_bookmark(paper_id):
         cursor = conn.cursor()
         cursor.execute("""
             DELETE FROM user_bookmarks 
-            WHERE user_id = ? AND paper_id = ?
+            WHERE user_id = %s AND paper_id = %s
         """, (user_id, paper_id))
     
     return jsonify({'message': 'Bookmark removed successfully'}), 200
