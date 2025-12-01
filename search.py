@@ -21,22 +21,22 @@ class SearchService:
             sql = """
                 SELECT * FROM papers 
                 WHERE (
-                    title LIKE ? OR 
-                    authors LIKE ? OR 
-                    abstract LIKE ? OR 
-                    pdf_text LIKE ?
+                    title LIKE %s OR 
+                    authors LIKE %s OR 
+                    abstract LIKE %s OR 
+                    pdf_text LIKE %s
                 )
             """
             params = [f'%{query}%'] * 4
             
             # Add filters
             if tags:
-                tag_conditions = " OR ".join(["tags LIKE ?" for _ in tags])
+                tag_conditions = " OR ".join(["tags LIKE %s" for _ in tags])
                 sql += f" AND ({tag_conditions})"
                 params.extend([f'%{tag}%' for tag in tags])
             
             if year_from:
-                sql += " AND year >= ?"
+                sql += " AND year >= %s"
                 params.append(year_from)
             
             if asip_funded_only:
@@ -92,7 +92,7 @@ class SearchService:
             
             cursor.execute("""
                 SELECT call_count FROM api_usage 
-                WHERE service = ? AND month = ?
+                WHERE service = %s AND month = %s
             """, (service, current_month))
             
             row = cursor.fetchone()
@@ -101,7 +101,7 @@ class SearchService:
                 # Initialize counter for new month
                 cursor.execute("""
                     INSERT INTO api_usage (service, month, call_count) 
-                    VALUES (?, ?, 0)
+                    VALUES (%s, %s, 0)
                 """, (service, current_month))
                 return True
             
@@ -117,7 +117,7 @@ class SearchService:
             cursor.execute("""
                 UPDATE api_usage 
                 SET call_count = call_count + 1, updated_at = CURRENT_TIMESTAMP 
-                WHERE service = ? AND month = ?
+                WHERE service = %s AND month = %s
             """, (service, current_month))
     
     @staticmethod
