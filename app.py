@@ -434,7 +434,7 @@ def get_search_analytics():
             ORDER BY count DESC 
             LIMIT 10
         """)
-        top_searches = [dict(row) for row in cursor.fetchall()]
+        top_searches = [row for row in cursor.fetchall()]
         
         # Searches by user tier
         cursor.execute("""
@@ -444,7 +444,7 @@ def get_search_analytics():
             WHERE s.created_at >= NOW() - INTERVAL '30 days'
             GROUP BY u.tier
         """)
-        by_tier = [dict(row) for row in cursor.fetchall()]
+        by_tier = [row for row in cursor.fetchall()]
         
         # Total searches
         cursor.execute("""
