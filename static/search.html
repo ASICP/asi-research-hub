@@ -528,11 +528,11 @@
                 <label>Sources</label>
                 <div class="checkbox-group">
                     <label>
-                        <input type="checkbox" id="source-internal" checked />
+                        <input type="checkbox" id="source-internal" checked onchange="toggleSourceSelection(this)" />
                         Internal Database
                     </label>
                     <label>
-                        <input type="checkbox" id="source-scholar" />
+                        <input type="checkbox" id="source-scholar" onchange="toggleSourceSelection(this)" />
                         Google Scholar
                     </label>
                 </div>
@@ -576,6 +576,18 @@
     <script>
         const API_URL = window.location.origin + '/api';
         let accessToken = localStorage.getItem('access_token');
+
+        // Mutually exclusive source selection
+        function toggleSourceSelection(checkbox) {
+            const internalCheckbox = document.getElementById('source-internal');
+            const scholarCheckbox = document.getElementById('source-scholar');
+            
+            if (checkbox.id === 'source-internal' && checkbox.checked) {
+                scholarCheckbox.checked = false;
+            } else if (checkbox.id === 'source-scholar' && checkbox.checked) {
+                internalCheckbox.checked = false;
+            }
+        }
 
         // Theme management
         function toggleTheme() {
@@ -901,11 +913,23 @@
             let html = '';
             references.forEach(ref => {
                 const snippet = ref.abstract ? ref.abstract.substring(0, 100) + '...' : 'No abstract available.';
+                
+                // Build reference link
+                let refLink = '';
+                if (ref.arxiv_id) {
+                    refLink = `<a href="https://arxiv.org/abs/${ref.arxiv_id}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;">🔗 View Paper</a>`;
+                } else if (ref.doi) {
+                    refLink = `<a href="https://doi.org/${ref.doi}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;">🔗 View Paper</a>`;
+                } else if (ref.pdf_url) {
+                    refLink = `<a href="${ref.pdf_url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;">🔗 View Paper</a>`;
+                }
+                
                 html += `
                     <div class="reference-item" onclick="viewPaper(${ref.id})">
                         <div class="reference-title">${ref.title}</div>
                         <div class="reference-meta">${ref.authors || 'Unknown'} • ${ref.year || 'N/A'}</div>
                         <div class="reference-snippet">${snippet}</div>
+                        ${refLink}
                     </div>
                 `;
             });
