@@ -8,6 +8,21 @@ ASI Research Hub is a production-ready AI alignment research portal that enables
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes & TODO
+
+**Recent Updates (Dec 1, 2025)**:
+- ✅ Migrated entire codebase from SQLite to PostgreSQL (100% compatible, all SQL uses %s placeholders)
+- ✅ Fixed critical search bug in search.py (SQLite placeholder → PostgreSQL syntax)
+- ✅ Restored session timeout: 15-minute inactivity logout with 10-minute warning popup
+- ✅ Added mutually exclusive source selection (Internal Database OR Google Scholar only)
+- ✅ Google Scholar papers now display "Explore Paper" button linking to original source
+- ✅ Google Scholar Reference Papers sidebar auto-populates with related Internal Database papers
+- ✅ Added reference links (arXiv/DOI/PDF) in Reference Papers sidebar
+
+**TODO - When stable (remind in ~3 days)**:
+- Set up automatic Github push integration for version control backup
+- Ensure all bugs resolved before enabling auto-sync to Github
+
 ## System Architecture
 
 ### Backend Architecture
