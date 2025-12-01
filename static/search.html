@@ -783,11 +783,51 @@
             }
             document.getElementById('paper-tags').innerHTML = tagsHTML;
 
-            // Show initial placeholder in references
-            displayReferences([]);
+            // For Google Scholar papers, auto-load related papers from Internal Database
+            if (paper.source === 'Google Scholar' || paper.id === 0) {
+                loadRelatedPapersForGoogleScholar(paper.title);
+            } else {
+                // For Internal Database papers, show placeholder
+                displayReferences([]);
+            }
 
             // Show modal
             document.getElementById('paper-modal').style.display = 'block';
+        }
+
+        async function loadRelatedPapersForGoogleScholar(title) {
+            const container = document.getElementById('references-list');
+            container.innerHTML = '<div class="no-references">Loading related papers...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}/search`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({
+                        query: title,
+                        sources: ['internal']
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const relatedPapers = data.papers || [];
+                    
+                    if (relatedPapers.length > 0) {
+                        displayReferences(relatedPapers.slice(0, 5));
+                    } else {
+                        container.innerHTML = '<div class="no-references">No related papers found in Internal Database</div>';
+                    }
+                } else {
+                    container.innerHTML = '<div class="no-references">No related papers found in Internal Database</div>';
+                }
+            } catch (error) {
+                console.error('Error loading related papers:', error);
+                container.innerHTML = '<div class="no-references">No related papers found in Internal Database</div>';
+            }
         }
 
         // New function to fetch and display a paper by ID (used for reference clicks)
