@@ -42,7 +42,7 @@ class SearchService:
             
             if year_from:
                 sql += " AND year >= %s"
-                params.append(year_from)
+                params.append(str(year_from))
             
             if asip_funded_only:
                 sql += " AND asip_funded = TRUE"
@@ -292,16 +292,27 @@ class SearchService:
             root = ET.fromstring(data)
             
             for entry in root.findall('{http://www.w3.org/2005/Atom}entry'):
-                title = entry.find('{http://www.w3.org/2005/Atom}title').text
-                authors = [a.find('{http://www.w3.org/2005/Atom}name').text 
-                          for a in entry.findall('{http://www.w3.org/2005/Atom}author')]
-                abstract = entry.find('{http://www.w3.org/2005/Atom}summary').text.strip()
-                arxiv_id = entry.find('{http://www.w3.org/2005/Atom}id').text.split('/abs/')[-1]
-                published = entry.find('{http://www.w3.org/2005/Atom}published').text[:4]
+                title_elem = entry.find('{http://www.w3.org/2005/Atom}title')
+                title = title_elem.text if title_elem is not None and title_elem.text else 'N/A'
+                
+                authors = []
+                for a in entry.findall('{http://www.w3.org/2005/Atom}author'):
+                    name_elem = a.find('{http://www.w3.org/2005/Atom}name')
+                    if name_elem is not None and name_elem.text:
+                        authors.append(name_elem.text)
+                
+                abstract_elem = entry.find('{http://www.w3.org/2005/Atom}summary')
+                abstract = abstract_elem.text.strip() if abstract_elem is not None and abstract_elem.text else ''
+                
+                id_elem = entry.find('{http://www.w3.org/2005/Atom}id')
+                arxiv_id = id_elem.text.split('/abs/')[-1] if id_elem is not None and id_elem.text else 'N/A'
+                
+                pub_elem = entry.find('{http://www.w3.org/2005/Atom}published')
+                published = pub_elem.text[:4] if pub_elem is not None and pub_elem.text else '2024'
                 
                 results.append({
                     'title': title,
-                    'authors': ', '.join(authors),
+                    'authors': ', '.join(authors) if authors else 'Unknown',
                     'abstract': abstract[:500],
                     'year': int(published),
                     'arxiv_id': arxiv_id,
@@ -343,7 +354,7 @@ class SearchService:
         """Search Semantic Scholar API (free, no API key needed)"""
         results = []
         try:
-            import urllib.request
+            import urllib.request, urllib.parse
             search_url = f"https://api.semanticscholar.org/graph/v1/paper/search?query={urllib.parse.quote(query)}&limit={max_results}&fields=title,authors,abstract,year,citationCount,url,doi"
             response = urllib.request.urlopen(search_url, timeout=10)
             data = response.read().decode('utf-8')

@@ -10,18 +10,32 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes & TODO
 
-**Recent Updates (Dec 1, 2025)**:
+**Recent Updates (Dec 2, 2025)**:
+- ✅ Added back button next to close button in paper modal
+- ✅ Converted source selection from checkboxes to radio buttons (single selection)
+- ✅ Added 4 new search sources (mutually exclusive):
+  - **arXiv**: Free API, real-time preprint database (especially strong for AI/ML papers)
+  - **CrossRef**: Free API, 140+ million scholarly articles with DOI
+  - **Semantic Scholar**: Free API, semantic search with citation counts
+  - **Google Scholar**: Kept with timeout improvements (10-sec limit, graceful error handling)
+- ✅ All external APIs are free with no API key requirement (users can optionally add keys for higher rate limits)
+- ✅ Deduplication logic added to prevent duplicate results in search display
+- ✅ Logo alignment fixed (flexbox layout, now perfectly inline with text)
+- ✅ Mobile layout improvements: Reference Papers sidebar stacks below abstract on small screens
+- ✅ Password visibility toggle (eye icon) on login page for UX improvement
+- ✅ Fixed duplicate search results in Internal Database
+- ✅ URL field now included in JSON serialization for Google Scholar paper links
+
+**Previous Updates (Dec 1, 2025)**:
 - ✅ Migrated entire codebase from SQLite to PostgreSQL (100% compatible, all SQL uses %s placeholders)
 - ✅ Fixed critical search bug in search.py (SQLite placeholder → PostgreSQL syntax)
 - ✅ Restored session timeout: 15-minute inactivity logout with 10-minute warning popup
-- ✅ Added mutually exclusive source selection (Internal Database OR Google Scholar only)
-- ✅ Google Scholar papers now display "Explore Paper" button linking to original source
-- ✅ Google Scholar Reference Papers sidebar auto-populates with related Internal Database papers
 - ✅ Added reference links (arXiv/DOI/PDF) in Reference Papers sidebar
 
-**TODO - When stable (remind in ~3 days)**:
+**TODO - Next Phase**:
+- User to sign up for optional API keys on arXiv, CrossRef, Semantic Scholar for higher rate limits (currently works without)
 - Set up automatic Github push integration for version control backup
-- Ensure all bugs resolved before enabling auto-sync to Github
+- Deploy to hubt1.asi2.org and test all 5 search sources in production
 
 ## System Architecture
 
