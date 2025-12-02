@@ -354,13 +354,36 @@ class SearchService:
         """Search Semantic Scholar API (free, no API key needed)"""
         results = []
         try:
-            import urllib.request, urllib.parse
+            import urllib.request, urllib.parse, urllib.error
+            import time
+            
             search_url = f"https://api.semanticscholar.org/graph/v1/paper/search?query={urllib.parse.quote(query)}&limit={max_results}&fields=title,authors,abstract,year,citationCount,url,doi"
-            response = urllib.request.urlopen(search_url, timeout=10)
-            data = response.read().decode('utf-8')
+            
+            # Add proper headers to avoid rate limiting
+            request = urllib.request.Request(
+                search_url,
+                headers={'User-Agent': 'ASI-Research-Hub/1.0 (+https://asi.org)'}
+            )
+            
+            try:
+                response = urllib.request.urlopen(request, timeout=10)
+                data = response.read().decode('utf-8')
+            except urllib.error.HTTPError as e:
+                if e.code == 429:
+                    print(f"⚠️ Semantic Scholar rate limited (429). Waiting before retry...")
+                    time.sleep(2)
+                    response = urllib.request.urlopen(request, timeout=10)
+                    data = response.read().decode('utf-8')
+                else:
+                    raise
             
             import json as json_module
             response_data = json_module.loads(data)
+            
+            # Check for error message in response
+            if 'message' in response_data and 'Too Many Requests' in response_data.get('message', ''):
+                print(f"⚠️ Semantic Scholar API error: {response_data['message']}")
+                return results
             
             for paper in response_data.get('data', []):
                 results.append({
@@ -438,9 +461,29 @@ class SearchService:
         results = []
         try:
             import requests
+            import time
+            
             search_url = f"https://api.semanticscholar.org/graph/v1/paper/search?query={query}&limit={max_results}&fields=title,authors,abstract,year,citationCount,url,doi"
-            response = requests.get(search_url, timeout=10)
+            headers = {'User-Agent': 'ASI-Research-Hub/1.0 (+https://asi.org)'}
+            
+            try:
+                response = requests.get(search_url, headers=headers, timeout=10)
+                response.raise_for_status()
+            except requests.exceptions.HTTPError as e:
+                if response.status_code == 429:
+                    print(f"⚠️ Semantic Scholar rate limited (429). Waiting before retry...")
+                    time.sleep(2)
+                    response = requests.get(search_url, headers=headers, timeout=10)
+                    response.raise_for_status()
+                else:
+                    raise
+            
             data = response.json()
+            
+            # Check for error message in response
+            if 'message' in data and 'Too Many Requests' in data.get('message', ''):
+                print(f"⚠️ Semantic Scholar API error: {data['message']}")
+                return results
             
             for paper in data.get('data', []):
                 authors = [author.get('name', '') for author in paper.get('authors', [])]
