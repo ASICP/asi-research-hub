@@ -27,7 +27,17 @@ class Config:
     SENDGRID_FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL', 'noreply@asi2.org')
     
     # Frontend URL (for CORS and email links)
-    FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5000')
+    # For production: Set FRONTEND_URL env var to https://hubt1.asi2.org
+    # Fallback: Use Replit dev domain if available, else localhost for development
+    _replit_domain = os.getenv('REPLIT_DEV_DOMAIN', '')
+    _frontend_url = os.getenv('FRONTEND_URL', '')
+    
+    if _frontend_url:
+        FRONTEND_URL = _frontend_url
+    elif _replit_domain:
+        FRONTEND_URL = f'https://{_replit_domain}'
+    else:
+        FRONTEND_URL = 'http://localhost:5000'
     
     # API settings
     PERPLEXITY_API_KEY = os.getenv('PERPLEXITY_API_KEY', '')
