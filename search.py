@@ -1,12 +1,16 @@
 import time
 import json
 import re
+import signal
 from typing import List, Dict, Optional
 from scholarly import scholarly
 from database import get_db
 from psycopg2.extras import RealDictCursor
 from models import Paper, SearchResult
 from config import Config
+
+def timeout_handler(signum, frame):
+    raise TimeoutError("Google Scholar search timed out")
 
 class SearchService:
     
@@ -56,37 +60,50 @@ class SearchService:
         results = []
         
         try:
-            search_query = scholarly.search_pubs(query)
-            count = 0
+            # Set a 10-second timeout for Google Scholar API
+            signal.signal(signal.SIGALRM, timeout_handler)
+            signal.alarm(10)
             
-            for pub in search_query:
-                if count >= max_results:
-                    break
+            try:
+                search_query = scholarly.search_pubs(query)
+                count = 0
                 
-                try:
-                    bib = pub.get('bib', {})
+                for pub in search_query:
+                    if count >= max_results:
+                        break
                     
-                    # Extract year safely
-                    year = bib.get('pub_year', 'N/A')
-                    if year == 'N/A':
-                        year = 2024  # Default for display purposes
-                    
-                    results.append({
-                        'title': bib.get('title', 'N/A'),
-                        'authors': ', '.join(bib.get('author', [])) if bib.get('author') else 'Unknown',
-                        'abstract': bib.get('abstract', '')[:500] if bib.get('abstract') else '',
-                        'year': year,
-                        'source': 'Google Scholar',
-                        'url': pub.get('pub_url', ''),
-                        'citation_count': pub.get('num_citations', 0)
-                    })
-                    count += 1
-                except Exception as pub_error:
-                    print(f"⚠️ Error parsing Google Scholar result: {pub_error}")
-                    continue
-                    
+                    try:
+                        bib = pub.get('bib', {})
+                        
+                        # Extract year safely
+                        year = bib.get('pub_year', 'N/A')
+                        if year == 'N/A':
+                            year = 2024  # Default for display purposes
+                        
+                        results.append({
+                            'title': bib.get('title', 'N/A'),
+                            'authors': ', '.join(bib.get('author', [])) if bib.get('author') else 'Unknown',
+                            'abstract': bib.get('abstract', '')[:500] if bib.get('abstract') else '',
+                            'year': year,
+                            'source': 'Google Scholar',
+                            'url': pub.get('pub_url', ''),
+                            'citation_count': pub.get('num_citations', 0)
+                        })
+                        count += 1
+                    except Exception as pub_error:
+                        print(f"⚠️ Error parsing Google Scholar result: {pub_error}")
+                        continue
+                
+                signal.alarm(0)  # Cancel alarm
+            
+            except TimeoutError:
+                signal.alarm(0)
+                print(f"⚠️ Google Scholar search timed out after 10 seconds for query: {query}")
+                print(f"   This may be due to Google Scholar rate limiting. Try again in a few moments.")
+                
         except Exception as e:
-            print(f"⚠️ Google Scholar API error (may be rate-limited): {type(e).__name__}: {str(e)[:100]}")
+            signal.alarm(0)
+            print(f"⚠️ Google Scholar API error: {type(e).__name__}: {str(e)[:100]}")
         
         return results
     
