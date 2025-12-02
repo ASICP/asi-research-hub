@@ -1,0 +1,77 @@
+Examples: 
+arXiv:
+import feedparser
+
+# Define the query URL
+query = 'machine learning'
+url = f'http://export.arxiv.org/api/query?search_query=all:{query}&start=0&max_results=5&sortBy=submittedDate&sortOrder=descending'
+
+# Parse the response
+feed = feedparser.parse(url)
+
+# Print results
+for entry in feed.entries:
+    print(f"Title: {entry.title}")
+    print(f"Authors: {', '.join(author.name for author in entry.authors)}")
+    print(f"PDF: {entry.link}")
+    print(f"Summary: {entry.summary[:200]}...")
+    print("---")
+
+Crossref:
+import requests
+
+# Define the query URL
+query = 'machine learning'
+url = f'https://api.crossref.org/works?query={query}&rows=5&sort=published&order=desc'
+
+# Fetch and parse the response
+response = requests.get(url)
+data = response.json()
+
+# Print results
+for item in data['message']['items']:
+    print(f"Title: {item.get('title', ['N/A'])[0]}")
+    print(f"Authors: {', '.join([author.get('given', '') + ' ' + author.get('family', '') for author in item.get('author', [])])}")
+    print(f"DOI: {item.get('DOI', 'N/A')}")
+    print(f"Published: {item.get('published', {}).get('date-parts', [['N/A']])[0]}")
+    print("---")
+
+Semantic Scholar:
+
+import requests
+
+# Define the query URL
+query = 'machine learning'
+url = f'https://api.semanticscholar.org/graph/v1/paper/search?query={query}&limit=5&fields=title,authors,year,abstract'
+
+# Fetch and parse the response
+response = requests.get(url)
+data = response.json()
+
+# Print results
+for paper in data['data']:
+    print(f"Title: {paper.get('title', 'N/A')}")
+    print(f"Authors: {', '.join([author.get('name', 'N/A') for author in paper.get('authors', [])])}")
+    print(f"Year: {paper.get('year', 'N/A')}")
+    print(f"Abstract: {paper.get('abstract', 'N/A')[:200]}...")
+    print("---")
+
+Google Scholar: third party API that we can build ourselves bec we are already heavy json users — Google Scholar API that scrapes results and return JSON data (titles, abstracts, citations, DOIs) - independant of Google,
+
+import requests
+
+# Define the query URL (replace 'YOUR_SERPAPI_KEY' with your actual key)
+query = 'machine learning'
+url = f'https://serpapi.com/search?engine=google_scholar&q={query}&num=5&api_key=YOUR_SERPAPI_KEY'
+
+# Fetch and parse the response
+response = requests.get(url)
+data = response.json()
+
+# Print results
+for result in data.get('organic_results', []):
+    print(f"Title: {result.get('title', 'N/A')}")
+    print(f"Authors: {', '.join([author.get('name', 'N/A') for author in result.get('publication_info', {}).get('authors', [])])}")
+    print(f"Cited by: {result.get('inline_links', {}).get('cited_by', {}).get('total', 'N/A')} times")
+    print(f"Link: {result.get('link', 'N/A')}")
+    print("---")
