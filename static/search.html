@@ -554,15 +554,27 @@
             </div>
 
             <div class="input-group">
-                <label>Sources</label>
+                <label>Data Source (Choose One)</label>
                 <div class="checkbox-group">
                     <label>
-                        <input type="checkbox" id="source-internal" checked onchange="toggleSourceSelection(this)" />
+                        <input type="radio" name="source" value="internal" checked />
                         Internal Database
                     </label>
                     <label>
-                        <input type="checkbox" id="source-scholar" onchange="toggleSourceSelection(this)" />
+                        <input type="radio" name="source" value="google_scholar" />
                         Google Scholar
+                    </label>
+                    <label>
+                        <input type="radio" name="source" value="arxiv" />
+                        arXiv
+                    </label>
+                    <label>
+                        <input type="radio" name="source" value="crossref" />
+                        CrossRef
+                    </label>
+                    <label>
+                        <input type="radio" name="source" value="semantic_scholar" />
+                        Semantic Scholar
                     </label>
                 </div>
             </div>
@@ -577,9 +589,11 @@
     <div id="paper-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <button class="close-btn" onclick="closeModal()" style="position: absolute; left: 24px; top: 24px; z-index: 5;" title="Back to search">←</button>
                 <div class="modal-title" id="modal-title"></div>
-                <button class="close-btn" onclick="closeModal()">×</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="close-btn" onclick="closeModal()" title="Back to search">←</button>
+                    <button class="close-btn" onclick="closeModal()">×</button>
+                </div>
             </div>
             <div class="modal-body">
                 <div class="modal-main">
@@ -606,18 +620,6 @@
     <script>
         const API_URL = window.location.origin + '/api';
         let accessToken = localStorage.getItem('access_token');
-
-        // Mutually exclusive source selection
-        function toggleSourceSelection(checkbox) {
-            const internalCheckbox = document.getElementById('source-internal');
-            const scholarCheckbox = document.getElementById('source-scholar');
-            
-            if (checkbox.id === 'source-internal' && checkbox.checked) {
-                scholarCheckbox.checked = false;
-            } else if (checkbox.id === 'source-scholar' && checkbox.checked) {
-                internalCheckbox.checked = false;
-            }
-        }
 
         // Theme management
         function toggleTheme() {
@@ -652,14 +654,15 @@
                 return;
             }
 
-            const sources = [];
-            if (document.getElementById('source-internal').checked) sources.push('internal');
-            if (document.getElementById('source-scholar').checked) sources.push('scholar');
-
-            if (sources.length === 0) {
-                showError('Please select at least one source');
-                return;
-            }
+            const selectedSource = document.querySelector('input[name="source"]:checked')?.value;
+            const sourceMap = {
+                'internal': 'internal',
+                'google_scholar': 'scholar',
+                'arxiv': 'arxiv',
+                'crossref': 'crossref',
+                'semantic_scholar': 'semantic_scholar'
+            };
+            const sources = [sourceMap[selectedSource] || 'internal'];
 
             showLoading();
 

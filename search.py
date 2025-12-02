@@ -167,10 +167,9 @@ class SearchService:
         # Search Google Scholar
         if 'scholar' in sources:
             scholar_results = SearchService.search_google_scholar(query)
-            # Convert dicts to Paper objects (simplified)
             for result in scholar_results:
                 paper = Paper(
-                    id=0,  # Not in DB yet
+                    id=0,
                     title=result['title'],
                     authors=result['authors'],
                     abstract=result['abstract'],
@@ -190,6 +189,81 @@ class SearchService:
                 all_papers.append(paper)
             sources_used.append('Google Scholar')
         
+        # Search arXiv
+        if 'arxiv' in sources:
+            arxiv_results = SearchService.search_arxiv(query)
+            for result in arxiv_results:
+                paper = Paper(
+                    id=0,
+                    title=result['title'],
+                    authors=result['authors'],
+                    abstract=result['abstract'],
+                    year=result['year'],
+                    source='arXiv',
+                    arxiv_id=result.get('arxiv_id'),
+                    doi=None,
+                    pdf_path=None,
+                    pdf_text=None,
+                    asip_funded=False,
+                    tags=[],
+                    citation_count=0,
+                    added_by=None,
+                    created_at='',
+                    url=result.get('url', '')
+                )
+                all_papers.append(paper)
+            sources_used.append('arXiv')
+        
+        # Search CrossRef
+        if 'crossref' in sources:
+            crossref_results = SearchService.search_crossref(query)
+            for result in crossref_results:
+                paper = Paper(
+                    id=0,
+                    title=result['title'],
+                    authors=result['authors'],
+                    abstract=result['abstract'],
+                    year=result['year'],
+                    source='CrossRef',
+                    arxiv_id=None,
+                    doi=result.get('doi'),
+                    pdf_path=None,
+                    pdf_text=None,
+                    asip_funded=False,
+                    tags=[],
+                    citation_count=0,
+                    added_by=None,
+                    created_at='',
+                    url=result.get('url', '')
+                )
+                all_papers.append(paper)
+            sources_used.append('CrossRef')
+        
+        # Search Semantic Scholar
+        if 'semantic_scholar' in sources:
+            semantic_results = SearchService.search_semantic_scholar(query)
+            for result in semantic_results:
+                paper = Paper(
+                    id=0,
+                    title=result['title'],
+                    authors=result['authors'],
+                    abstract=result['abstract'],
+                    year=result['year'],
+                    source='Semantic Scholar',
+                    arxiv_id=None,
+                    doi=result.get('doi'),
+                    pdf_path=None,
+                    pdf_text=None,
+                    asip_funded=False,
+                    tags=[],
+                    citation_count=result.get('citation_count', 0),
+                    added_by=None,
+                    created_at='',
+                    url=result.get('url', '')
+                )
+                all_papers.append(paper)
+            sources_used.append('Semantic Scholar')
+        
         # Log search
         if user_id:
             SearchService.log_search(user_id, query, sources_used, len(all_papers))
@@ -203,6 +277,93 @@ class SearchService:
             sources_used=sources_used,
             execution_time=execution_time
         )
+    
+    @staticmethod
+    def search_arxiv(query: str, max_results: int = 20) -> List[Dict]:
+        """Search arXiv API (free, no API key needed)"""
+        results = []
+        try:
+            import urllib.request
+            search_url = f"http://export.arxiv.org/api/query?search_query=all:{query}&start=0&max_results={max_results}&sortBy=submittedDate&sortOrder=descending"
+            response = urllib.request.urlopen(search_url, timeout=10)
+            data = response.read().decode('utf-8')
+            
+            import xml.etree.ElementTree as ET
+            root = ET.fromstring(data)
+            
+            for entry in root.findall('{http://www.w3.org/2005/Atom}entry'):
+                title = entry.find('{http://www.w3.org/2005/Atom}title').text
+                authors = [a.find('{http://www.w3.org/2005/Atom}name').text 
+                          for a in entry.findall('{http://www.w3.org/2005/Atom}author')]
+                abstract = entry.find('{http://www.w3.org/2005/Atom}summary').text.strip()
+                arxiv_id = entry.find('{http://www.w3.org/2005/Atom}id').text.split('/abs/')[-1]
+                published = entry.find('{http://www.w3.org/2005/Atom}published').text[:4]
+                
+                results.append({
+                    'title': title,
+                    'authors': ', '.join(authors),
+                    'abstract': abstract[:500],
+                    'year': int(published),
+                    'arxiv_id': arxiv_id,
+                    'url': f'https://arxiv.org/abs/{arxiv_id}'
+                })
+        except Exception as e:
+            print(f"⚠️ arXiv search error: {type(e).__name__}: {str(e)[:100]}")
+        return results
+    
+    @staticmethod
+    def search_crossref(query: str, max_results: int = 20) -> List[Dict]:
+        """Search CrossRef API (free, no API key needed)"""
+        results = []
+        try:
+            import urllib.request, urllib.parse
+            search_url = f"https://api.crossref.org/works?query={urllib.parse.quote(query)}&rows={max_results}"
+            response = urllib.request.urlopen(search_url, timeout=10)
+            data = response.read().decode('utf-8')
+            
+            import json as json_module
+            response_data = json_module.loads(data)
+            
+            for item in response_data.get('message', {}).get('items', []):
+                results.append({
+                    'title': item.get('title', ['N/A'])[0] if item.get('title') else 'N/A',
+                    'authors': ', '.join([f"{a.get('family', '')} {a.get('given', '')}".strip() 
+                                         for a in item.get('author', [])]) or 'Unknown',
+                    'abstract': item.get('abstract', '')[:500] or '',
+                    'year': item.get('published-online', {}).get('date-parts', [[2024]])[0][0],
+                    'doi': item.get('DOI', ''),
+                    'url': item.get('URL', '')
+                })
+        except Exception as e:
+            print(f"⚠️ CrossRef search error: {type(e).__name__}: {str(e)[:100]}")
+        return results
+    
+    @staticmethod
+    def search_semantic_scholar(query: str, max_results: int = 20) -> List[Dict]:
+        """Search Semantic Scholar API (free, no API key needed)"""
+        results = []
+        try:
+            import urllib.request
+            search_url = f"https://api.semanticscholar.org/graph/v1/paper/search?query={urllib.parse.quote(query)}&limit={max_results}&fields=title,authors,abstract,year,citationCount,url,doi"
+            response = urllib.request.urlopen(search_url, timeout=10)
+            data = response.read().decode('utf-8')
+            
+            import json as json_module
+            response_data = json_module.loads(data)
+            
+            for paper in response_data.get('data', []):
+                results.append({
+                    'title': paper.get('title', 'N/A'),
+                    'authors': ', '.join([a.get('name', '') for a in paper.get('authors', [])]) or 'Unknown',
+                    'abstract': paper.get('abstract', '')[:500] or '',
+                    'year': paper.get('year', 2024),
+                    'doi': paper.get('doi', ''),
+                    'url': paper.get('url', ''),
+                    'citation_count': paper.get('citationCount', 0)
+                })
+        except Exception as e:
+            print(f"⚠️ Semantic Scholar search error: {type(e).__name__}: {str(e)[:100]}")
+        return results
     
     @staticmethod
     def log_search(user_id: int, query: str, sources: List[str], result_count: int):
