@@ -376,6 +376,92 @@ class SearchService:
             print(f"⚠️ Semantic Scholar search error: {type(e).__name__}: {str(e)[:100]}")
         return results
     
+    # ============================================================================
+    # Optional Helper Functions: Use cleaner libraries (feedparser, requests)
+    # Keep stdlib versions as fallback in main search methods
+    # ============================================================================
+    
+    @staticmethod
+    def search_arxiv_helper(query: str, max_results: int = 20) -> List[Dict]:
+        """Search arXiv using feedparser (cleaner alternative to stdlib XML parsing)"""
+        results = []
+        try:
+            import feedparser
+            search_url = f"http://export.arxiv.org/api/query?search_query=all:{query}&start=0&max_results={max_results}&sortBy=submittedDate&sortOrder=descending"
+            feed = feedparser.parse(search_url)
+            
+            for entry in feed.entries:
+                authors = [author.name for author in entry.get('authors', [])]
+                arxiv_id = entry.id.split('/abs/')[-1] if 'id' in entry else 'N/A'
+                
+                results.append({
+                    'title': entry.get('title', 'N/A'),
+                    'authors': ', '.join(authors) if authors else 'Unknown',
+                    'abstract': entry.get('summary', '')[:500],
+                    'year': int(entry.get('published', '2024')[:4]),
+                    'arxiv_id': arxiv_id,
+                    'url': f'https://arxiv.org/abs/{arxiv_id}'
+                })
+        except Exception as e:
+            print(f"⚠️ arXiv helper error: {type(e).__name__}: {str(e)[:100]}")
+        return results
+    
+    @staticmethod
+    def search_crossref_helper(query: str, max_results: int = 20) -> List[Dict]:
+        """Search CrossRef using requests (cleaner alternative to stdlib urllib)"""
+        results = []
+        try:
+            import requests
+            search_url = f"https://api.crossref.org/works?query={query}&rows={max_results}&sort=published&order=desc"
+            response = requests.get(search_url, timeout=10)
+            data = response.json()
+            
+            for item in data.get('message', {}).get('items', []):
+                authors = [f"{a.get('given', '')} {a.get('family', '')}".strip() 
+                          for a in item.get('author', [])]
+                
+                results.append({
+                    'title': item.get('title', ['N/A'])[0] if item.get('title') else 'N/A',
+                    'authors': ', '.join(authors) if authors else 'Unknown',
+                    'abstract': item.get('abstract', '')[:500] or '',
+                    'year': item.get('published-online', {}).get('date-parts', [[2024]])[0][0],
+                    'doi': item.get('DOI', ''),
+                    'url': item.get('URL', '')
+                })
+        except Exception as e:
+            print(f"⚠️ CrossRef helper error: {type(e).__name__}: {str(e)[:100]}")
+        return results
+    
+    @staticmethod
+    def search_semantic_scholar_helper(query: str, max_results: int = 20) -> List[Dict]:
+        """Search Semantic Scholar using requests (cleaner alternative to stdlib urllib)"""
+        results = []
+        try:
+            import requests
+            search_url = f"https://api.semanticscholar.org/graph/v1/paper/search?query={query}&limit={max_results}&fields=title,authors,abstract,year,citationCount,url,doi"
+            response = requests.get(search_url, timeout=10)
+            data = response.json()
+            
+            for paper in data.get('data', []):
+                authors = [author.get('name', '') for author in paper.get('authors', [])]
+                
+                results.append({
+                    'title': paper.get('title', 'N/A'),
+                    'authors': ', '.join(authors) if authors else 'Unknown',
+                    'abstract': paper.get('abstract', '')[:500] or '',
+                    'year': paper.get('year', 2024),
+                    'doi': paper.get('doi', ''),
+                    'url': paper.get('url', ''),
+                    'citation_count': paper.get('citationCount', 0)
+                })
+        except Exception as e:
+            print(f"⚠️ Semantic Scholar helper error: {type(e).__name__}: {str(e)[:100]}")
+        return results
+    
+    # ============================================================================
+    # End of Helper Functions
+    # ============================================================================
+    
     @staticmethod
     def log_search(user_id: int, query: str, sources: List[str], result_count: int):
         """Log search for analytics"""
