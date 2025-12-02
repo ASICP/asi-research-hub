@@ -357,7 +357,7 @@ class SearchService:
             import urllib.request, urllib.parse, urllib.error
             import time
             
-            search_url = f"https://api.semanticscholar.org/graph/v1/paper/search?query={urllib.parse.quote(query)}&limit={max_results}&fields=title,authors,abstract,year,citationCount,url,doi"
+            search_url = f"https://api.semanticscholar.org/graph/v1/paper/search?query={urllib.parse.quote(query)}&limit={max_results}&fields=title,authors,abstract,year,citationCount,url"
             
             # Add proper headers to avoid rate limiting
             request = urllib.request.Request(
@@ -391,7 +391,7 @@ class SearchService:
                     'authors': ', '.join([a.get('name', '') for a in paper.get('authors', [])]) or 'Unknown',
                     'abstract': paper.get('abstract', '')[:500] or '',
                     'year': paper.get('year', 2024),
-                    'doi': paper.get('doi', ''),
+                    'doi': '',
                     'url': paper.get('url', ''),
                     'citation_count': paper.get('citationCount', 0)
                 })
@@ -463,7 +463,7 @@ class SearchService:
             import requests
             import time
             
-            search_url = f"https://api.semanticscholar.org/graph/v1/paper/search?query={query}&limit={max_results}&fields=title,authors,abstract,year,citationCount,url,doi"
+            search_url = f"https://api.semanticscholar.org/graph/v1/paper/search?query={query}&limit={max_results}&fields=title,authors,abstract,year,citationCount,url"
             headers = {'User-Agent': 'ASI-Research-Hub/1.0 (+https://asi.org)'}
             
             try:
@@ -493,7 +493,7 @@ class SearchService:
                     'authors': ', '.join(authors) if authors else 'Unknown',
                     'abstract': paper.get('abstract', '')[:500] or '',
                     'year': paper.get('year', 2024),
-                    'doi': paper.get('doi', ''),
+                    'doi': '',
                     'url': paper.get('url', ''),
                     'citation_count': paper.get('citationCount', 0)
                 })
