@@ -156,6 +156,8 @@ class SearchService:
         all_papers = []
         sources_used = []
         
+        print(f"🔍 Unified search - Query: {query}, Sources requested: {sources}")
+        
         # Search internal database
         if 'internal' in sources:
             internal_results = SearchService.search_internal(
@@ -191,7 +193,9 @@ class SearchService:
         
         # Search arXiv
         if 'arxiv' in sources:
+            print(f"🔍 Searching arXiv...")
             arxiv_results = SearchService.search_arxiv(query)
+            print(f"✅ arXiv returned {len(arxiv_results)} results")
             for result in arxiv_results:
                 paper = Paper(
                     id=0,
@@ -241,7 +245,9 @@ class SearchService:
         
         # Search Semantic Scholar
         if 'semantic_scholar' in sources:
+            print(f"🔍 Searching Semantic Scholar...")
             semantic_results = SearchService.search_semantic_scholar(query)
+            print(f"✅ Semantic Scholar returned {len(semantic_results)} results")
             for result in semantic_results:
                 paper = Paper(
                     id=0,
