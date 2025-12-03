@@ -330,7 +330,7 @@ def get_paper_references(paper_id):
     
     for row in rows:
         paper = Paper.from_db_row(row)
-        paper_tags = set(paper.tags.lower().split(',')) if paper.tags else set()
+        paper_tags = set(t.lower() for t in paper.tags) if paper.tags else set()
         
         # Check if there's any overlap
         if current_tag_set & paper_tags:
@@ -448,7 +448,8 @@ def get_search_analytics():
             FROM search_logs 
             WHERE created_at >= NOW() - INTERVAL '30 days'
         """)
-        total = cursor.fetchone()['total']
+        result = cursor.fetchone()
+        total = result['total'] if result else 0
     
     return jsonify({
         'top_searches': top_searches,

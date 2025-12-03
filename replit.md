@@ -10,7 +10,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes & TODO
 
-**Recent Updates (Dec 2, 2025)**:
+**Recent Updates (Dec 3, 2025)**:
+- ✅ **SECURITY**: Added verification token expiration (24-hour window) with automatic token regeneration
+- ✅ **SECURITY**: Email case normalization - all emails stored/queried as lowercase
+- ✅ **SECURITY**: Prevent email enumeration on registration - same message for all cases
+- ✅ **SECURITY**: Login rate limiting - 5-minute lockout after 5 failed attempts
+- ✅ Fixed FRONTEND_URL environment variable for production email links (hubt1.asi2.org)
+- ✅ Added failed_login_attempts and lockout_until columns to users table
+
+**Previous Updates (Dec 2, 2025)**:
 - ✅ Added back button next to close button in paper modal
 - ✅ Converted source selection from checkboxes to radio buttons (single selection)
 - ✅ Added 4 new search sources (mutually exclusive):
@@ -110,7 +118,10 @@ Three separate pages for different use cases:
 **Security Measures**:
 - bcrypt password hashing (salt rounds automatically managed)
 - Secure random tokens (`secrets.token_urlsafe(32)`)
-- Email verification prevents spam accounts
+- Email verification with 24-hour token expiration (auto-regeneration on re-registration)
+- Email case normalization (all emails stored lowercase)
+- Anti-enumeration: Registration always returns generic message
+- Login rate limiting: 5 failed attempts → 5-minute account lockout
 - JWT secret rotation supported via environment variables
 - CORS restricted to allowed origins (asi2.org + localhost)
 
