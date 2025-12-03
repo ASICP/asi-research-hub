@@ -117,9 +117,23 @@ def register():
         'message': result.get('message', 'Registration successful! Please check your email to verify your account.')
     }), 201
 
+@app.route('/verify', methods=['GET'])
+def verify_email_link():
+    """Email verification endpoint - handles verification links from emails"""
+    token = request.args.get('token')
+    if not token:
+        return jsonify({'error': 'Missing token'}), 400
+        
+    result = AuthService.verify_email(token)
+    if result['success']:
+        # Redirect to WordPress success page
+        return redirect('https://asi2.org/email-confirmed/')
+    else:
+        return jsonify({'error': result['error']}), 400
+
 @app.route('/api/verify', methods=['GET', 'POST'])
 def verify_email():
-    """Email verification endpoint"""
+    """Email verification endpoint (API)"""
     # Handle GET request (from email link)
     if request.method == 'GET':
         token = request.args.get('token')
