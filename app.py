@@ -113,13 +113,9 @@ def register():
         reason=data['reason']
     )
     
-    if result['success']:
-        return jsonify({
-            'message': 'Registration successful! Please check your email to verify your account.',
-            'user_id': result['user_id']
-        }), 201
-    else:
-        return jsonify({'error': result['error']}), 400
+    return jsonify({
+        'message': result.get('message', 'Registration successful! Please check your email to verify your account.')
+    }), 201
 
 @app.route('/api/verify', methods=['GET', 'POST'])
 def verify_email():

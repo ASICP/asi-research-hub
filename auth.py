@@ -2,15 +2,17 @@ import bcrypt
 import secrets
 import os
 import certifi
-from datetime import datetime
+from datetime import datetime, timedelta
 from database import get_db
 from psycopg2.extras import RealDictCursor
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from config import Config
 
-# Fix for SSL certificate verification on some systems
 os.environ['SSL_CERT_FILE'] = certifi.where()
+
+MAX_LOGIN_ATTEMPTS = 5
+LOCKOUT_DURATION_MINUTES = 5
 
 class AuthService:
     
@@ -33,18 +35,42 @@ class AuthService:
     def create_user(email: str, password: str, first_name: str, 
                    last_name: str, tier: str, region: str, reason: str) -> dict:
         """Create new user account"""
+        email = email.lower().strip()
+        
         password_hash = AuthService.hash_password(password)
         verification_token = AuthService.generate_verification_token()
         
         with get_db() as conn:
             cursor = conn.cursor(cursor_factory=RealDictCursor)
             
-            # Check if email already exists
-            cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
-            if cursor.fetchone():
-                return {'success': False, 'error': 'Email already registered'}
+            cursor.execute("""
+                SELECT id, is_verified, created_at, first_name 
+                FROM users WHERE LOWER(email) = %s
+            """, (email,))
+            existing_user = cursor.fetchone()
             
-            # Insert user
+            if existing_user:
+                if existing_user['is_verified']:
+                    return {'success': True, 'message': 'If this email is available, you will receive a verification link shortly.'}
+                
+                token_expired = existing_user['created_at'] and (datetime.now() - existing_user['created_at']) > timedelta(hours=24)
+                
+                if token_expired:
+                    cursor.execute("""
+                        UPDATE users 
+                        SET verification_token = %s, created_at = CURRENT_TIMESTAMP
+                        WHERE id = %s
+                    """, (verification_token, existing_user['id']))
+                    
+                    AuthService.send_verification_email(email, existing_user['first_name'], verification_token)
+                    return {'success': True, 'message': 'If this email is available, you will receive a verification link shortly.'}
+                else:
+                    cursor.execute("""
+                        UPDATE users SET verification_token = %s WHERE id = %s
+                    """, (verification_token, existing_user['id']))
+                    AuthService.send_verification_email(email, existing_user['first_name'], verification_token)
+                    return {'success': True, 'message': 'If this email is available, you will receive a verification link shortly.'}
+            
             cursor.execute("""
                 INSERT INTO users (email, password_hash, first_name, last_name, 
                                  tier, region, reason, verification_token)
@@ -55,10 +81,9 @@ class AuthService:
             result = cursor.fetchone()
             user_id = result['id'] if result else None
         
-        # Send verification email
         AuthService.send_verification_email(email, first_name, verification_token)
         
-        return {'success': True, 'user_id': user_id}
+        return {'success': True, 'message': 'If this email is available, you will receive a verification link shortly.', 'user_id': user_id}
     
     @staticmethod
     def send_verification_email(email: str, first_name: str, token: str):
@@ -120,12 +145,12 @@ class AuthService:
     
     @staticmethod
     def verify_email(token: str) -> dict:
-        """Verify user email with token"""
+        """Verify user email with token (expires after 24 hours)"""
         with get_db() as conn:
             cursor = conn.cursor(cursor_factory=RealDictCursor)
             
             cursor.execute("""
-                SELECT id, email FROM users 
+                SELECT id, email, created_at FROM users 
                 WHERE verification_token = %s AND is_verified = FALSE
             """, (token,))
             
@@ -133,6 +158,9 @@ class AuthService:
             
             if not user:
                 return {'success': False, 'error': 'Invalid or expired token'}
+            
+            if user['created_at'] and (datetime.now() - user['created_at']) > timedelta(hours=24):
+                return {'success': False, 'error': 'Verification link has expired. Please register again.'}
             
             cursor.execute("""
                 UPDATE users 
@@ -143,8 +171,91 @@ class AuthService:
         return {'success': True, 'email': user['email']}
     
     @staticmethod
+    def check_rate_limit(email: str) -> dict:
+        """Check if user is rate limited for login attempts"""
+        email = email.lower().strip()
+        
+        with get_db() as conn:
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            
+            cursor.execute("""
+                SELECT id, lockout_until, failed_login_attempts 
+                FROM users WHERE LOWER(email) = %s
+            """, (email,))
+            
+            user = cursor.fetchone()
+            
+            if not user:
+                return {'locked': False}
+            
+            if user['lockout_until'] and user['lockout_until'] > datetime.now():
+                remaining = (user['lockout_until'] - datetime.now()).seconds
+                minutes = remaining // 60
+                seconds = remaining % 60
+                return {
+                    'locked': True, 
+                    'error': f'Account temporarily locked. Try again in {minutes}m {seconds}s.',
+                    'remaining_seconds': remaining
+                }
+            
+            if user['lockout_until'] and user['lockout_until'] <= datetime.now():
+                cursor.execute("""
+                    UPDATE users SET failed_login_attempts = 0, lockout_until = NULL 
+                    WHERE id = %s
+                """, (user['id'],))
+            
+            return {'locked': False, 'attempts': user['failed_login_attempts'] or 0}
+    
+    @staticmethod
+    def record_failed_login(email: str):
+        """Record a failed login attempt"""
+        email = email.lower().strip()
+        
+        with get_db() as conn:
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            
+            cursor.execute("SELECT id, failed_login_attempts FROM users WHERE LOWER(email) = %s", (email,))
+            user = cursor.fetchone()
+            
+            if not user:
+                return
+            
+            new_attempts = (user['failed_login_attempts'] or 0) + 1
+            
+            if new_attempts >= MAX_LOGIN_ATTEMPTS:
+                lockout_until = datetime.now() + timedelta(minutes=LOCKOUT_DURATION_MINUTES)
+                cursor.execute("""
+                    UPDATE users 
+                    SET failed_login_attempts = %s, lockout_until = %s 
+                    WHERE id = %s
+                """, (new_attempts, lockout_until, user['id']))
+            else:
+                cursor.execute("""
+                    UPDATE users SET failed_login_attempts = %s WHERE id = %s
+                """, (new_attempts, user['id']))
+    
+    @staticmethod
+    def reset_login_attempts(email: str):
+        """Reset failed login attempts on successful login"""
+        email = email.lower().strip()
+        
+        with get_db() as conn:
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            cursor.execute("""
+                UPDATE users 
+                SET failed_login_attempts = 0, lockout_until = NULL 
+                WHERE LOWER(email) = %s
+            """, (email,))
+    
+    @staticmethod
     def login(email: str, password: str) -> dict:
         """Authenticate user and return JWT token"""
+        email = email.lower().strip()
+        
+        rate_check = AuthService.check_rate_limit(email)
+        if rate_check.get('locked'):
+            return {'success': False, 'error': rate_check['error'], 'locked': True}
+        
         with get_db() as conn:
             cursor = conn.cursor(cursor_factory=RealDictCursor)
             
@@ -152,7 +263,7 @@ class AuthService:
                 SELECT id, email, password_hash, first_name, last_name, 
                        tier, is_verified 
                 FROM users 
-                WHERE email = %s
+                WHERE LOWER(email) = %s
             """, (email,))
             
             user = cursor.fetchone()
@@ -164,9 +275,16 @@ class AuthService:
                 return {'success': False, 'error': 'Email not verified. Please check your inbox.'}
             
             if not AuthService.verify_password(password, user['password_hash']):
-                return {'success': False, 'error': 'Invalid credentials'}
+                AuthService.record_failed_login(email)
+                
+                attempts_left = MAX_LOGIN_ATTEMPTS - (rate_check.get('attempts', 0) + 1)
+                if attempts_left > 0:
+                    return {'success': False, 'error': f'Invalid credentials. {attempts_left} attempts remaining.'}
+                else:
+                    return {'success': False, 'error': f'Account locked for {LOCKOUT_DURATION_MINUTES} minutes due to too many failed attempts.', 'locked': True}
             
-            # Update last login
+            AuthService.reset_login_attempts(email)
+            
             cursor.execute("""
                 UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = %s
             """, (user['id'],))
@@ -185,17 +303,17 @@ class AuthService:
     @staticmethod
     def request_password_reset(email: str) -> dict:
         """Generate password reset token and send email"""
+        email = email.lower().strip()
+        
         with get_db() as conn:
             cursor = conn.cursor(cursor_factory=RealDictCursor)
             
-            cursor.execute("SELECT id, first_name FROM users WHERE email = %s", (email,))
+            cursor.execute("SELECT id, first_name FROM users WHERE LOWER(email) = %s", (email,))
             user = cursor.fetchone()
             
             if not user:
-                # Don't reveal if email exists for security
                 return {'success': True, 'message': 'If the email exists, a reset link has been sent'}
             
-            # Generate reset token
             reset_token = AuthService.generate_verification_token()
             
             cursor.execute("""
@@ -204,7 +322,6 @@ class AuthService:
                 WHERE id = %s
             """, (reset_token, user['id']))
         
-        # Send reset email
         AuthService.send_password_reset_email(email, user['first_name'], reset_token)
         
         return {'success': True, 'message': 'If the email exists, a reset link has been sent'}
@@ -284,10 +401,8 @@ class AuthService:
             if not user:
                 return {'success': False, 'error': 'Invalid or expired reset token'}
             
-            # Hash new password
             password_hash = AuthService.hash_password(new_password)
             
-            # Update password and clear reset token
             cursor.execute("""
                 UPDATE users 
                 SET password_hash = %s, 
@@ -297,4 +412,3 @@ class AuthService:
             """, (password_hash, user['id']))
         
         return {'success': True, 'message': 'Password reset successful'}
-
