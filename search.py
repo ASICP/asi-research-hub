@@ -8,26 +8,75 @@ from models import Paper, SearchResult
 from config import Config
 
 class SearchService:
-    
+
     @staticmethod
-    def search_internal(query: str, tags: Optional[List[str]] = None, 
-                       year_from: Optional[int] = None, 
+    def parse_search_query(query: str) -> tuple:
+        """
+        Parse search query to extract quoted phrases and regular terms.
+        Returns: (quoted_phrases, regular_terms)
+
+        Example: 'AI "machine learning" safety' -> (["machine learning"], ["AI", "safety"])
+        """
+        quoted_phrases = []
+        regular_terms = []
+
+        # Extract quoted phrases
+        import re
+        quote_pattern = r'"([^"]+)"'
+        quoted_phrases = re.findall(quote_pattern, query)
+
+        # Remove quoted parts to get regular terms
+        remaining = re.sub(quote_pattern, '', query)
+        regular_terms = [term.strip() for term in remaining.split() if term.strip()]
+
+        return quoted_phrases, regular_terms
+
+    @staticmethod
+    def search_internal(query: str, tags: Optional[List[str]] = None,
+                       year_from: Optional[int] = None,
                        asip_funded_only: bool = False) -> List[Paper]:
-        """Search internal PDF database"""
+        """Search internal PDF database with support for quoted exact phrases"""
         with get_db() as conn:
             cursor = conn.cursor()
-            
+
+            # Parse query for quoted phrases
+            quoted_phrases, regular_terms = SearchService.parse_search_query(query)
+
             # Build SQL query dynamically
-            sql = """
-                SELECT * FROM papers 
-                WHERE (
-                    title LIKE ? OR 
-                    authors LIKE ? OR 
-                    abstract LIKE ? OR 
+            sql = "SELECT * FROM papers WHERE 1=1"
+            params = []
+
+            # Add quoted phrase conditions (exact match)
+            if quoted_phrases:
+                quoted_conditions = []
+                for phrase in quoted_phrases:
+                    quoted_conditions.append(
+                        "(title LIKE ? OR authors LIKE ? OR abstract LIKE ? OR pdf_text LIKE ?)"
+                    )
+                    params.extend([f'%{phrase}%'] * 4)
+
+                sql += " AND (" + " AND ".join(quoted_conditions) + ")"
+
+            # Add regular term conditions (any word match)
+            if regular_terms:
+                term_query = ' '.join(regular_terms)
+                sql += """ AND (
+                    title LIKE ? OR
+                    authors LIKE ? OR
+                    abstract LIKE ? OR
                     pdf_text LIKE ?
-                )
-            """
-            params = [f'%{query}%'] * 4
+                )"""
+                params.extend([f'%{term_query}%'] * 4)
+
+            # If no quoted phrases and no regular terms, search original query
+            if not quoted_phrases and not regular_terms:
+                sql += """ AND (
+                    title LIKE ? OR
+                    authors LIKE ? OR
+                    abstract LIKE ? OR
+                    pdf_text LIKE ?
+                )"""
+                params.extend([f'%{query}%'] * 4)
             
             # Add filters
             if tags:
