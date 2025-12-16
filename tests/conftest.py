@@ -191,7 +191,11 @@ def cleanup_g():
 
     autouse=True means this runs automatically for every test
     """
-    from flask import g
     yield
-    # Clear g after test
-    g.__dict__.clear()
+    # Clear g after test (only if in app context)
+    try:
+        from flask import g
+        g.__dict__.clear()
+    except (RuntimeError, AttributeError):
+        # Not in app context or g doesn't exist - that's fine
+        pass
