@@ -43,8 +43,9 @@ Flask-WTF==1.2.1
 Flask-Talisman==1.1.0
 bleach==6.1.0
 
-# Rate Limiting
+# Rate Limiting & Monitoring
 Flask-Limiter==3.5.0
+prometheus-flask-exporter==0.23.0
 
 # API Clients
 anthropic==0.8.1  # Claude API
