@@ -1,13 +1,88 @@
+# Combined Dependencies for ASI Research Hub v1 + ARA v2
+# Updated: December 15, 2025
+
+# ============================================
+# SHARED: Core Web Framework
+# ============================================
 Flask==3.0.0
 Flask-CORS==4.0.0
-Flask-JWT-Extended==4.5.3
-bcrypt==4.1.1
-PyPDF2==3.0.1
-scholarly==1.7.11
-requests==2.31.0
-feedparser==6.0.10
-python-dotenv==1.0.0
-sendgrid==6.11.0
-validators==0.22.0
 Werkzeug==3.0.1
+python-dotenv==1.0.0
+requests==2.31.0
 gunicorn==21.2.0
+
+# ============================================
+# ASI Research Hub v1 Dependencies
+# ============================================
+Flask-JWT-Extended==4.5.3  # v1 auth
+bcrypt==4.1.1
+PyPDF2==3.0.1  # PDF processing for v1
+scholarly==1.7.11  # Google Scholar for v1
+sendgrid==6.11.0  # Email for v1
+validators==0.22.0
+
+# ============================================
+# ARA v2 Dependencies
+# ============================================
+
+# Database
+SQLAlchemy==2.0.23
+psycopg2-binary==2.9.9
+alembic==1.13.0
+
+# Redis & Caching
+redis==5.0.1
+Flask-Caching==2.1.0
+
+# Authentication & Security (v2)
+PyJWT==2.8.0
+cryptography==41.0.7
+Flask-WTF==1.2.1
+Flask-Talisman==1.1.0
+bleach==6.1.0
+
+# Rate Limiting
+Flask-Limiter==3.5.0
+
+# API Clients
+anthropic==0.8.1  # Claude API
+feedparser==6.0.10  # ArXiv API
+
+# Data Processing
+scikit-learn==1.3.2  # TF-IDF for tag assignment
+numpy==1.26.2
+pandas==2.1.4
+
+# PDF Generation
+reportlab==4.0.7
+
+# Task Queue (async scoring)
+celery==5.3.4
+celery[redis]==5.3.4
+
+# Monitoring & Logging
+prometheus-client==0.19.0
+prometheus-flask-exporter==0.23.0
+
+# Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-flask==1.3.0
+pytest-mock==3.12.0
+faker==21.0.0
+
+# Development Tools
+black==23.12.1
+flake8==6.1.0
+isort==5.13.2
+
+# Security Scanning
+safety==2.3.5
+bandit==1.7.6
+
+# Documentation
+sphinx==7.2.6
+
+# Utilities
+python-dateutil==2.8.2
+pytz==2023.3
