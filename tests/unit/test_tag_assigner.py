@@ -549,7 +549,7 @@ class TestAssignAndSaveTags:
     @patch('ara_v2.services.tag_assigner.TagAssigner.get_or_create_tags')
     @patch('ara_v2.services.tag_assigner.TagAssigner.assign_tags')
     @patch('ara_v2.services.tag_assigner.current_app')
-    def test_assign_and_save_basic(self, app, mock_app, mock_assign, mock_get_create):
+    def test_assign_and_save_basic(self, mock_get_create, mock_assign, mock_app, app):
         """Test basic assign and save workflow."""
         # Mock paper
         mock_paper = Mock()
@@ -578,7 +578,7 @@ class TestAssignAndSaveTags:
 
     @patch('ara_v2.services.tag_assigner.TagAssigner.assign_tags')
     @patch('ara_v2.services.tag_assigner.current_app')
-    def test_assign_and_save_no_tags(self, app, mock_app, mock_assign):
+    def test_assign_and_save_no_tags(self, mock_assign, mock_app, app):
         """Test when no tags are assigned."""
         mock_paper = Mock()
         mock_paper.title = "Test"
@@ -596,7 +596,7 @@ class TestAssignAndSaveTags:
     @patch('ara_v2.services.tag_assigner.TagAssigner.get_or_create_tags')
     @patch('ara_v2.services.tag_assigner.TagAssigner.assign_tags')
     @patch('ara_v2.services.tag_assigner.current_app')
-    def test_assign_and_save_semantic_scholar(self, app, mock_app, mock_assign, mock_get_create):
+    def test_assign_and_save_semantic_scholar(self, mock_get_create, mock_assign, mock_app, app):
         """Test with Semantic Scholar paper."""
         mock_paper = Mock()
         mock_paper.id = 1
@@ -622,7 +622,7 @@ class TestAssignAndSaveTags:
     @patch('ara_v2.services.tag_assigner.TagAssigner.get_or_create_tags')
     @patch('ara_v2.services.tag_assigner.TagAssigner.assign_tags')
     @patch('ara_v2.services.tag_assigner.current_app')
-    def test_assign_and_save_arxiv(self, app, mock_app, mock_assign, mock_get_create):
+    def test_assign_and_save_arxiv(self, mock_get_create, mock_assign, mock_app, app):
         """Test with ArXiv paper."""
         mock_paper = Mock()
         mock_paper.id = 1
@@ -647,7 +647,7 @@ class TestAssignAndSaveTags:
     @patch('ara_v2.services.tag_assigner.TagAssigner.get_or_create_tags')
     @patch('ara_v2.services.tag_assigner.TagAssigner.assign_tags')
     @patch('ara_v2.services.tag_assigner.current_app')
-    def test_assign_and_save_crossref(self, app, mock_app, mock_assign, mock_get_create):
+    def test_assign_and_save_crossref(self, mock_get_create, mock_assign, mock_app, app):
         """Test with CrossRef paper."""
         mock_paper = Mock()
         mock_paper.id = 1
@@ -672,7 +672,7 @@ class TestAssignAndSaveTags:
     @patch('ara_v2.services.tag_assigner.TagAssigner.get_or_create_tags')
     @patch('ara_v2.services.tag_assigner.TagAssigner.assign_tags')
     @patch('ara_v2.services.tag_assigner.current_app')
-    def test_assign_and_save_respects_min_confidence(self, app, mock_app, mock_assign, mock_get_create):
+    def test_assign_and_save_respects_min_confidence(self, mock_get_create, mock_assign, mock_app, app):
         """Test that min_confidence parameter is passed through."""
         mock_paper = Mock()
         mock_paper.id = 1
@@ -692,7 +692,7 @@ class TestAssignAndSaveTags:
     @patch('ara_v2.services.tag_assigner.TagAssigner.get_or_create_tags')
     @patch('ara_v2.services.tag_assigner.TagAssigner.assign_tags')
     @patch('ara_v2.services.tag_assigner.current_app')
-    def test_assign_and_save_respects_max_tags(self, app, mock_app, mock_assign, mock_get_create):
+    def test_assign_and_save_respects_max_tags(self, mock_get_create, mock_assign, mock_app, app):
         """Test that max_tags parameter is passed through."""
         mock_paper = Mock()
         mock_paper.id = 1
