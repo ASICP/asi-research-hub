@@ -372,15 +372,31 @@ class TagAssigner:
 
         combined = {}
         for tag in all_tags:
+            # Calculate weighted sum and track which strategies contributed
+            rule_score = rule_scores.get(tag, 0)
+            tfidf_score = tfidf_scores.get(tag, 0)
+            source_score = source_scores.get(tag, 0)
+
             weighted_sum = (
-                rule_scores.get(tag, 0) * weights['rule'] +
-                tfidf_scores.get(tag, 0) * weights['tfidf'] +
-                source_scores.get(tag, 0) * weights['source']
+                rule_score * weights['rule'] +
+                tfidf_score * weights['tfidf'] +
+                source_score * weights['source']
             )
 
-            # Normalize by sum of weights
-            total_weight = sum(weights.values())
-            combined[tag] = weighted_sum / total_weight
+            # Normalize by sum of weights that actually contributed (non-zero scores)
+            contributing_weight = 0
+            if rule_score > 0:
+                contributing_weight += weights['rule']
+            if tfidf_score > 0:
+                contributing_weight += weights['tfidf']
+            if source_score > 0:
+                contributing_weight += weights['source']
+
+            # Avoid division by zero (though this shouldn't happen)
+            if contributing_weight > 0:
+                combined[tag] = weighted_sum / contributing_weight
+            else:
+                combined[tag] = 0
 
         return combined
 
