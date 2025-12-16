@@ -48,15 +48,25 @@ class RateLimitError(ARAError):
 
 
 # Data Errors
-class PaperNotFoundError(ARAError):
+class NotFoundError(ARAError):
+    """Resource not found."""
+
+    def __init__(self, message: str = "Resource not found"):
+        super().__init__(message, code='NOT_FOUND', status_code=404)
+
+
+class PaperNotFoundError(NotFoundError):
     """Paper not found."""
 
     def __init__(self, paper_id: int):
-        super().__init__(
-            f"Paper {paper_id} not found",
-            code='NOT_FOUND',
-            status_code=404
-        )
+        super().__init__(f"Paper {paper_id} not found")
+
+
+class ConflictError(ARAError):
+    """Resource conflict (e.g., duplicate entry)."""
+
+    def __init__(self, message: str = "Resource already exists"):
+        super().__init__(message, code='CONFLICT', status_code=409)
 
 
 class ValidationError(ARAError):
