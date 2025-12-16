@@ -18,6 +18,7 @@ Flask-JWT-Extended==4.5.3  # v1 auth
 bcrypt==4.1.1
 PyPDF2==3.0.1  # PDF processing for v1
 scholarly==1.7.11  # Google Scholar for v1
+Flask-SQLAlchemy==3.1.1
 sendgrid==6.11.0  # Email for v1
 validators==0.22.0
 
@@ -27,6 +28,7 @@ validators==0.22.0
 
 # Database
 SQLAlchemy==2.0.23
+Flask-SQLAlchemy==3.1.1
 psycopg2-binary==2.9.9
 alembic==1.13.0
 
