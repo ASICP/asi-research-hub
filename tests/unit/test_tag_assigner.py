@@ -449,7 +449,7 @@ class TestCombineScores:
         assert len(combined) == 0
 
     def test_combine_scores_normalization(self):
-        """Test that scores are properly normalized by weight sum."""
+        """Test that scores are properly normalized by contributing weights only."""
         assigner = TagAssigner()
 
         rule_scores = {'test': 1.0}
@@ -463,8 +463,9 @@ class TestCombineScores:
             rule_scores, tfidf_scores, source_scores, weights
         )
 
-        # Should be normalized: 1.0 * 0.5 / (0.5 + 0.3 + 0.2) = 0.5
-        assert abs(combined['test'] - 0.5) < 0.01
+        # Should be normalized by contributing weights only: 1.0 * 0.5 / 0.5 = 1.0
+        # (only rule_scores contributes, so we divide by rule weight only)
+        assert abs(combined['test'] - 1.0) < 0.01
 
 
 class TestGetOrCreateTags:
