@@ -24,7 +24,7 @@ class UserActivity(db.Model):
     )
     action_type = Column(String(50), nullable=False, index=True)
     paper_id = Column(Integer, ForeignKey('papers.id'))
-    metadata = Column(JSONB)  # Additional action-specific data
+    action_metadata = Column(JSONB)  # Additional action-specific data
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
 
     # Relationships
@@ -50,6 +50,6 @@ class UserActivity(db.Model):
             'user_id': self.user_id,
             'action_type': self.action_type,
             'paper_id': self.paper_id,
-            'metadata': self.metadata,
+            'action_metadata': self.action_metadata,
             'created_at': self.created_at.isoformat() if self.created_at else None,
         }
