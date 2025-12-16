@@ -209,7 +209,7 @@ def upgrade() -> None:
         sa.Column('user_id', sa.Integer(), nullable=False),
         sa.Column('action_type', sa.String(length=50), nullable=False),
         sa.Column('paper_id', sa.Integer(), nullable=True),
-        sa.Column('metadata', postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+        sa.Column('action_metadata', postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column('created_at', sa.DateTime(), nullable=False),
         sa.CheckConstraint(
             "action_type IN ('search', 'view_paper', 'bookmark', 'unbookmark', "
@@ -223,7 +223,7 @@ def upgrade() -> None:
     op.create_index('idx_user_activity_user', 'user_activity', ['user_id'])
     op.create_index('idx_user_activity_type', 'user_activity', ['action_type'])
     op.create_index('idx_user_activity_time', 'user_activity', [sa.text('created_at DESC')])
-    op.create_index('idx_user_activity_metadata', 'user_activity', ['metadata'],
+    op.create_index('idx_user_activity_metadata', 'user_activity', ['action_metadata'],
                     postgresql_using='gin')
     op.create_index('idx_user_activity_user_time', 'user_activity',
                     ['user_id', sa.text('created_at DESC')])
