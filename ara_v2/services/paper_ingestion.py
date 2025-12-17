@@ -17,6 +17,7 @@ from ara_v2.services.connectors.arxiv import ArxivConnector
 from ara_v2.services.connectors.crossref import CrossRefConnector
 from ara_v2.services.tag_assigner import TagAssigner
 from ara_v2.services.scoring.tag_scorer import TagScorer, update_tag_statistics
+from ara_v2.services.tag_combo_tracker import track_paper_tag_combinations
 
 
 class PaperIngestionService:
@@ -174,14 +175,25 @@ class PaperIngestionService:
             db.session.add(paper)
             db.session.flush()  # Get paper.id without committing
 
+            combo_stats = {}
+
             # Assign tags if requested
             if assign_tags:
                 self._assign_tags_to_paper(paper)
 
+                # Flush to ensure paper_tags are saved before combo tracking
+                db.session.flush()
+
+                # Track tag combinations (for novelty detection)
+                combo_stats = track_paper_tag_combinations(paper.id)
+
                 # Calculate tag score after tags are assigned
                 self._calculate_and_save_tag_score(paper)
 
-            current_app.logger.info(f"Created new paper: {paper.title[:50]}...")
+            current_app.logger.info(
+                f"Created new paper: {paper.title[:50]}... "
+                f"(tags={len(paper.tags)}, novel_combos={combo_stats.get('novel_combos', 0)})"
+            )
 
             return paper, True
 

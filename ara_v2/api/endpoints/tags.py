@@ -163,27 +163,36 @@ def trending_tags():
     Get trending/fastest-growing tags.
 
     Query parameters:
-        - limit: Maximum number of tags (default: 10)
+        - limit: Maximum number of tags (default: 20)
+        - min_frequency: Minimum tag frequency (default: 2)
 
     Returns:
         {
-            "tags": List[dict]
+            "tags": List[dict with growth_rate]
         }
     """
     try:
-        limit = request.args.get('limit', 10, type=int)
+        limit = request.args.get('limit', 20, type=int)
+        min_frequency = request.args.get('min_frequency', 2, type=int)
 
-        # Get tags that have been used recently and have good paper counts
-        # Simple approach: recently used tags with decent paper counts
+        # Get tags ordered by growth rate (papers per month)
         tags = Tag.query.filter(
-            Tag.paper_count > 0,
-            Tag.last_used != None
+            Tag.frequency >= min_frequency,
+            Tag.growth_rate != None
         ).order_by(
-            Tag.last_used.desc()
+            Tag.growth_rate.desc()
         ).limit(limit).all()
 
+        result = []
+        for tag in tags:
+            tag_dict = tag.to_dict()
+            # Add growth rate to response
+            tag_dict['growth_rate'] = float(tag.growth_rate) if tag.growth_rate else 0.0
+            result.append(tag_dict)
+
         return jsonify({
-            'tags': [tag.to_dict() for tag in tags]
+            'total': len(result),
+            'tags': result
         }), 200
 
     except Exception as e:
@@ -198,8 +207,9 @@ def tag_combos():
     Get interesting tag combinations.
 
     Query parameters:
-        - min_count: Minimum occurrence count (default: 2)
-        - limit: Maximum number of combos (default: 20)
+        - min_frequency: Minimum occurrence count (default: 1)
+        - novel_only: Only show novel combos (frequency <= 3) (default: false)
+        - limit: Maximum number of combos (default: 50)
 
     Returns:
         {
@@ -207,42 +217,25 @@ def tag_combos():
         }
     """
     try:
-        min_count = request.args.get('min_count', 2, type=int)
-        limit = request.args.get('limit', 20, type=int)
+        from ara_v2.services.tag_combo_tracker import TagComboTracker
 
-        # Get tag combos ordered by frequency
-        combos = TagCombo.query.filter(
-            TagCombo.count >= min_count
-        ).order_by(
-            TagCombo.count.desc()
-        ).limit(limit).all()
+        min_frequency = request.args.get('min_frequency', 1, type=int)
+        novel_only = request.args.get('novel_only', 'false').lower() == 'true'
+        limit = request.args.get('limit', 50, type=int)
 
-        result = []
-        for combo in combos:
-            # Get tag names for the combo
-            tags = db.session.query(Tag).filter(
-                Tag.id.in_(combo.tag_ids)
-            ).all()
+        tracker = TagComboTracker()
 
-            result.append({
-                'id': combo.id,
-                'tag_ids': combo.tag_ids,
-                'tags': [
-                    {
-                        'id': tag.id,
-                        'name': tag.name,
-                        'slug': tag.slug
-                    }
-                    for tag in tags
-                ],
-                'count': combo.count,
-                'first_seen': combo.first_seen.isoformat() if combo.first_seen else None,
-                'last_seen': combo.last_seen.isoformat() if combo.last_seen else None
-            })
+        if novel_only:
+            # Get novel combinations
+            result = tracker.get_novel_combinations(limit=limit, min_frequency=min_frequency)
+        else:
+            # Get popular combinations
+            result = tracker.get_popular_combinations(limit=limit, min_frequency=min_frequency)
 
         return jsonify({
             'total': len(result),
-            'combos': result
+            'combos': result,
+            'novel_only': novel_only
         }), 200
 
     except Exception as e:

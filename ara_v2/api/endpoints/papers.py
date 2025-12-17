@@ -316,6 +316,95 @@ def get_paper(paper_id):
         raise
 
 
+@papers_bp.route('/<int:paper_id>/scores', methods=['GET'])
+@optional_auth
+def get_paper_scores(paper_id):
+    """
+    Get all scores for a paper.
+
+    Path parameters:
+        - paper_id: Paper ID
+
+    Returns:
+        {
+            "paper_id": int,
+            "tag_score": float,
+            "citation_score": float,
+            "novelty_score": float,
+            "holmes_score": float,
+            "is_diamond": bool,
+            "scored_at": str (ISO 8601)
+        }
+    """
+    try:
+        paper = Paper.query.filter_by(id=paper_id, deleted_at=None).first()
+
+        if not paper:
+            raise NotFoundError(f'Paper {paper_id} not found')
+
+        scores = {
+            'paper_id': paper.id,
+            'tag_score': float(paper.tag_score) if paper.tag_score else None,
+            'citation_score': float(paper.citation_score) if paper.citation_score else None,
+            'novelty_score': float(paper.novelty_score) if paper.novelty_score else None,
+            'holmes_score': float(paper.holmes_score) if paper.holmes_score else None,
+            'is_diamond': paper.is_diamond,
+            'scored_at': paper.scored_at.isoformat() if paper.scored_at else None
+        }
+
+        return jsonify(scores), 200
+
+    except NotFoundError as e:
+        raise
+    except Exception as e:
+        current_app.logger.error(f"Get paper scores error: {e}")
+        raise
+
+
+@papers_bp.route('/<int:paper_id>/novel-combos', methods=['GET'])
+@optional_auth
+def get_paper_novel_combos(paper_id):
+    """
+    Get novel tag combinations for a paper.
+
+    Path parameters:
+        - paper_id: Paper ID
+
+    Returns:
+        {
+            "paper_id": int,
+            "novel_combos": [
+                {
+                    "tag_ids": [int, int],
+                    "tag_names": [str, str],
+                    "frequency": int
+                }
+            ]
+        }
+    """
+    try:
+        from ara_v2.services.tag_combo_tracker import TagComboTracker
+
+        paper = Paper.query.filter_by(id=paper_id, deleted_at=None).first()
+
+        if not paper:
+            raise NotFoundError(f'Paper {paper_id} not found')
+
+        tracker = TagComboTracker()
+        novel_combos = tracker.get_paper_novel_combos(paper_id)
+
+        return jsonify({
+            'paper_id': paper_id,
+            'novel_combos': novel_combos
+        }), 200
+
+    except NotFoundError as e:
+        raise
+    except Exception as e:
+        current_app.logger.error(f"Get paper novel combos error: {e}")
+        raise
+
+
 @papers_bp.route('/<int:paper_id>/citations', methods=['POST'])
 @require_auth
 @limiter.limit("10 per hour")
