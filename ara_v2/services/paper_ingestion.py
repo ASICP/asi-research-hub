@@ -16,6 +16,7 @@ from ara_v2.services.connectors.semantic_scholar import SemanticScholarConnector
 from ara_v2.services.connectors.arxiv import ArxivConnector
 from ara_v2.services.connectors.crossref import CrossRefConnector
 from ara_v2.services.tag_assigner import TagAssigner
+from ara_v2.services.scoring.tag_scorer import TagScorer, update_tag_statistics
 
 
 class PaperIngestionService:
@@ -176,6 +177,9 @@ class PaperIngestionService:
             # Assign tags if requested
             if assign_tags:
                 self._assign_tags_to_paper(paper)
+
+                # Calculate tag score after tags are assigned
+                self._calculate_and_save_tag_score(paper)
 
             current_app.logger.info(f"Created new paper: {paper.title[:50]}...")
 
@@ -353,6 +357,35 @@ class PaperIngestionService:
         for tag, _ in tag_assignments:
             tag.paper_count = db.session.query(PaperTag).filter_by(tag_id=tag.id).count()
             tag.last_used = datetime.utcnow()
+
+            # Update tag growth rate
+            update_tag_statistics(tag.id)
+
+    def _calculate_and_save_tag_score(self, paper: Paper):
+        """
+        Calculate and save tag score for a paper.
+
+        Args:
+            paper: Paper instance with tags already assigned
+        """
+        try:
+            scorer = TagScorer()
+            tag_score = scorer.calculate_tag_score(paper.id)
+
+            # Save score to paper
+            paper.tag_score = tag_score
+            paper.scored_at = datetime.utcnow()
+
+            current_app.logger.info(
+                f"Calculated tag score for paper {paper.id}: {tag_score:.2f}"
+            )
+
+        except Exception as e:
+            current_app.logger.error(
+                f"Error calculating tag score for paper {paper.id}: {e}"
+            )
+            # Don't fail the ingestion if scoring fails
+            paper.tag_score = None
 
     def build_citation_network(
         self,
