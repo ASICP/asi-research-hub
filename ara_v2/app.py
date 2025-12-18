@@ -3,7 +3,8 @@ ARA v2 Application Factory
 Creates and configures the Flask application with all extensions.
 """
 
-from flask import Flask, jsonify
+import os
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 from flask_talisman import Talisman
 
@@ -12,6 +13,10 @@ from ara_v2.utils.logger import configure_logging
 from ara_v2.utils.database import db, init_db
 from ara_v2.utils.redis_client import redis_client, init_redis
 from ara_v2.utils.errors import register_error_handlers
+
+# Get project root directory (parent of ara_v2)
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_FOLDER = os.path.join(PROJECT_ROOT, 'static')
 
 
 def create_app(config_name=None):
@@ -24,7 +29,7 @@ def create_app(config_name=None):
     Returns:
         Configured Flask application
     """
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder=STATIC_FOLDER, static_url_path='/static')
 
     # Load configuration
     if config_name:
