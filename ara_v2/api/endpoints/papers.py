@@ -223,18 +223,15 @@ def search():
                                 if year == 'N/A':
                                     year = 2024
                                 
-                                title = bib.get('title', 'N/A')
-                                abstract = bib.get('abstract', '')[:500] if bib.get('abstract') else ''
-                                
                                 results.append({
-                                    'title': title,
+                                    'title': bib.get('title', 'N/A'),
                                     'authors': ', '.join(bib.get('author', [])) if bib.get('author') else 'Unknown',
-                                    'abstract': abstract,
+                                    'abstract': bib.get('abstract', '')[:500] if bib.get('abstract') else '',
                                     'year': year,
                                     'source': 'google_scholar',
                                     'url': pub.get('pub_url', ''),
                                     'citation_count': pub.get('num_citations', 0),
-                                    'tags': assign_tags_from_text(title, abstract)
+                                    'tags': []
                                 })
                                 count += 1
                             except Exception as pub_error:
