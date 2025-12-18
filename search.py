@@ -12,6 +12,48 @@ from config import Config
 def timeout_handler(signum, frame):
     raise TimeoutError("Google Scholar search timed out")
 
+# Tag keywords mapping for auto-assignment
+TAG_KEYWORDS = {
+    'alignment': ['alignment', 'aligned', 'aligning'],
+    'AI_safety': ['safety', 'safe', 'safer', 'safeguard'],
+    'AI_risks': ['risk', 'risks', 'danger', 'dangerous', 'threat'],
+    'interpretability': ['interpretability', 'interpretable', 'explainability', 'explainable', 'xai'],
+    'reward_hacking': ['reward hacking', 'reward gaming', 'reward manipulation'],
+    'robustness': ['robust', 'robustness', 'adversarial'],
+    'value_alignment': ['value alignment', 'human values', 'value learning'],
+    'corrigibility': ['corrigibility', 'corrigible', 'shutdown'],
+    'mesa_optimization': ['mesa-optimization', 'mesa optimization', 'inner alignment'],
+    'outer_alignment': ['outer alignment'],
+    'training': ['training', 'train', 'fine-tuning', 'fine tuning', 'finetuning'],
+    'RLHF': ['rlhf', 'reinforcement learning from human feedback', 'human feedback'],
+    'constitutional_AI': ['constitutional ai', 'constitutional'],
+    'deception': ['deception', 'deceptive', 'lying', 'dishonest'],
+    'goal_misgeneralization': ['goal misgeneralization', 'distributional shift'],
+    'scalable_oversight': ['scalable oversight', 'oversight'],
+    'red_teaming': ['red team', 'red-team', 'adversarial testing'],
+    'language_models': ['language model', 'llm', 'gpt', 'transformer', 'large language'],
+    'neural_networks': ['neural network', 'deep learning', 'deep neural'],
+    'machine_learning': ['machine learning', 'ml'],
+    'AGI': ['agi', 'artificial general intelligence', 'general intelligence'],
+    'superintelligence': ['superintelligence', 'superintelligent', 'super-intelligence'],
+    'existential_risk': ['existential risk', 'x-risk', 'extinction'],
+    'governance': ['governance', 'policy', 'regulation'],
+    'ethics': ['ethics', 'ethical', 'moral'],
+}
+
+def assign_tags_from_text(title: str, abstract: str) -> List[str]:
+    """Assign relevant AI safety tags based on title and abstract content"""
+    text = (title + ' ' + abstract).lower()
+    assigned_tags = []
+    
+    for tag, keywords in TAG_KEYWORDS.items():
+        for keyword in keywords:
+            if keyword.lower() in text:
+                assigned_tags.append(tag)
+                break
+    
+    return assigned_tags[:5]  # Limit to 5 most relevant tags
+
 class SearchService:
     
     @staticmethod
@@ -170,6 +212,8 @@ class SearchService:
         if 'scholar' in sources:
             scholar_results = SearchService.search_google_scholar(query)
             for result in scholar_results:
+                # Auto-assign tags based on content
+                auto_tags = assign_tags_from_text(result['title'], result['abstract'])
                 paper = Paper(
                     id=0,
                     title=result['title'],
@@ -182,7 +226,7 @@ class SearchService:
                     pdf_path=None,
                     pdf_text=None,
                     asip_funded=False,
-                    tags=[],
+                    tags=auto_tags,
                     citation_count=result['citation_count'],
                     added_by=None,
                     created_at='',
@@ -197,6 +241,8 @@ class SearchService:
             arxiv_results = SearchService.search_arxiv(query)
             print(f"✅ arXiv returned {len(arxiv_results)} results")
             for result in arxiv_results:
+                # Auto-assign tags based on content
+                auto_tags = assign_tags_from_text(result['title'], result['abstract'])
                 paper = Paper(
                     id=0,
                     title=result['title'],
@@ -209,7 +255,7 @@ class SearchService:
                     pdf_path=None,
                     pdf_text=None,
                     asip_funded=False,
-                    tags=[],
+                    tags=auto_tags,
                     citation_count=0,
                     added_by=None,
                     created_at='',
@@ -222,6 +268,8 @@ class SearchService:
         if 'crossref' in sources:
             crossref_results = SearchService.search_crossref(query)
             for result in crossref_results:
+                # Auto-assign tags based on content
+                auto_tags = assign_tags_from_text(result['title'], result['abstract'])
                 paper = Paper(
                     id=0,
                     title=result['title'],
@@ -234,7 +282,7 @@ class SearchService:
                     pdf_path=None,
                     pdf_text=None,
                     asip_funded=False,
-                    tags=[],
+                    tags=auto_tags,
                     citation_count=0,
                     added_by=None,
                     created_at='',
@@ -249,6 +297,8 @@ class SearchService:
             semantic_results = SearchService.search_semantic_scholar(query)
             print(f"✅ Semantic Scholar returned {len(semantic_results)} results")
             for result in semantic_results:
+                # Auto-assign tags based on content
+                auto_tags = assign_tags_from_text(result['title'], result['abstract'])
                 paper = Paper(
                     id=0,
                     title=result['title'],
@@ -261,7 +311,7 @@ class SearchService:
                     pdf_path=None,
                     pdf_text=None,
                     asip_funded=False,
-                    tags=[],
+                    tags=auto_tags,
                     citation_count=result.get('citation_count', 0),
                     added_by=None,
                     created_at='',

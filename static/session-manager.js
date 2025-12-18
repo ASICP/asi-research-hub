@@ -122,6 +122,15 @@ function forceLogout() {
 
 // Track user activity
 function setupActivityListeners() {
+    // Only run session timeout for logged-in users
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        console.log('Session manager: No auth token, skipping timeout setup');
+        return;
+    }
+    
+    console.log('Session manager: Starting inactivity timers');
+    
     const events = ['mousedown', 'keydown', 'scroll', 'click', 'touchstart'];
     
     events.forEach(event => {
@@ -132,10 +141,7 @@ function setupActivityListeners() {
     resetInactivityTimer();
 }
 
-// Initialize when page loads
-window.addEventListener('DOMContentLoaded', setupActivityListeners);
-
-// Also setup if script loads after DOM is ready
+// Initialize when DOM is ready (only once)
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', setupActivityListeners);
 } else {

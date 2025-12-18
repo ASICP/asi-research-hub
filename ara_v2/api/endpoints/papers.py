@@ -136,11 +136,45 @@ def search():
                 except Exception as e:
                     current_app.logger.error(f"Internal database search error: {e}")
 
+            # Helper function to auto-assign tags based on content
+            def assign_tags_from_text(title, abstract):
+                """Assign relevant AI safety tags based on title and abstract content"""
+                TAG_KEYWORDS = {
+                    'alignment': ['alignment', 'aligned', 'aligning'],
+                    'AI_safety': ['safety', 'safe', 'safer', 'safeguard'],
+                    'AI_risks': ['risk', 'risks', 'danger', 'dangerous', 'threat'],
+                    'interpretability': ['interpretability', 'interpretable', 'explainability', 'explainable', 'xai'],
+                    'reward_hacking': ['reward hacking', 'reward gaming', 'reward manipulation'],
+                    'robustness': ['robust', 'robustness', 'adversarial'],
+                    'value_alignment': ['value alignment', 'human values', 'value learning'],
+                    'training': ['training', 'train', 'fine-tuning', 'fine tuning', 'finetuning'],
+                    'RLHF': ['rlhf', 'reinforcement learning from human feedback', 'human feedback'],
+                    'deception': ['deception', 'deceptive', 'lying', 'dishonest'],
+                    'language_models': ['language model', 'llm', 'gpt', 'transformer', 'large language'],
+                    'neural_networks': ['neural network', 'deep learning', 'deep neural'],
+                    'machine_learning': ['machine learning'],
+                    'AGI': ['agi', 'artificial general intelligence', 'general intelligence'],
+                    'superintelligence': ['superintelligence', 'superintelligent'],
+                    'governance': ['governance', 'policy', 'regulation'],
+                    'ethics': ['ethics', 'ethical', 'moral'],
+                }
+                text = ((title or '') + ' ' + (abstract or '')).lower()
+                assigned = []
+                for tag, keywords in TAG_KEYWORDS.items():
+                    for keyword in keywords:
+                        if keyword.lower() in text:
+                            assigned.append(tag)
+                            break
+                return assigned[:5]
+
             if 'semantic_scholar' in sources:
                 try:
                     s2_result = ingestion_service.s2_connector.search_papers(
                         query, limit=max_results
                     )
+                    for paper in s2_result['papers']:
+                        if not paper.get('tags'):
+                            paper['tags'] = assign_tags_from_text(paper.get('title', ''), paper.get('abstract', ''))
                     all_papers.extend(s2_result['papers'])
                 except Exception as e:
                     current_app.logger.error(f"Semantic Scholar search error: {e}")
@@ -150,6 +184,9 @@ def search():
                     arxiv_result = ingestion_service.arxiv_connector.search_papers(
                         query, max_results=max_results
                     )
+                    for paper in arxiv_result['papers']:
+                        if not paper.get('tags'):
+                            paper['tags'] = assign_tags_from_text(paper.get('title', ''), paper.get('abstract', ''))
                     all_papers.extend(arxiv_result['papers'])
                 except Exception as e:
                     current_app.logger.error(f"ArXiv search error: {e}")
@@ -159,6 +196,9 @@ def search():
                     crossref_result = ingestion_service.crossref_connector.search_papers(
                         query, rows=max_results
                     )
+                    for paper in crossref_result['papers']:
+                        if not paper.get('tags'):
+                            paper['tags'] = assign_tags_from_text(paper.get('title', ''), paper.get('abstract', ''))
                     all_papers.extend(crossref_result['papers'])
                 except Exception as e:
                     current_app.logger.error(f"CrossRef search error: {e}")
@@ -183,15 +223,18 @@ def search():
                                 if year == 'N/A':
                                     year = 2024
                                 
+                                title = bib.get('title', 'N/A')
+                                abstract = bib.get('abstract', '')[:500] if bib.get('abstract') else ''
+                                
                                 results.append({
-                                    'title': bib.get('title', 'N/A'),
+                                    'title': title,
                                     'authors': ', '.join(bib.get('author', [])) if bib.get('author') else 'Unknown',
-                                    'abstract': bib.get('abstract', '')[:500] if bib.get('abstract') else '',
+                                    'abstract': abstract,
                                     'year': year,
                                     'source': 'google_scholar',
                                     'url': pub.get('pub_url', ''),
                                     'citation_count': pub.get('num_citations', 0),
-                                    'tags': []
+                                    'tags': assign_tags_from_text(title, abstract)
                                 })
                                 count += 1
                             except Exception as pub_error:
