@@ -10,6 +10,35 @@ from datetime import datetime
 from flask import current_app
 import os
 
+# Tag keywords mapping for auto-assignment
+TAG_KEYWORDS = {
+    'alignment': ['alignment', 'aligned', 'aligning'],
+    'AI_safety': ['safety', 'safe', 'safer', 'safeguard'],
+    'AI_risks': ['risk', 'risks', 'danger', 'dangerous', 'threat'],
+    'interpretability': ['interpretability', 'interpretable', 'explainability', 'explainable', 'xai'],
+    'reward_hacking': ['reward hacking', 'reward gaming', 'reward manipulation'],
+    'robustness': ['robust', 'robustness', 'adversarial'],
+    'value_alignment': ['value alignment', 'human values', 'value learning'],
+    'corrigibility': ['corrigibility', 'corrigible', 'shutdown'],
+    'mesa_optimization': ['mesa-optimization', 'mesa optimization', 'inner alignment'],
+    'outer_alignment': ['outer alignment'],
+    'training': ['training', 'train', 'fine-tuning', 'fine tuning', 'finetuning'],
+    'RLHF': ['rlhf', 'reinforcement learning from human feedback', 'human feedback'],
+    'constitutional_AI': ['constitutional ai', 'constitutional'],
+    'deception': ['deception', 'deceptive', 'lying', 'dishonest'],
+    'goal_misgeneralization': ['goal misgeneralization', 'distributional shift'],
+    'scalable_oversight': ['scalable oversight', 'oversight'],
+    'red_teaming': ['red team', 'red-team', 'adversarial testing'],
+    'language_models': ['language model', 'llm', 'gpt', 'transformer', 'large language'],
+    'neural_networks': ['neural network', 'deep learning', 'deep neural'],
+    'machine_learning': ['machine learning', 'ml'],
+    'AGI': ['agi', 'artificial general intelligence', 'general intelligence'],
+    'superintelligence': ['superintelligence', 'superintelligent', 'super-intelligence'],
+    'existential_risk': ['existential risk', 'x-risk', 'extinction'],
+    'governance': ['governance', 'policy', 'regulation'],
+    'ethics': ['ethics', 'ethical', 'moral'],
+}
+
 
 class SerpapiConnector:
     """
@@ -133,16 +162,24 @@ class SerpapiConnector:
         if 'doi.org' in link:
             doi = link.split('doi.org/')[-1] if 'doi.org/' in link else None
 
+        # Extract title and abstract for tag assignment
+        title = result.get('title', '')
+        abstract = result.get('snippet', '')
+        
+        # Assign tags based on content
+        tags = self._assign_tags(title, abstract)
+
         return {
-            'title': result.get('title', ''),
+            'title': title,
             'authors': self._extract_authors(result.get('publication_info', {})),
-            'abstract': result.get('snippet', ''),
+            'abstract': abstract,
             'year': year,
             'url': link,
             'source': 'google_scholar',
             'arxiv_id': arxiv_id,
             'doi': doi,
             'citations': result.get('inline_links', {}).get('cited_by', {}).get('total', 0),
+            'tags': tags,
         }
 
     @staticmethod
@@ -164,3 +201,26 @@ class SerpapiConnector:
             return authors_part
         
         return ''
+    
+    @staticmethod
+    def _assign_tags(title: str, abstract: str) -> List[str]:
+        """
+        Assign relevant AI safety tags based on title and abstract content.
+        
+        Args:
+            title: Paper title
+            abstract: Paper abstract/snippet
+        
+        Returns:
+            list: List of assigned tags
+        """
+        text = (title + ' ' + abstract).lower()
+        assigned_tags = []
+        
+        for tag, keywords in TAG_KEYWORDS.items():
+            for keyword in keywords:
+                if keyword.lower() in text:
+                    assigned_tags.append(tag)
+                    break
+        
+        return assigned_tags[:10]  # Limit to 10 most relevant tags
