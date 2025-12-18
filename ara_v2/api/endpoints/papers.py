@@ -5,7 +5,8 @@ Handles paper search, retrieval, and management.
 
 from flask import Blueprint, request, jsonify, current_app
 from ara_v2.models.paper import Paper
-from ara_v2.models.tag import Tag, PaperTag
+from ara_v2.models.tag import Tag
+from ara_v2.models.paper_tag import PaperTag
 from ara_v2.models.citation import Citation
 from ara_v2.middleware.auth import require_auth, optional_auth, get_current_user
 from ara_v2.utils.database import db

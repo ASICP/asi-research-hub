@@ -9,7 +9,8 @@ from flask import current_app
 from sqlalchemy.exc import IntegrityError
 
 from ara_v2.models.paper import Paper
-from ara_v2.models.tag import Tag, PaperTag
+from ara_v2.models.tag import Tag
+from ara_v2.models.paper_tag import PaperTag
 from ara_v2.models.citation import Citation
 from ara_v2.utils.database import db
 from ara_v2.services.connectors.semantic_scholar import SemanticScholarConnector

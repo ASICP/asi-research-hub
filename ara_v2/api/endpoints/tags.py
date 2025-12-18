@@ -4,7 +4,8 @@ Handles tag retrieval and statistics.
 """
 
 from flask import Blueprint, request, jsonify, current_app
-from ara_v2.models.tag import Tag, PaperTag, TagCombo
+from ara_v2.models.tag import Tag, TagCombo
+from ara_v2.models.paper_tag import PaperTag
 from ara_v2.models.paper import Paper
 from ara_v2.middleware.auth import optional_auth
 from ara_v2.utils.database import db
