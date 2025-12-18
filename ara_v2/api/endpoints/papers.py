@@ -42,6 +42,9 @@ def search():
         }
     """
     try:
+        import time
+        start_time = time.time()
+        
         data = request.get_json()
 
         if not data:
@@ -91,6 +94,7 @@ def search():
             if 'internal' in sources:
                 try:
                     from sqlalchemy import text
+                    import json as json_lib
                     search_pattern = f'%{query}%'
                     
                     # Direct SQL query to avoid model/schema mismatch
@@ -104,6 +108,16 @@ def search():
                     """), {'pattern': search_pattern, 'limit': max_results})
                     
                     for row in result:
+                        # Parse tags if stored as JSON string
+                        tags = row.tags
+                        if isinstance(tags, str):
+                            try:
+                                tags = json_lib.loads(tags)
+                            except:
+                                tags = []
+                        elif not tags:
+                            tags = []
+                            
                         all_papers.append({
                             'id': row.id,
                             'title': row.title,
@@ -115,7 +129,7 @@ def search():
                             'doi': row.doi,
                             'pdf_url': row.pdf_path,
                             'asip_funded': row.asip_funded,
-                            'tags': row.tags if row.tags else [],
+                            'tags': tags,
                             'created_at': row.created_at.isoformat() if row.created_at else None
                         })
                 except Exception as e:
@@ -148,11 +162,60 @@ def search():
                 except Exception as e:
                     current_app.logger.error(f"CrossRef search error: {e}")
 
+            if 'google_scholar' in sources:
+                try:
+                    from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
+                    from scholarly import scholarly
+                    
+                    def fetch_google_scholar():
+                        results = []
+                        search_query = scholarly.search_pubs(query)
+                        count = 0
+                        
+                        for pub in search_query:
+                            if count >= max_results:
+                                break
+                            
+                            try:
+                                bib = pub.get('bib', {})
+                                year = bib.get('pub_year', 'N/A')
+                                if year == 'N/A':
+                                    year = 2024
+                                
+                                results.append({
+                                    'title': bib.get('title', 'N/A'),
+                                    'authors': ', '.join(bib.get('author', [])) if bib.get('author') else 'Unknown',
+                                    'abstract': bib.get('abstract', '')[:500] if bib.get('abstract') else '',
+                                    'year': year,
+                                    'source': 'google_scholar',
+                                    'url': pub.get('pub_url', ''),
+                                    'citation_count': pub.get('num_citations', 0),
+                                    'tags': []
+                                })
+                                count += 1
+                            except Exception as pub_error:
+                                continue
+                        return results
+                    
+                    with ThreadPoolExecutor(max_workers=1) as executor:
+                        future = executor.submit(fetch_google_scholar)
+                        try:
+                            gs_results = future.result(timeout=10)
+                            all_papers.extend(gs_results)
+                        except FuturesTimeoutError:
+                            current_app.logger.warning(f"Google Scholar search timed out for query: {query}")
+                except Exception as e:
+                    current_app.logger.error(f"Google Scholar search error: {e}")
+
             # Deduplicate
             deduplicated = ingestion_service._deduplicate_papers(all_papers)
+            
+            execution_time = round(time.time() - start_time, 2)
 
             return jsonify({
                 'total_fetched': len(deduplicated),
+                'total_count': len(deduplicated),
+                'execution_time': execution_time,
                 'papers': deduplicated
             }), 200
 
