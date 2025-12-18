@@ -208,32 +208,13 @@ class SearchService:
             all_papers.extend(internal_results)
             sources_used.append('internal')
         
-        # Search Google Scholar
-        if 'scholar' in sources:
-            scholar_results = SearchService.search_google_scholar(query)
-            for result in scholar_results:
-                # Auto-assign tags based on content
-                auto_tags = assign_tags_from_text(result['title'], result['abstract'])
-                paper = Paper(
-                    id=0,
-                    title=result['title'],
-                    authors=result['authors'],
-                    abstract=result['abstract'],
-                    year=result['year'],
-                    source='Google Scholar',
-                    arxiv_id=None,
-                    doi=None,
-                    pdf_path=None,
-                    pdf_text=None,
-                    asip_funded=False,
-                    tags=auto_tags,
-                    citation_count=result['citation_count'],
-                    added_by=None,
-                    created_at='',
-                    url=result.get('url', '')
-                )
-                all_papers.append(paper)
-            sources_used.append('Google Scholar')
+        # Google Scholar disabled - access blocked by Google
+        # if 'scholar' in sources:
+        #     scholar_results = SearchService.search_google_scholar(query)
+        #     for result in scholar_results:
+        #         paper = Paper(...)
+        #         all_papers.append(paper)
+        #     sources_used.append('Google Scholar')
         
         # Search arXiv
         if 'arxiv' in sources:

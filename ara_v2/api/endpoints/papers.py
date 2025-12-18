@@ -203,50 +203,12 @@ def search():
                 except Exception as e:
                     current_app.logger.error(f"CrossRef search error: {e}")
 
-            if 'google_scholar' in sources:
-                try:
-                    from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
-                    from scholarly import scholarly
-                    
-                    def fetch_google_scholar():
-                        results = []
-                        search_query = scholarly.search_pubs(query)
-                        count = 0
-                        
-                        for pub in search_query:
-                            if count >= max_results:
-                                break
-                            
-                            try:
-                                bib = pub.get('bib', {})
-                                year = bib.get('pub_year', 'N/A')
-                                if year == 'N/A':
-                                    year = 2024
-                                
-                                results.append({
-                                    'title': bib.get('title', 'N/A'),
-                                    'authors': ', '.join(bib.get('author', [])) if bib.get('author') else 'Unknown',
-                                    'abstract': bib.get('abstract', '')[:500] if bib.get('abstract') else '',
-                                    'year': year,
-                                    'source': 'google_scholar',
-                                    'url': pub.get('pub_url', ''),
-                                    'citation_count': pub.get('num_citations', 0),
-                                    'tags': []
-                                })
-                                count += 1
-                            except Exception as pub_error:
-                                continue
-                        return results
-                    
-                    with ThreadPoolExecutor(max_workers=1) as executor:
-                        future = executor.submit(fetch_google_scholar)
-                        try:
-                            gs_results = future.result(timeout=10)
-                            all_papers.extend(gs_results)
-                        except FuturesTimeoutError:
-                            current_app.logger.warning(f"Google Scholar search timed out for query: {query}")
-                except Exception as e:
-                    current_app.logger.error(f"Google Scholar search error: {e}")
+            # Google Scholar disabled - access blocked by Google
+            # if 'google_scholar' in sources:
+            #     try:
+            #         ...
+            #     except Exception as e:
+            #         current_app.logger.error(f"Google Scholar search error: {e}")
 
             # Deduplicate
             deduplicated = ingestion_service._deduplicate_papers(all_papers)
