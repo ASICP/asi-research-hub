@@ -77,7 +77,7 @@ class Config:
     LOG_FILE = os.getenv('LOG_FILE', 'logs/ara_v2.log')
 
     # CORS
-    CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:3000').split(',')
+    CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:3000,http://localhost:5000,https://hubt1.asi2.org,https://asi2.org').split(',')
 
     # Monitoring
     ENABLE_PROMETHEUS_METRICS = os.getenv('ENABLE_PROMETHEUS_METRICS', 'true').lower() == 'true'

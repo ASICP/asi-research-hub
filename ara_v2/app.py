@@ -84,12 +84,12 @@ def init_extensions(app):
             'script-src': ["'self'", "'unsafe-inline'", "https://d3js.org"],
             'style-src': ["'self'", "'unsafe-inline'"],
             'img-src': ["'self'", "data:", "https:"],
-            'connect-src': ["'self'"],
+            'connect-src': ["'self'", "https://hubt1.asi2.org"],
         }
 
         Talisman(
             app,
-            force_https=True,
+            force_https=False,  # Cloud Run handles HTTPS
             strict_transport_security=True,
             content_security_policy=csp,
             content_security_policy_nonce_in=['script-src']

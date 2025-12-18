@@ -4,6 +4,7 @@ Handles password hashing, verification, and validation.
 """
 
 from werkzeug.security import generate_password_hash, check_password_hash
+import bcrypt
 import re
 
 
@@ -60,6 +61,7 @@ def hash_password(password: str) -> str:
 def verify_password(password_hash: str, password: str) -> bool:
     """
     Verify password against hash.
+    Supports both bcrypt and werkzeug scrypt hashes.
 
     Args:
         password_hash: Stored password hash
@@ -68,6 +70,17 @@ def verify_password(password_hash: str, password: str) -> bool:
     Returns:
         bool: True if password matches
     """
+    # Check if it's a bcrypt hash (starts with $2a$, $2b$, or $2y$)
+    if password_hash.startswith(('$2a$', '$2b$', '$2y$')):
+        try:
+            return bcrypt.checkpw(
+                password.encode('utf-8'),
+                password_hash.encode('utf-8')
+            )
+        except Exception:
+            return False
+    
+    # Otherwise use werkzeug's check
     return check_password_hash(password_hash, password)
 
 
