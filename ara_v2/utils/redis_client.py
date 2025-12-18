@@ -1,10 +1,17 @@
 """
 Redis client utilities for ARA v2.
 Manages Redis connection for caching, rate limiting, and session storage.
+Optional - gracefully degrades if Redis is unavailable.
 """
 
-import redis
+import os
 from urllib.parse import urlparse
+
+try:
+    import redis
+    REDIS_AVAILABLE = True
+except ImportError:
+    REDIS_AVAILABLE = False
 
 
 # Global Redis client
@@ -13,18 +20,22 @@ redis_client = None
 
 def init_redis(app):
     """
-    Initialize Redis client.
+    Initialize Redis client (optional).
 
     Args:
         app: Flask application instance
     """
     global redis_client
 
-    redis_url = app.config.get('REDIS_URL')
+    if not REDIS_AVAILABLE:
+        app.logger.warning("Redis package not installed, Redis features disabled")
+        return
+
+    redis_url = app.config.get('REDIS_URL') or os.getenv('REDIS_URL')
 
     if not redis_url:
-        app.logger.warning("REDIS_URL not configured, Redis features disabled")
-        return
+        # Try localhost as fallback (development)
+        redis_url = "redis://localhost:6379/0"
 
     try:
         # Parse Redis URL
@@ -37,23 +48,23 @@ def init_redis(app):
             db=int(url.path[1:]) if url.path and len(url.path) > 1 else 0,
             password=url.password,
             decode_responses=True,  # Automatically decode bytes to strings
-            socket_connect_timeout=5,
-            socket_timeout=5
+            socket_connect_timeout=2,  # Short timeout
+            socket_timeout=2
         )
 
         # Test connection
         redis_client.ping()
 
-        app.logger.info("Redis initialized successfully")
+        app.logger.info(f"Redis initialized successfully at {url.hostname}:{url.port}")
 
     except redis.ConnectionError as e:
-        app.logger.error(f"Failed to connect to Redis: {e}")
+        app.logger.warning(f"Redis not available: {e}. Continuing without Redis.")
         redis_client = None
     except Exception as e:
-        app.logger.error(f"Redis initialization error: {e}")
+        app.logger.warning(f"Redis initialization failed: {e}. Continuing without Redis.")
         redis_client = None
 
 
 def get_redis():
-    """Get Redis client instance."""
+    """Get Redis client instance (may be None if Redis unavailable)."""
     return redis_client
