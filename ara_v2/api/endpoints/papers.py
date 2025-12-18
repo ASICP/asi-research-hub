@@ -87,6 +87,40 @@ def search():
             # Search only (don't save to database)
             all_papers = []
 
+            # Search internal database
+            if 'internal' in sources:
+                try:
+                    from sqlalchemy import text
+                    search_pattern = f'%{query}%'
+                    
+                    # Direct SQL query to avoid model/schema mismatch
+                    result = db.session.execute(text("""
+                        SELECT id, title, authors, abstract, year, source, arxiv_id, doi, 
+                               pdf_path, asip_funded, tags, created_at
+                        FROM papers 
+                        WHERE (title ILIKE :pattern OR abstract ILIKE :pattern OR authors ILIKE :pattern)
+                        ORDER BY created_at DESC
+                        LIMIT :limit
+                    """), {'pattern': search_pattern, 'limit': max_results})
+                    
+                    for row in result:
+                        all_papers.append({
+                            'id': row.id,
+                            'title': row.title,
+                            'authors': row.authors,
+                            'abstract': row.abstract,
+                            'year': row.year,
+                            'source': row.source or 'internal',
+                            'arxiv_id': row.arxiv_id,
+                            'doi': row.doi,
+                            'pdf_url': row.pdf_path,
+                            'asip_funded': row.asip_funded,
+                            'tags': row.tags if row.tags else [],
+                            'created_at': row.created_at.isoformat() if row.created_at else None
+                        })
+                except Exception as e:
+                    current_app.logger.error(f"Internal database search error: {e}")
+
             if 'semantic_scholar' in sources:
                 try:
                     s2_result = ingestion_service.s2_connector.search_papers(
