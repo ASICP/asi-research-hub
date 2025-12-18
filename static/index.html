@@ -420,7 +420,7 @@
                 if (document.getElementById('source-internal').checked) sources.push('internal');
                 if (document.getElementById('source-scholar').checked) sources.push('scholar');
 
-                const response = await fetch(`${API_URL}/search`, {
+                const response = await fetch(`${API_URL}/papers/search`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

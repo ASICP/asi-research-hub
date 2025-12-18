@@ -681,7 +681,7 @@
             showLoading();
 
             try {
-                const response = await fetch(`${API_URL}/search`, {
+                const response = await fetch(`${API_URL}/papers/search`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -862,7 +862,7 @@
             container.innerHTML = '<div class="no-references">Loading related papers...</div>';
 
             try {
-                const response = await fetch(`${API_URL}/search`, {
+                const response = await fetch(`${API_URL}/papers/search`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -952,7 +952,7 @@
             container.innerHTML = '<div class="no-references">Loading papers with tag: ' + tag + '...</div>';
 
             try {
-                const response = await fetch(`${API_URL}/search`, {
+                const response = await fetch(`${API_URL}/papers/search`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
