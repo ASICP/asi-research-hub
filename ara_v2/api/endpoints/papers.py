@@ -98,11 +98,12 @@ def search():
                     search_pattern = f'%{query}%'
                     
                     # Direct SQL query to avoid model/schema mismatch
+                    # Also search in tags field (stored as JSON array)
                     result = db.session.execute(text("""
                         SELECT id, title, authors, abstract, year, source, arxiv_id, doi, 
                                pdf_path, asip_funded, tags, created_at
                         FROM papers 
-                        WHERE (title ILIKE :pattern OR abstract ILIKE :pattern OR authors ILIKE :pattern)
+                        WHERE (title ILIKE :pattern OR abstract ILIKE :pattern OR authors ILIKE :pattern OR tags::text ILIKE :pattern)
                         ORDER BY created_at DESC
                         LIMIT :limit
                     """), {'pattern': search_pattern, 'limit': max_results})
