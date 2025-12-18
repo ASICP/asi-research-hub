@@ -11,24 +11,16 @@ from flask_limiter.util import get_remote_address
 def get_limiter_storage_uri():
     """
     Get storage URI for rate limiter.
+    
+    Uses in-memory storage for Cloud Run compatibility.
+    Cloud Run is stateless and cannot run Redis as a background process.
 
     Returns:
-        str: Redis URI if available, otherwise memory://
+        str: memory:// for stateless Cloud Run deployments
     """
-    redis_url = os.getenv('REDIS_URL')
-
-    if redis_url:
-        return redis_url
-
-    # Try localhost Redis (development)
-    try:
-        import redis
-        r = redis.Redis(host='localhost', port=6379, socket_connect_timeout=1)
-        r.ping()
-        return "redis://localhost:6379/0"
-    except:
-        # Fallback to memory (works in single-instance deployments)
-        return "memory://"
+    # Always use in-memory storage for Cloud Run compatibility
+    # Redis requires a persistent background process which Cloud Run doesn't support
+    return "memory://"
 
 
 # Initialize Flask-Limiter with automatic storage detection

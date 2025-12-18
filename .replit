@@ -41,10 +41,6 @@ author = "agent"
 task = "workflow.run"
 args = "ASI Research Hub"
 
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Redis Server"
-
 [[workflows.workflow]]
 name = "ASI Research Hub"
 author = "agent"
@@ -57,20 +53,7 @@ waitForPort = 5000
 [workflows.workflow.metadata]
 outputType = "webview"
 
-[[workflows.workflow]]
-name = "Redis Server"
-author = "agent"
-
-[workflows.workflow.metadata]
-outputType = "console"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "redis-server --bind 127.0.0.1 --port 6000"
-
 [userenv]
 
 [userenv.shared]
 FRONTEND_URL = "https://hubt1.asi2.org"
-REDIS_URL = "redis://127.0.0.1:6000/0"
-RATELIMIT_STORAGE_URL = "redis://127.0.0.1:6000/0"
