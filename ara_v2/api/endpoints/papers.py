@@ -342,69 +342,52 @@ def get_paper(paper_id):
             "authors": List[str],
             "year": int,
             "tags": List[dict],
-            "citations": List[dict],
-            "references": List[dict],
             ...
         }
     """
     try:
-        paper = Paper.query.filter_by(id=paper_id, deleted_at=None).first()
-
-        if not paper:
+        from sqlalchemy import text
+        import json as json_lib
+        
+        # Direct SQL query to avoid model/schema mismatch
+        result = db.session.execute(text("""
+            SELECT id, title, authors, abstract, year, source, arxiv_id, doi, 
+                   pdf_path, asip_funded, tags, citation_count, created_at
+            FROM papers 
+            WHERE id = :paper_id
+            LIMIT 1
+        """), {'paper_id': paper_id})
+        
+        row = result.fetchone()
+        
+        if not row:
             raise NotFoundError(f'Paper {paper_id} not found')
 
-        # Get paper data
-        paper_data = paper.to_dict()
+        # Parse tags if stored as JSON string
+        tags = row.tags
+        if isinstance(tags, str):
+            try:
+                tags = json_lib.loads(tags)
+            except:
+                tags = []
+        elif not tags:
+            tags = []
 
-        # Get tags with confidence scores
-        paper_tags = db.session.query(PaperTag, Tag).join(Tag).filter(
-            PaperTag.paper_id == paper_id
-        ).all()
-
-        paper_data['tags'] = [
-            {
-                'name': tag.name,
-                'slug': tag.slug,
-                'confidence': paper_tag.confidence
-            }
-            for paper_tag, tag in paper_tags
-        ]
-
-        # Get citation count and sample citations
-        citations = db.session.query(Citation, Paper).join(
-            Paper, Citation.citing_paper_id == Paper.id
-        ).filter(
-            Citation.cited_paper_id == paper_id,
-            Paper.deleted_at == None
-        ).limit(10).all()
-
-        paper_data['cited_by'] = [
-            {
-                'id': citing_paper.id,
-                'title': citing_paper.title,
-                'year': citing_paper.year,
-                'authors': citing_paper.authors
-            }
-            for _, citing_paper in citations
-        ]
-
-        # Get references (papers this paper cites)
-        references = db.session.query(Citation, Paper).join(
-            Paper, Citation.cited_paper_id == Paper.id
-        ).filter(
-            Citation.citing_paper_id == paper_id,
-            Paper.deleted_at == None
-        ).limit(10).all()
-
-        paper_data['references'] = [
-            {
-                'id': cited_paper.id,
-                'title': cited_paper.title,
-                'year': cited_paper.year,
-                'authors': cited_paper.authors
-            }
-            for _, cited_paper in references
-        ]
+        paper_data = {
+            'id': row.id,
+            'title': row.title,
+            'authors': row.authors,
+            'abstract': row.abstract,
+            'year': row.year,
+            'source': row.source or 'internal',
+            'arxiv_id': row.arxiv_id,
+            'doi': row.doi,
+            'pdf_url': row.pdf_path,
+            'asip_funded': row.asip_funded,
+            'tags': tags,
+            'citation_count': row.citation_count,
+            'created_at': row.created_at.isoformat() if row.created_at else None
+        }
 
         return jsonify(paper_data), 200
 
