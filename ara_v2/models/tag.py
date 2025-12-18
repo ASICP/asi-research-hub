@@ -16,9 +16,14 @@ class Tag(db.Model):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(100), unique=True, nullable=False, index=True)
+    slug = Column(String(120), unique=True, index=True)
+    category = Column(String(50), index=True)
+    description = Column(String(500))
     frequency = Column(Integer, default=0, nullable=False)
+    paper_count = Column(Integer, default=0, nullable=False)
     first_seen = Column(DateTime)
     last_seen = Column(DateTime)
+    last_used = Column(DateTime)
     growth_rate = Column(DECIMAL(5, 4), default=0.0)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
@@ -33,9 +38,14 @@ class Tag(db.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'slug': self.slug,
+            'category': self.category,
+            'description': self.description,
             'frequency': self.frequency,
+            'paper_count': self.paper_count,
             'first_seen': self.first_seen.isoformat() if self.first_seen else None,
             'last_seen': self.last_seen.isoformat() if self.last_seen else None,
+            'last_used': self.last_used.isoformat() if self.last_used else None,
             'growth_rate': float(self.growth_rate) if self.growth_rate else 0.0,
             'created_at': self.created_at.isoformat() if self.created_at else None,
         }

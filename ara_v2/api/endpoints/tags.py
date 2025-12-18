@@ -132,9 +132,9 @@ def get_tag(tag_slug):
         # Get recent papers with this tag
         recent_papers = db.session.query(Paper).join(PaperTag).filter(
             PaperTag.tag_id == tag.id,
-            Paper.deleted_at == None
+            Paper.deleted_at.is_(None)
         ).order_by(
-            Paper.published_date.desc().nullslast()
+            Paper.created_at.desc().nullslast()
         ).limit(10).all()
 
         tag_data['recent_papers'] = [
@@ -143,7 +143,7 @@ def get_tag(tag_slug):
                 'title': paper.title,
                 'year': paper.year,
                 'authors': paper.authors,
-                'citation_count': paper.citation_count
+                'citation_score': float(paper.citation_score) if paper.citation_score else None
             }
             for paper in recent_papers
         ]
