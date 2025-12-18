@@ -16,6 +16,7 @@ from ara_v2.utils.database import db
 from ara_v2.services.connectors.semantic_scholar import SemanticScholarConnector
 from ara_v2.services.connectors.arxiv import ArxivConnector
 from ara_v2.services.connectors.crossref import CrossRefConnector
+from ara_v2.services.connectors.serpapi import SerpapiConnector
 from ara_v2.services.tag_assigner import TagAssigner
 from ara_v2.services.scoring.tag_scorer import TagScorer, update_tag_statistics
 from ara_v2.services.tag_combo_tracker import track_paper_tag_combinations
@@ -38,6 +39,7 @@ class PaperIngestionService:
         self.s2_connector = SemanticScholarConnector()
         self.arxiv_connector = ArxivConnector()
         self.crossref_connector = CrossRefConnector()
+        self.serpapi_connector = SerpapiConnector()
         self.tag_assigner = TagAssigner()
 
     def search_and_ingest(
@@ -65,7 +67,7 @@ class PaperIngestionService:
             }
         """
         if sources is None:
-            sources = ['semantic_scholar', 'arxiv', 'crossref']
+            sources = ['semantic_scholar', 'arxiv', 'crossref', 'google_scholar']
 
         all_papers_data = []
         fetch_stats = {}
@@ -81,6 +83,9 @@ class PaperIngestionService:
                     papers_data = result['papers']
                 elif source == 'crossref':
                     result = self.crossref_connector.search_papers(query, rows=max_results_per_source)
+                    papers_data = result['papers']
+                elif source == 'google_scholar':
+                    result = self.serpapi_connector.search_papers(query, max_results=max_results_per_source)
                     papers_data = result['papers']
                 else:
                     current_app.logger.warning(f"Unknown source: {source}")

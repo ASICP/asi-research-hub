@@ -10,7 +10,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes & TODO
 
-**Recent Updates (Dec 3, 2025)**:
+**Recent Updates (Dec 18, 2025)**:
+- ✅ **CRITICAL FIX**: Replaced Google Scholar scholarly library with SerpAPI integration
+- ✅ **CRITICAL FIX**: Fixed Google Scholar blocking issue by implementing SerpAPI connector
+- ✅ Created `ara_v2/services/connectors/serpapi.py` for SerpAPI integration
+- ✅ Updated `search.py` to use SerpAPI instead of scholarly library
+- ✅ Updated `paper_ingestion.py` to support google_scholar source via SerpAPI
+- ✅ Added SERPAPI_API_KEY to secrets management
+- ✅ All 5 search sources now fully functional (Internal Database, Google Scholar via SerpAPI, arXiv, CrossRef, Semantic Scholar)
+
+**Previous Updates (Dec 3, 2025)**:
 - ✅ **SECURITY**: Added verification token expiration (24-hour window) with automatic token regeneration
 - ✅ **SECURITY**: Email case normalization - all emails stored/queried as lowercase
 - ✅ **SECURITY**: Prevent email enumeration on registration - same message for all cases
@@ -41,9 +50,11 @@ Preferred communication style: Simple, everyday language.
 - ✅ Added reference links (arXiv/DOI/PDF) in Reference Papers sidebar
 
 **TODO - Next Phase**:
-- User to sign up for optional API keys on arXiv, CrossRef, Semantic Scholar for higher rate limits (currently works without)
-- Set up automatic Github push integration for version control backup
+- Test Google Scholar SerpAPI integration in production (hubt1.asi2.org)
+- Monitor SerpAPI monthly quota usage (100 free searches/month included)
+- Optional: Users can get their own SerpAPI keys for higher limits at https://serpapi.com
 - Deploy to hubt1.asi2.org and test all 5 search sources in production
+- Set up automatic Github push integration for version control backup
 
 ## System Architecture
 
@@ -56,7 +67,7 @@ The backend follows a modular service-oriented architecture:
 
 - **`app.py`**: Main application entry point containing all API route handlers. Implements CORS for WordPress embedding and handles request/response cycles.
 - **`auth.py`**: Authentication service handling user registration, login, password hashing (bcrypt), email verification tokens, and password reset flows.
-- **`search.py`**: Search service providing unified search across internal database (full-text SQLite FTS) and external sources (Google Scholar API).
+- **`search.py`**: Search service providing unified search across internal database (full-text SQLite FTS) and external sources (Google Scholar via SerpAPI, arXiv, CrossRef, Semantic Scholar).
 - **`models.py`**: Data models for User and Paper entities using Python dataclasses for type safety and serialization.
 - **`utils.py`**: Validation utilities for emails, passwords, file uploads, and text processing.
 
@@ -134,16 +145,20 @@ Three separate pages for different use cases:
 
 **Unified Search Interface**:
 - **Internal Database**: SQLite FTS5 searches across title, authors, abstract, full PDF text
-- **Google Scholar**: Free API integration via `scholarly` library with rate limiting
-- **Filters**: Tags, year range, ASIP-funded only, source selection
+- **Google Scholar**: Free API integration via SerpAPI connector (100 searches/month free, then $5 per 100)
+- **arXiv**: Real-time preprint database (especially strong for AI/ML papers)
+- **CrossRef**: 140+ million scholarly articles with DOI links
+- **Semantic Scholar**: Semantic search with citation counts
+- **Filters**: Tags, year range, ASIP-funded only, source selection (mutually exclusive radio buttons)
 
 **Design Decisions**:
-- Search service abstracts complexity from API layer
-- Results normalized to common `SearchResult` model regardless of source
-- Rate limiting prevents Google Scholar API abuse
-- PDF text extraction via PyPDF2 enables full-content search
+- Connector pattern allows pluggable integrations with different sources
+- All APIs are free with optional API keys for higher rate limits
+- Results normalized to common format regardless of source
+- Automatic tag assignment from keyword matching (alignment, AI_safety, training, etc.)
+- Deduplication prevents duplicate results across multiple sources
 
-**Why this approach**: Provides researchers with comprehensive coverage while keeping costs minimal (no paid API subscriptions required).
+**Why this approach**: Provides researchers with comprehensive coverage while keeping costs minimal (no expensive API subscriptions required). SerpAPI was chosen for Google Scholar to avoid rate limiting issues with the scholarly library.
 
 ### Email System
 
@@ -180,19 +195,25 @@ Three separate pages for different use cases:
    - Configuration: API key + verified sender email
    - Alternative: SMTP server (requires additional setup)
 
-2. **Google Scholar API** (via `scholarly` library)
-   - Purpose: External research paper search
-   - Cost: Free (rate-limited)
-   - Integration: Python library with exponential backoff
-   - Limitation: ~100 queries/hour recommended
+2. **SerpAPI Google Scholar Integration**
+   - Purpose: Google Scholar search via SerpAPI
+   - Cost: Free tier (100 searches/month), then $5 per 100 searches
+   - Configuration: API key in SERPAPI_API_KEY secret
+   - Advantage: Reliable API with better rate limiting than scholarly library
+   - Connector: `ara_v2/services/connectors/serpapi.py`
 
-3. **Replit Hosting** (recommended deployment)
+3. **arXiv, CrossRef, Semantic Scholar APIs**
+   - Purpose: Additional research paper sources
+   - Cost: All free with no API key requirement
+   - Connectors: Individual connector classes in `ara_v2/services/connectors/`
+
+4. **Replit Hosting** (recommended deployment)
    - Purpose: Always-on hosting
    - Cost: $20/month (Hacker plan)
    - Features: Auto-restart, environment secrets, custom domains
    - Alternative: DigitalOcean, Heroku, or any Python-capable host
 
-4. **Google reCAPTCHA v3** (configured but optional)
+5. **Google reCAPTCHA v3** (configured but optional)
    - Purpose: Bot protection on registration
    - Cost: Free
    - Configuration: Site key + secret key
@@ -210,7 +231,8 @@ Three separate pages for different use cases:
 
 **PDF & Search**:
 - `PyPDF2==3.0.1`: PDF text extraction
-- `scholarly==1.7.11`: Google Scholar integration
+- `feedparser`: ArXiv feed parsing
+- `requests`: HTTP requests for SerpAPI and other connectors
 
 **Email**:
 - `sendgrid==6.11.0`: Email delivery

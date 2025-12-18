@@ -2,8 +2,9 @@ import time
 import json
 import re
 import signal
+import os
+import requests
 from typing import List, Dict, Optional
-from scholarly import scholarly
 from database import get_db
 from psycopg2.extras import RealDictCursor
 from models import Paper, SearchResult
@@ -98,54 +99,78 @@ class SearchService:
     
     @staticmethod
     def search_google_scholar(query: str, max_results: int = 20) -> List[Dict]:
-        """Search Google Scholar (free API via scholarly)"""
+        """Search Google Scholar via SerpAPI"""
         results = []
         
         try:
-            # Set a 10-second timeout for Google Scholar API
-            signal.signal(signal.SIGALRM, timeout_handler)
-            signal.alarm(10)
+            api_key = os.getenv('SERPAPI_API_KEY')
+            if not api_key:
+                print("⚠️ SERPAPI_API_KEY not configured. Google Scholar search unavailable.")
+                return results
             
-            try:
-                search_query = scholarly.search_pubs(query)
-                count = 0
-                
-                for pub in search_query:
-                    if count >= max_results:
-                        break
-                    
-                    try:
-                        bib = pub.get('bib', {})
-                        
-                        # Extract year safely
-                        year = bib.get('pub_year', 'N/A')
-                        if year == 'N/A':
-                            year = 2024  # Default for display purposes
-                        
-                        results.append({
-                            'title': bib.get('title', 'N/A'),
-                            'authors': ', '.join(bib.get('author', [])) if bib.get('author') else 'Unknown',
-                            'abstract': bib.get('abstract', '')[:500] if bib.get('abstract') else '',
-                            'year': year,
-                            'source': 'Google Scholar',
-                            'url': pub.get('pub_url', ''),
-                            'citation_count': pub.get('num_citations', 0)
-                        })
-                        count += 1
-                    except Exception as pub_error:
-                        print(f"⚠️ Error parsing Google Scholar result: {pub_error}")
-                        continue
-                
-                signal.alarm(0)  # Cancel alarm
+            params = {
+                'q': query.strip(),
+                'engine': 'google_scholar',
+                'api_key': api_key,
+                'num': min(max_results, 20),
+                'hl': 'en',
+            }
+
+            response = requests.get(
+                'https://serpapi.com/search',
+                params=params,
+                timeout=15
+            )
+            response.raise_for_status()
+
+            data = response.json()
+
+            if data.get('error'):
+                print(f"⚠️ SerpAPI error: {data.get('error')}")
+                return results
+
+            # Extract organic results
+            organic_results = data.get('organic_results', [])
             
-            except TimeoutError:
-                signal.alarm(0)
-                print(f"⚠️ Google Scholar search timed out after 10 seconds for query: {query}")
-                print(f"   This may be due to Google Scholar rate limiting. Try again in a few moments.")
+            for result in organic_results:
+                try:
+                    # Parse publication date for year
+                    year = None
+                    pub_info = result.get('publication_info', {}).get('summary', '')
+                    if pub_info and ' - ' in pub_info:
+                        year_str = pub_info.split(' - ')[-1]
+                        try:
+                            year = int(year_str)
+                        except (ValueError, IndexError):
+                            year = 2024
+                    else:
+                        year = 2024
+
+                    # Extract authors from publication info
+                    authors = ''
+                    pub_info = result.get('publication_info', {}).get('summary', '')
+                    if pub_info and ' - ' in pub_info:
+                        authors = pub_info.split(' - ')[0].strip()
+
+                    results.append({
+                        'title': result.get('title', 'N/A'),
+                        'authors': authors if authors else 'Unknown',
+                        'abstract': result.get('snippet', '')[:500] if result.get('snippet') else '',
+                        'year': year,
+                        'source': 'Google Scholar',
+                        'url': result.get('link', ''),
+                        'citation_count': result.get('inline_links', {}).get('cited_by', {}).get('total', 0)
+                    })
+                except Exception as pub_error:
+                    print(f"⚠️ Error parsing Google Scholar result: {pub_error}")
+                    continue
                 
+        except requests.exceptions.Timeout:
+            print(f"⚠️ Google Scholar search timed out for query: {query}")
+        except requests.exceptions.RequestException as e:
+            print(f"⚠️ Google Scholar API error: {str(e)[:100]}")
         except Exception as e:
-            signal.alarm(0)
-            print(f"⚠️ Google Scholar API error: {type(e).__name__}: {str(e)[:100]}")
+            print(f"⚠️ Unexpected error in Google Scholar search: {str(e)[:100]}")
         
         return results
     
