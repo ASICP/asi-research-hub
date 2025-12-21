@@ -1030,10 +1030,15 @@
                     refLink = `<a href="https://doi.org/${ref.doi}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;">🔗 View Paper</a>`;
                 } else if (ref.pdf_url) {
                     refLink = `<a href="${ref.pdf_url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;">🔗 View Paper</a>`;
+                } else if (ref.url) {
+                    refLink = `<a href="${ref.url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;">🔗 View Paper</a>`;
                 }
                 
+                // Create proper paper key for clicking
+                const paperKey = ref.id ? `internal_${ref.id}` : `${ref.source}_${ref.source_id}`;
+                
                 html += `
-                    <div class="reference-item" onclick="viewPaperById(${ref.id})">
+                    <div class="reference-item" onclick="viewPaper('${paperKey.replace(/'/g, "\\'")}')">
                         <div class="reference-title">${ref.title}</div>
                         <div class="reference-meta">${ref.authors || 'Unknown'} • ${ref.year || 'N/A'}</div>
                         <div class="reference-snippet">${snippet}</div>
