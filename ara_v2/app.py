@@ -24,7 +24,9 @@ def create_app(config_name=None):
     Returns:
         Configured Flask application
     """
-    app = Flask(__name__)
+    import os
+    root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    app = Flask(__name__, static_folder=os.path.join(root_path, 'static'))
 
     # Load configuration
     if config_name:
