@@ -123,7 +123,7 @@ def search():
                     current_app.logger.error(f"CrossRef search error: {e}")
 
             if 'google_scholar' in sources:
-                # Google Scholar via SerpAPI with arXiv fallback on timeout
+                # Google Scholar via SerpAPI with arXiv fallback on any error
                 if not ingestion_service.serpapi_connector:
                     warnings.append({
                         'source': 'google_scholar',
@@ -140,35 +140,35 @@ def search():
                     except Exception as scholar_error:
                         error_msg = str(scholar_error).lower()
 
-                        # Check if it's a timeout error
-                        if 'timeout' in error_msg or 'timed out' in error_msg:
-                            current_app.logger.warning(f"⚠️ Google Scholar search timed out: {scholar_error}")
-                            current_app.logger.info(f"→ Falling back to arXiv for query: {query}")
+                        # Fall back to arXiv for any Google Scholar error
+                        current_app.logger.warning(f"⚠️ Google Scholar search failed: {scholar_error}")
+                        current_app.logger.info(f"→ Falling back to arXiv for query: {query}")
 
-                            try:
-                                # Fallback to arXiv
-                                arxiv_fallback_result = ingestion_service.arxiv_connector.search_papers(
-                                    query, max_results=max_results
-                                )
-                                all_papers.extend(arxiv_fallback_result['papers'])
-                                current_app.logger.info(f"✓ arXiv fallback returned {len(arxiv_fallback_result['papers'])} papers")
+                        try:
+                            # Fallback to arXiv
+                            arxiv_fallback_result = ingestion_service.arxiv_connector.search_papers(
+                                query, max_results=max_results
+                            )
+                            all_papers.extend(arxiv_fallback_result['papers'])
+                            current_app.logger.info(f"✓ arXiv fallback returned {len(arxiv_fallback_result['papers'])} papers")
 
-                                warnings.append({
-                                    'source': 'google_scholar',
-                                    'message': 'Google Scholar timed out - results from arXiv fallback'
-                                })
-                            except Exception as arxiv_error:
-                                current_app.logger.error(f"arXiv fallback also failed: {arxiv_error}")
-                                warnings.append({
-                                    'source': 'google_scholar',
-                                    'message': f'Google Scholar timed out and arXiv fallback failed: {str(arxiv_error)}'
-                                })
-                        else:
-                            # Not a timeout - log error
-                            current_app.logger.error(f"Google Scholar search failed: {scholar_error}")
+                            # Customize warning message based on error type
+                            if 'timeout' in error_msg or 'timed out' in error_msg:
+                                fallback_reason = 'Google Scholar timed out'
+                            elif 'not found' in error_msg:
+                                fallback_reason = 'Google Scholar returned no results'
+                            else:
+                                fallback_reason = 'Google Scholar unavailable'
+
                             warnings.append({
                                 'source': 'google_scholar',
-                                'message': f'Google Scholar search failed: {str(scholar_error)[:100]}'
+                                'message': f'{fallback_reason} - showing results from arXiv instead'
+                            })
+                        except Exception as arxiv_error:
+                            current_app.logger.error(f"arXiv fallback also failed: {arxiv_error}")
+                            warnings.append({
+                                'source': 'google_scholar',
+                                'message': f'Google Scholar failed and arXiv fallback also failed: {str(arxiv_error)}'
                             })
 
             # Deduplicate
