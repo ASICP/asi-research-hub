@@ -129,8 +129,12 @@ def search():
                         query, limit=max_results
                     )
                     papers_count = len(s2_result.get('papers', []))
-                    all_papers.extend(s2_result.get('papers', []))
-                    current_app.logger.info(f"✓ Semantic Scholar returned {papers_count} papers")
+                    ss_papers = s2_result.get('papers', [])
+                    all_papers.extend(ss_papers)
+                    if ss_papers:
+                        current_app.logger.info(f"✓ Semantic Scholar returned {papers_count} papers - First paper keys: {list(ss_papers[0].keys())}")
+                    else:
+                        current_app.logger.info(f"✓ Semantic Scholar returned {papers_count} papers")
                 except Exception as e:
                     error_msg = str(e).lower()
                     current_app.logger.error(f"Semantic Scholar search error (will check for timeout/rate limit): {e}")

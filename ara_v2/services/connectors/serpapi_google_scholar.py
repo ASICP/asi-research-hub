@@ -146,10 +146,13 @@ class SerpAPIGoogleScholarConnector:
             # Parse response
             papers = []
             organic_results = data.get('organic_results', [])
+            
+            current_app.logger.info(f"SerpAPI returned {len(organic_results)} results for query: {query}")
 
             for result in organic_results:
                 paper = self._parse_paper(result)
                 if paper:
+                    current_app.logger.info(f"Parsed paper - title: {paper.get('title', 'N/A')[:50]}... source_id: {paper.get('source_id', 'EMPTY')}")
                     papers.append(paper)
 
             # Estimate total results
@@ -219,13 +222,20 @@ class SerpAPIGoogleScholarConnector:
             # Extract tags from title/abstract
             tags = self._assign_tags(result.get('title', ''), result.get('snippet', ''))
             
+            # Use link as unique identifier if available, otherwise use title hash
+            source_id = result.get('link', '')
+            if not source_id:
+                # Fallback: use title as ID (will be URL-encoded by frontend)
+                import hashlib
+                source_id = hashlib.md5(result.get('title', 'unknown').encode()).hexdigest()[:16]
+            
             paper = {
                 'title': result.get('title', 'N/A'),
                 'authors': ', '.join(authors) if authors else 'Unknown',
                 'year': year if year else None,
                 'abstract': result.get('snippet', ''),
                 'source': 'google_scholar',
-                'source_id': result.get('result_id', ''),
+                'source_id': source_id,
                 'citation_count': citation_count,
                 'tags': tags,
             }
