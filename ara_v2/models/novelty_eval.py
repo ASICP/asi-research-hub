@@ -37,7 +37,7 @@ class NoveltyEval(db.Model):
     evaluated_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
 
     # Relationships
-    paper = relationship('Paper', back_populates='novelty_evaluations')
+    paper = relationship('Paper')
 
     # Constraints
     __table_args__ = (

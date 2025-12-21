@@ -1,0 +1,22 @@
+~/workspace$ # Connect to PostgreSQL and check schema                                                                                                                                
+  python -c "                                                                                                                                                             
+  from ara_v2.app import create_app                                                                                                                                       
+  from sqlalchemy import inspect                                                                                                                                          
+  app = create_app()                                                                                                                                                      
+  with app.app_context():                                                                                                                                                 
+      from ara_v2.utils.database import db                                                                                                                                
+      inspector = inspect(db.engine)                                                                                                                                      
+      columns = [col['name'] for col in inspector.get_columns('papers')]                                                                                                  
+      print('Actual database columns:', columns)                                                                                                                          
+                                                                                                                                                                          
+      from ara_v2.models.paper import Paper                                                                                                                               
+      model_cols = [c.name for c in Paper.__table__.columns]                                                                                                              
+      print('Model expects columns:', model_cols)                                                                                                                         
+                                                                                                                                                                          
+      missing = set(model_cols) - set(columns)                                                                                                                            
+      print('Missing columns:', missing)                                                                                                                                  
+  "
+  File "<string>", line 2
+    from ara_v2.app import create_app                                                                                                                                       
+IndentationError: unexpected indent
+~/workspace$ 

@@ -29,7 +29,7 @@ class UserActivity(db.Model):
 
     # Relationships
     user = relationship('User', back_populates='activities')
-    paper = relationship('Paper', back_populates='activities')
+    paper = relationship('Paper')
 
     # Constraints
     __table_args__ = (

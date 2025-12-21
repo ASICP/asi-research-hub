@@ -1,16 +1,15 @@
 """
 Paper model for ARA v2.
-Stores research papers with metadata and scores.
+Stores research papers with metadata matching the production database schema.
 """
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, CheckConstraint, DECIMAL, UniqueConstraint
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime
 from ara_v2.utils.database import db
 
 
 class Paper(db.Model):
-    """Research paper with metadata and Holmes scores."""
+    """Research paper with metadata from internal database."""
 
     __tablename__ = 'papers'
 
@@ -21,101 +20,50 @@ class Paper(db.Model):
     authors = Column(Text)
     abstract = Column(Text)
     year = Column(Integer)
+    source = Column(String(50), nullable=False, index=True)
 
-    # Source information
-    source = Column(
-        String(50),
-        nullable=False,
-        index=True
-    )
-    source_id = Column(String(255))
-    pdf_url = Column(Text)
+    # Identifiers
+    doi = Column(String(255))
+    arxiv_id = Column(String(100))
 
-    # Scores (NULL until calculated)
-    tag_score = Column(DECIMAL(5, 2))
-    citation_score = Column(DECIMAL(5, 2))
-    novelty_score = Column(DECIMAL(5, 2))
-    holmes_score = Column(DECIMAL(5, 2))
+    # Content storage
+    pdf_path = Column(String(255))
+    pdf_text = Column(Text)  # Full-text searchable PDF content
 
-    # Diamond flag (top 0-2% novelty)
-    is_diamond = Column(Boolean, default=False, index=True)
-
+    # Metadata
+    citation_count = Column(Integer, default=0)
+    asip_funded = Column(Boolean, default=False)
+    added_by = Column(String(255))
+    tags = Column(Text)  # JSON array of tag strings
+    
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    scored_at = Column(DateTime)
-    deleted_at = Column(DateTime)  # Soft delete support
-
-    # Relationships
-    tags = relationship('PaperTag', back_populates='paper', cascade='all, delete-orphan')
-    bookmarks = relationship('Bookmark', back_populates='paper', cascade='all, delete-orphan')
-    citations_as_citing = relationship(
-        'Citation',
-        foreign_keys='Citation.citing_paper_id',
-        back_populates='citing_paper',
-        cascade='all, delete-orphan'
-    )
-    citations_as_cited = relationship(
-        'Citation',
-        foreign_keys='Citation.cited_paper_id',
-        back_populates='cited_paper',
-        cascade='all, delete-orphan'
-    )
-    novelty_evaluations = relationship('NoveltyEval', back_populates='paper', cascade='all, delete-orphan')
-    activities = relationship('UserActivity', back_populates='paper')
-
-    # Constraints
-    __table_args__ = (
-        CheckConstraint(
-            "source IN ('google_scholar', 'crossref', 'semantic_scholar', 'arxiv', 'internal')",
-            name='check_paper_source'
-        ),
-        UniqueConstraint('source', 'source_id', name='uq_paper_source_id'),
-    )
 
     def __repr__(self):
         return f'<Paper {self.id}: {self.title[:50]}...>'
 
-    def to_dict(self, include_tags=False, include_scores=True):
+    def to_dict(self):
         """Convert paper to dictionary (for API responses)."""
-        data = {
+        import json
+        tags_list = []
+        if self.tags:
+            try:
+                tags_list = json.loads(self.tags)
+            except (json.JSONDecodeError, TypeError):
+                tags_list = []
+        
+        return {
             'id': self.id,
             'title': self.title,
             'authors': self.authors,
             'abstract': self.abstract,
             'year': self.year,
             'source': self.source,
-            'source_id': self.source_id,
-            'pdf_url': self.pdf_url,
+            'doi': self.doi,
+            'arxiv_id': self.arxiv_id,
+            'pdf_path': self.pdf_path,
+            'citation_count': self.citation_count,
+            'asip_funded': self.asip_funded,
+            'tags': tags_list,
             'created_at': self.created_at.isoformat() if self.created_at else None,
         }
-
-        if include_scores:
-            data['scores'] = {
-                'tag_score': float(self.tag_score) if self.tag_score else None,
-                'citation_score': float(self.citation_score) if self.citation_score else None,
-                'novelty_score': float(self.novelty_score) if self.novelty_score else None,
-                'holmes_score': float(self.holmes_score) if self.holmes_score else None,
-            }
-            data['is_diamond'] = self.is_diamond
-            data['scored_at'] = self.scored_at.isoformat() if self.scored_at else None
-
-        if include_tags:
-            data['tags'] = [pt.tag.name for pt in self.tags]
-
-        return data
-
-    def is_scored(self):
-        """Check if paper has been scored."""
-        return self.scored_at is not None
-
-    def is_deleted(self):
-        """Check if paper is soft-deleted."""
-        return self.deleted_at is not None
-
-    def soft_delete(self):
-        """Soft delete the paper."""
-        self.deleted_at = datetime.utcnow()
-
-    def restore(self):
-        """Restore a soft-deleted paper."""
-        self.deleted_at = None

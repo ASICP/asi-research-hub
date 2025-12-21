@@ -22,8 +22,8 @@ class PaperTag(db.Model):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     # Relationships
-    paper = relationship('Paper', back_populates='tags')
-    tag = relationship('Tag', back_populates='papers')
+    paper = relationship('Paper')
+    tag = relationship('Tag')
 
     # Constraints
     __table_args__ = (

@@ -31,7 +31,7 @@ class Bookmark(db.Model):
 
     # Relationships
     user = relationship('User', back_populates='bookmarks')
-    paper = relationship('Paper', back_populates='bookmarks')
+    paper = relationship('Paper')
 
     # Constraints
     __table_args__ = (

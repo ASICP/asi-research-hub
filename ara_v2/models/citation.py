@@ -31,8 +31,8 @@ class Citation(db.Model):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     # Relationships
-    citing_paper = relationship('Paper', foreign_keys=[citing_paper_id], back_populates='citations_as_citing')
-    cited_paper = relationship('Paper', foreign_keys=[cited_paper_id], back_populates='citations_as_cited')
+    citing_paper = relationship('Paper', foreign_keys=[citing_paper_id])
+    cited_paper = relationship('Paper', foreign_keys=[cited_paper_id])
 
     # Constraints
     __table_args__ = (
