@@ -28,23 +28,27 @@ def search():
     Request body:
         {
             "query": "AI safety",
-            "sources": ["semantic_scholar", "arxiv", "crossref"],  # Optional
+            "sources": ["semantic_scholar", "arxiv", "crossref", "google_scholar"],  # Optional, defaults to all
             "max_results": 20,  # Optional, default: 20
             "ingest": true,  # Optional, whether to save to DB, default: false
             "assign_tags": true  # Optional, auto-assign tags, default: true
         }
 
+    Available sources:
+        - semantic_scholar: Free API, 200M+ papers
+        - arxiv: Free API, STEM preprints
+        - crossref: Free API, comprehensive metadata
+        - google_scholar: SerpAPI required (SERPAPI_API_KEY), with arXiv fallback on timeout
+
     Returns:
         {
             "total_fetched": int,
             "total_ingested": int,  # If ingest=true
-            "papers": List[dict]
+            "papers": List[dict],
+            "warnings": List[dict]  # Optional, if any source failed
         }
     """
     try:
-        import time
-        start_time = time.time()
-        
         data = request.get_json()
 
         if not data:
@@ -54,7 +58,7 @@ def search():
         if not query:
             raise ValidationError('Query parameter is required')
 
-        sources = data.get('sources', ['semantic_scholar', 'arxiv', 'crossref'])
+        sources = data.get('sources', ['semantic_scholar', 'arxiv', 'crossref', 'google_scholar'])
         max_results = data.get('max_results', 20)
         ingest = data.get('ingest', False)
         assign_tags = data.get('assign_tags', True)
@@ -89,92 +93,13 @@ def search():
         else:
             # Search only (don't save to database)
             all_papers = []
-
-            # Search internal database
-            if 'internal' in sources:
-                try:
-                    from sqlalchemy import text
-                    import json as json_lib
-                    search_pattern = f'%{query}%'
-                    
-                    # Direct SQL query to avoid model/schema mismatch
-                    # Also search in tags field (stored as JSON array)
-                    result = db.session.execute(text("""
-                        SELECT id, title, authors, abstract, year, source, arxiv_id, doi, 
-                               pdf_path, asip_funded, tags, created_at
-                        FROM papers 
-                        WHERE (title ILIKE :pattern OR abstract ILIKE :pattern OR authors ILIKE :pattern OR tags::text ILIKE :pattern)
-                        ORDER BY created_at DESC
-                        LIMIT :limit
-                    """), {'pattern': search_pattern, 'limit': max_results})
-                    
-                    for row in result:
-                        # Parse tags if stored as JSON string
-                        tags = row.tags
-                        if isinstance(tags, str):
-                            try:
-                                tags = json_lib.loads(tags)
-                            except:
-                                tags = []
-                        elif not tags:
-                            tags = []
-                            
-                        all_papers.append({
-                            'id': row.id,
-                            'title': row.title,
-                            'authors': row.authors,
-                            'abstract': row.abstract,
-                            'year': row.year,
-                            'source': row.source or 'internal',
-                            'arxiv_id': row.arxiv_id,
-                            'doi': row.doi,
-                            'pdf_url': row.pdf_path,
-                            'asip_funded': row.asip_funded,
-                            'tags': tags,
-                            'created_at': row.created_at.isoformat() if row.created_at else None
-                        })
-                except Exception as e:
-                    current_app.logger.error(f"Internal database search error: {e}")
-
-            # Helper function to auto-assign tags based on content
-            def assign_tags_from_text(title, abstract):
-                """Assign relevant AI safety tags based on title and abstract content"""
-                TAG_KEYWORDS = {
-                    'alignment': ['alignment', 'aligned', 'aligning'],
-                    'AI_safety': ['safety', 'safe', 'safer', 'safeguard'],
-                    'AI_risks': ['risk', 'risks', 'danger', 'dangerous', 'threat'],
-                    'interpretability': ['interpretability', 'interpretable', 'explainability', 'explainable', 'xai'],
-                    'reward_hacking': ['reward hacking', 'reward gaming', 'reward manipulation'],
-                    'robustness': ['robust', 'robustness', 'adversarial'],
-                    'value_alignment': ['value alignment', 'human values', 'value learning'],
-                    'training': ['training', 'train', 'fine-tuning', 'fine tuning', 'finetuning'],
-                    'RLHF': ['rlhf', 'reinforcement learning from human feedback', 'human feedback'],
-                    'deception': ['deception', 'deceptive', 'lying', 'dishonest'],
-                    'language_models': ['language model', 'llm', 'gpt', 'transformer', 'large language'],
-                    'neural_networks': ['neural network', 'deep learning', 'deep neural'],
-                    'machine_learning': ['machine learning'],
-                    'AGI': ['agi', 'artificial general intelligence', 'general intelligence'],
-                    'superintelligence': ['superintelligence', 'superintelligent'],
-                    'governance': ['governance', 'policy', 'regulation'],
-                    'ethics': ['ethics', 'ethical', 'moral'],
-                }
-                text = ((title or '') + ' ' + (abstract or '')).lower()
-                assigned = []
-                for tag, keywords in TAG_KEYWORDS.items():
-                    for keyword in keywords:
-                        if keyword.lower() in text:
-                            assigned.append(tag)
-                            break
-                return assigned[:5]
+            warnings = []
 
             if 'semantic_scholar' in sources:
                 try:
                     s2_result = ingestion_service.s2_connector.search_papers(
                         query, limit=max_results
                     )
-                    for paper in s2_result['papers']:
-                        if not paper.get('tags'):
-                            paper['tags'] = assign_tags_from_text(paper.get('title', ''), paper.get('abstract', ''))
                     all_papers.extend(s2_result['papers'])
                 except Exception as e:
                     current_app.logger.error(f"Semantic Scholar search error: {e}")
@@ -184,9 +109,6 @@ def search():
                     arxiv_result = ingestion_service.arxiv_connector.search_papers(
                         query, max_results=max_results
                     )
-                    for paper in arxiv_result['papers']:
-                        if not paper.get('tags'):
-                            paper['tags'] = assign_tags_from_text(paper.get('title', ''), paper.get('abstract', ''))
                     all_papers.extend(arxiv_result['papers'])
                 except Exception as e:
                     current_app.logger.error(f"ArXiv search error: {e}")
@@ -196,69 +118,71 @@ def search():
                     crossref_result = ingestion_service.crossref_connector.search_papers(
                         query, rows=max_results
                     )
-                    for paper in crossref_result['papers']:
-                        if not paper.get('tags'):
-                            paper['tags'] = assign_tags_from_text(paper.get('title', ''), paper.get('abstract', ''))
                     all_papers.extend(crossref_result['papers'])
                 except Exception as e:
                     current_app.logger.error(f"CrossRef search error: {e}")
 
             if 'google_scholar' in sources:
-                try:
-                    from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
-                    from scholarly import scholarly
-                    
-                    def fetch_google_scholar():
-                        results = []
-                        search_query = scholarly.search_pubs(query)
-                        count = 0
-                        
-                        for pub in search_query:
-                            if count >= max_results:
-                                break
-                            
+                # Google Scholar via SerpAPI with arXiv fallback on timeout
+                if not ingestion_service.serpapi_connector:
+                    warnings.append({
+                        'source': 'google_scholar',
+                        'message': 'Google Scholar search skipped - SerpAPI key not configured. Get API key from https://serpapi.com/'
+                    })
+                else:
+                    try:
+                        current_app.logger.info(f"Searching Google Scholar via SerpAPI for: {query}")
+                        scholar_result = ingestion_service.serpapi_connector.search_papers(
+                            query, limit=max_results
+                        )
+                        all_papers.extend(scholar_result['papers'])
+                        current_app.logger.info(f"✓ Google Scholar returned {len(scholar_result['papers'])} papers")
+                    except Exception as scholar_error:
+                        error_msg = str(scholar_error).lower()
+
+                        # Check if it's a timeout error
+                        if 'timeout' in error_msg or 'timed out' in error_msg:
+                            current_app.logger.warning(f"⚠️ Google Scholar search timed out: {scholar_error}")
+                            current_app.logger.info(f"→ Falling back to arXiv for query: {query}")
+
                             try:
-                                bib = pub.get('bib', {})
-                                year = bib.get('pub_year', 'N/A')
-                                if year == 'N/A':
-                                    year = 2024
-                                
-                                results.append({
-                                    'title': bib.get('title', 'N/A'),
-                                    'authors': ', '.join(bib.get('author', [])) if bib.get('author') else 'Unknown',
-                                    'abstract': bib.get('abstract', '')[:500] if bib.get('abstract') else '',
-                                    'year': year,
+                                # Fallback to arXiv
+                                arxiv_fallback_result = ingestion_service.arxiv_connector.search_papers(
+                                    query, max_results=max_results
+                                )
+                                all_papers.extend(arxiv_fallback_result['papers'])
+                                current_app.logger.info(f"✓ arXiv fallback returned {len(arxiv_fallback_result['papers'])} papers")
+
+                                warnings.append({
                                     'source': 'google_scholar',
-                                    'url': pub.get('pub_url', ''),
-                                    'citation_count': pub.get('num_citations', 0),
-                                    'tags': []
+                                    'message': 'Google Scholar timed out - results from arXiv fallback'
                                 })
-                                count += 1
-                            except Exception as pub_error:
-                                continue
-                        return results
-                    
-                    with ThreadPoolExecutor(max_workers=1) as executor:
-                        future = executor.submit(fetch_google_scholar)
-                        try:
-                            gs_results = future.result(timeout=10)
-                            all_papers.extend(gs_results)
-                        except FuturesTimeoutError:
-                            current_app.logger.warning(f"Google Scholar search timed out for query: {query}")
-                except Exception as e:
-                    current_app.logger.error(f"Google Scholar search error: {e}")
+                            except Exception as arxiv_error:
+                                current_app.logger.error(f"arXiv fallback also failed: {arxiv_error}")
+                                warnings.append({
+                                    'source': 'google_scholar',
+                                    'message': f'Google Scholar timed out and arXiv fallback failed: {str(arxiv_error)}'
+                                })
+                        else:
+                            # Not a timeout - log error
+                            current_app.logger.error(f"Google Scholar search failed: {scholar_error}")
+                            warnings.append({
+                                'source': 'google_scholar',
+                                'message': f'Google Scholar search failed: {str(scholar_error)[:100]}'
+                            })
 
             # Deduplicate
             deduplicated = ingestion_service._deduplicate_papers(all_papers)
-            
-            execution_time = round(time.time() - start_time, 2)
 
-            return jsonify({
+            response_data = {
                 'total_fetched': len(deduplicated),
-                'total_count': len(deduplicated),
-                'execution_time': execution_time,
                 'papers': deduplicated
-            }), 200
+            }
+
+            if warnings:
+                response_data['warnings'] = warnings
+
+            return jsonify(response_data), 200
 
     except ValidationError as e:
         raise
@@ -382,52 +306,69 @@ def get_paper(paper_id):
             "authors": List[str],
             "year": int,
             "tags": List[dict],
+            "citations": List[dict],
+            "references": List[dict],
             ...
         }
     """
     try:
-        from sqlalchemy import text
-        import json as json_lib
-        
-        # Direct SQL query to avoid model/schema mismatch
-        result = db.session.execute(text("""
-            SELECT id, title, authors, abstract, year, source, arxiv_id, doi, 
-                   pdf_path, asip_funded, tags, citation_count, created_at
-            FROM papers 
-            WHERE id = :paper_id
-            LIMIT 1
-        """), {'paper_id': paper_id})
-        
-        row = result.fetchone()
-        
-        if not row:
+        paper = Paper.query.filter_by(id=paper_id, deleted_at=None).first()
+
+        if not paper:
             raise NotFoundError(f'Paper {paper_id} not found')
 
-        # Parse tags if stored as JSON string
-        tags = row.tags
-        if isinstance(tags, str):
-            try:
-                tags = json_lib.loads(tags)
-            except:
-                tags = []
-        elif not tags:
-            tags = []
+        # Get paper data
+        paper_data = paper.to_dict()
 
-        paper_data = {
-            'id': row.id,
-            'title': row.title,
-            'authors': row.authors,
-            'abstract': row.abstract,
-            'year': row.year,
-            'source': row.source or 'internal',
-            'arxiv_id': row.arxiv_id,
-            'doi': row.doi,
-            'pdf_url': row.pdf_path,
-            'asip_funded': row.asip_funded,
-            'tags': tags,
-            'citation_count': row.citation_count,
-            'created_at': row.created_at.isoformat() if row.created_at else None
-        }
+        # Get tags with confidence scores
+        paper_tags = db.session.query(PaperTag, Tag).join(Tag).filter(
+            PaperTag.paper_id == paper_id
+        ).all()
+
+        paper_data['tags'] = [
+            {
+                'name': tag.name,
+                'slug': tag.slug,
+                'confidence': paper_tag.confidence
+            }
+            for paper_tag, tag in paper_tags
+        ]
+
+        # Get citation count and sample citations
+        citations = db.session.query(Citation, Paper).join(
+            Paper, Citation.citing_paper_id == Paper.id
+        ).filter(
+            Citation.cited_paper_id == paper_id,
+            Paper.deleted_at == None
+        ).limit(10).all()
+
+        paper_data['cited_by'] = [
+            {
+                'id': citing_paper.id,
+                'title': citing_paper.title,
+                'year': citing_paper.year,
+                'authors': citing_paper.authors
+            }
+            for _, citing_paper in citations
+        ]
+
+        # Get references (papers this paper cites)
+        references = db.session.query(Citation, Paper).join(
+            Paper, Citation.cited_paper_id == Paper.id
+        ).filter(
+            Citation.citing_paper_id == paper_id,
+            Paper.deleted_at == None
+        ).limit(10).all()
+
+        paper_data['references'] = [
+            {
+                'id': cited_paper.id,
+                'title': cited_paper.title,
+                'year': cited_paper.year,
+                'authors': cited_paper.authors
+            }
+            for _, cited_paper in references
+        ]
 
         return jsonify(paper_data), 200
 
