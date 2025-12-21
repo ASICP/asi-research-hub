@@ -11,17 +11,19 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes & TODO
 
 **Recent Updates (Dec 21, 2025 - FINAL)**:
-- ✅ **CRITICAL FIX**: Removed `deleted_at` column references - Paper model doesn't have this column
+- ✅ **CRITICAL FIX**: Removed `deleted_at` column references from all endpoints (Paper model doesn't have this column)
+- ✅ **CRITICAL FIX**: Fixed frontend source mapping bug - 'google_scholar' was being mapped to 'scholar' instead of 'google_scholar'
 - ✅ **CRITICAL FIX**: Internal Database search now working (returns 2+ papers for "AI safety")
-- ✅ **CRITICAL FIX**: Google Scholar now working (returns 20+ papers for test queries)
+- ✅ **CRITICAL FIX**: Google Scholar now working (returns 20+ papers via SerpAPI)
 - ✅ Google Scholar with arXiv fallback on timeout confirmed working
 - ✅ All 5 search sources fully tested and operational:
   - **Internal Database**: ✓ Working - searches title/abstract/authors
-  - **Google Scholar**: ✓ Working - returns 20+ papers via SerpAPI
-  - **ArXiv**: ✓ Available as fallback on Google Scholar timeout
-  - **CrossRef**: ✓ Available - DOI search across 140M+ articles
-  - **Semantic Scholar**: ✓ Available - semantic search with citation counts
+  - **Google Scholar**: ✓ Working - returns 20+ papers via SerpAPI with arXiv fallback
+  - **ArXiv**: ✓ Working - direct feed API integration
+  - **CrossRef**: ✓ Working - DOI search across 140M+ articles
+  - **Semantic Scholar**: ✓ Working - semantic search with citation counts
 - ✅ Unique identifier system working for all sources (source + source_id)
+- ✅ Frontend radio button selection correctly passes sources to API
 
 **Previous Updates (Dec 18, 2025)**:
 - ✅ Replaced Google Scholar scholarly library with SerpAPI integration
