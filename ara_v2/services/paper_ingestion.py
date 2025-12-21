@@ -16,6 +16,7 @@ from ara_v2.utils.database import db
 from ara_v2.services.connectors.semantic_scholar import SemanticScholarConnector
 from ara_v2.services.connectors.arxiv import ArxivConnector
 from ara_v2.services.connectors.crossref import CrossRefConnector
+from ara_v2.services.connectors.serpapi_google_scholar import SerpAPIGoogleScholarConnector
 from ara_v2.services.tag_assigner import TagAssigner
 from ara_v2.services.scoring.tag_scorer import TagScorer, update_tag_statistics
 from ara_v2.services.tag_combo_tracker import track_paper_tag_combinations
@@ -38,6 +39,21 @@ class PaperIngestionService:
         self.s2_connector = SemanticScholarConnector()
         self.arxiv_connector = ArxivConnector()
         self.crossref_connector = CrossRefConnector()
+
+        # Initialize SerpAPI connector for Google Scholar (if API key is configured)
+        try:
+            from flask import current_app
+            api_key = current_app.config.get('SERPAPI_API_KEY', '')
+            if api_key:
+                self.serpapi_connector = SerpAPIGoogleScholarConnector(api_key=api_key)
+                current_app.logger.info("SerpAPI Google Scholar connector initialized")
+            else:
+                self.serpapi_connector = None
+                current_app.logger.warning("SerpAPI key not configured - Google Scholar searches will be disabled")
+        except Exception as e:
+            self.serpapi_connector = None
+            current_app.logger.error(f"Failed to initialize SerpAPI connector: {e}")
+
         self.tag_assigner = TagAssigner()
 
     def search_and_ingest(
@@ -65,7 +81,7 @@ class PaperIngestionService:
             }
         """
         if sources is None:
-            sources = ['semantic_scholar', 'arxiv', 'crossref']
+            sources = ['semantic_scholar', 'arxiv', 'crossref', 'google_scholar']
 
         all_papers_data = []
         fetch_stats = {}
@@ -82,6 +98,43 @@ class PaperIngestionService:
                 elif source == 'crossref':
                     result = self.crossref_connector.search_papers(query, rows=max_results_per_source)
                     papers_data = result['papers']
+                elif source == 'google_scholar':
+                    # Google Scholar via SerpAPI with arXiv fallback on timeout
+                    if not self.serpapi_connector:
+                        current_app.logger.warning("Google Scholar requested but SerpAPI not configured - skipping")
+                        fetch_stats[source] = 0
+                        continue
+
+                    try:
+                        current_app.logger.info(f"Searching Google Scholar via SerpAPI for: {query}")
+                        result = self.serpapi_connector.search_papers(query, limit=max_results_per_source)
+                        papers_data = result['papers']
+                        current_app.logger.info(f"✓ Google Scholar returned {len(papers_data)} papers")
+                    except Exception as scholar_error:
+                        error_msg = str(scholar_error).lower()
+
+                        # Check if it's a timeout error
+                        if 'timeout' in error_msg or 'timed out' in error_msg:
+                            current_app.logger.warning(
+                                f"⚠️ Google Scholar search timed out: {scholar_error}"
+                            )
+                            current_app.logger.info(f"→ Falling back to arXiv for query: {query}")
+
+                            try:
+                                # Fallback to arXiv
+                                result = self.arxiv_connector.search_papers(query, max_results=max_results_per_source)
+                                papers_data = result['papers']
+                                current_app.logger.info(f"✓ arXiv fallback returned {len(papers_data)} papers")
+                                fetch_stats[f'{source}_fallback_arxiv'] = len(papers_data)
+                            except Exception as arxiv_error:
+                                current_app.logger.error(f"arXiv fallback also failed: {arxiv_error}")
+                                fetch_stats[source] = 0
+                                continue
+                        else:
+                            # Not a timeout - log error and skip
+                            current_app.logger.error(f"Google Scholar search failed: {scholar_error}")
+                            fetch_stats[source] = 0
+                            continue
                 else:
                     current_app.logger.warning(f"Unknown source: {source}")
                     continue

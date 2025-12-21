@@ -28,17 +28,24 @@ def search():
     Request body:
         {
             "query": "AI safety",
-            "sources": ["semantic_scholar", "arxiv", "crossref"],  # Optional
+            "sources": ["semantic_scholar", "arxiv", "crossref", "google_scholar"],  # Optional, defaults to all
             "max_results": 20,  # Optional, default: 20
             "ingest": true,  # Optional, whether to save to DB, default: false
             "assign_tags": true  # Optional, auto-assign tags, default: true
         }
 
+    Available sources:
+        - semantic_scholar: Free API, 200M+ papers
+        - arxiv: Free API, STEM preprints
+        - crossref: Free API, comprehensive metadata
+        - google_scholar: SerpAPI required (SERPAPI_API_KEY), with arXiv fallback on timeout
+
     Returns:
         {
             "total_fetched": int,
             "total_ingested": int,  # If ingest=true
-            "papers": List[dict]
+            "papers": List[dict],
+            "warnings": List[dict]  # Optional, if any source failed
         }
     """
     try:
@@ -51,7 +58,7 @@ def search():
         if not query:
             raise ValidationError('Query parameter is required')
 
-        sources = data.get('sources', ['semantic_scholar', 'arxiv', 'crossref'])
+        sources = data.get('sources', ['semantic_scholar', 'arxiv', 'crossref', 'google_scholar'])
         max_results = data.get('max_results', 20)
         ingest = data.get('ingest', False)
         assign_tags = data.get('assign_tags', True)
@@ -86,6 +93,7 @@ def search():
         else:
             # Search only (don't save to database)
             all_papers = []
+            warnings = []
 
             if 'semantic_scholar' in sources:
                 try:
@@ -114,13 +122,67 @@ def search():
                 except Exception as e:
                     current_app.logger.error(f"CrossRef search error: {e}")
 
+            if 'google_scholar' in sources:
+                # Google Scholar via SerpAPI with arXiv fallback on timeout
+                if not ingestion_service.serpapi_connector:
+                    warnings.append({
+                        'source': 'google_scholar',
+                        'message': 'Google Scholar search skipped - SerpAPI key not configured. Get API key from https://serpapi.com/'
+                    })
+                else:
+                    try:
+                        current_app.logger.info(f"Searching Google Scholar via SerpAPI for: {query}")
+                        scholar_result = ingestion_service.serpapi_connector.search_papers(
+                            query, limit=max_results
+                        )
+                        all_papers.extend(scholar_result['papers'])
+                        current_app.logger.info(f"✓ Google Scholar returned {len(scholar_result['papers'])} papers")
+                    except Exception as scholar_error:
+                        error_msg = str(scholar_error).lower()
+
+                        # Check if it's a timeout error
+                        if 'timeout' in error_msg or 'timed out' in error_msg:
+                            current_app.logger.warning(f"⚠️ Google Scholar search timed out: {scholar_error}")
+                            current_app.logger.info(f"→ Falling back to arXiv for query: {query}")
+
+                            try:
+                                # Fallback to arXiv
+                                arxiv_fallback_result = ingestion_service.arxiv_connector.search_papers(
+                                    query, max_results=max_results
+                                )
+                                all_papers.extend(arxiv_fallback_result['papers'])
+                                current_app.logger.info(f"✓ arXiv fallback returned {len(arxiv_fallback_result['papers'])} papers")
+
+                                warnings.append({
+                                    'source': 'google_scholar',
+                                    'message': 'Google Scholar timed out - results from arXiv fallback'
+                                })
+                            except Exception as arxiv_error:
+                                current_app.logger.error(f"arXiv fallback also failed: {arxiv_error}")
+                                warnings.append({
+                                    'source': 'google_scholar',
+                                    'message': f'Google Scholar timed out and arXiv fallback failed: {str(arxiv_error)}'
+                                })
+                        else:
+                            # Not a timeout - log error
+                            current_app.logger.error(f"Google Scholar search failed: {scholar_error}")
+                            warnings.append({
+                                'source': 'google_scholar',
+                                'message': f'Google Scholar search failed: {str(scholar_error)[:100]}'
+                            })
+
             # Deduplicate
             deduplicated = ingestion_service._deduplicate_papers(all_papers)
 
-            return jsonify({
+            response_data = {
                 'total_fetched': len(deduplicated),
                 'papers': deduplicated
-            }), 200
+            }
+
+            if warnings:
+                response_data['warnings'] = warnings
+
+            return jsonify(response_data), 200
 
     except ValidationError as e:
         raise
