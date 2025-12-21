@@ -324,9 +324,16 @@ class SemanticScholarConnector:
             for f in s2_fields if f
         ])
 
+        import uuid
+        # Generate consistent source_id from paperId, or create from title+authors if missing
+        source_id = raw_paper.get('paperId', '')
+        if not source_id or source_id.strip() == '':
+            id_seed = f"{raw_paper.get('title', 'unknown')}_{','.join(authors)}"
+            source_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, id_seed))[:16]
+        
         return {
             'source': 'semantic_scholar',
-            'source_id': raw_paper.get('paperId', ''),
+            'source_id': source_id,
             'doi': external_ids.get('DOI'),
             'arxiv_id': external_ids.get('ArXiv'),
             'title': raw_paper.get('title', '').strip(),

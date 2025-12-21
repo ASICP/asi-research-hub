@@ -191,6 +191,8 @@ class SerpAPIGoogleScholarConnector:
             Normalized paper dictionary or None if parsing fails
         """
         try:
+            import uuid
+            
             # Extract publication info
             pub_info = result.get('publication_info', {})
 
@@ -222,12 +224,14 @@ class SerpAPIGoogleScholarConnector:
             # Extract tags from title/abstract
             tags = self._assign_tags(result.get('title', ''), result.get('snippet', ''))
             
-            # Use link as unique identifier if available, otherwise use title hash
+            # Generate a unique source_id (UUID-based for consistency)
+            # Use link if available, otherwise generate from title+authors
             source_id = result.get('link', '')
-            if not source_id:
-                # Fallback: use title as ID (will be URL-encoded by frontend)
+            if not source_id or source_id.strip() == '':
+                # Create consistent ID from title and authors
                 import hashlib
-                source_id = hashlib.md5(result.get('title', 'unknown').encode()).hexdigest()[:16]
+                id_seed = f"{result.get('title', 'unknown')}_{','.join(authors)}"
+                source_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, id_seed))[:16]
             
             paper = {
                 'title': result.get('title', 'N/A'),
