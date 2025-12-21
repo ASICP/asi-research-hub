@@ -10,6 +10,35 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime
 from flask import current_app
 
+# Tag keywords for auto-assignment
+TAG_KEYWORDS = {
+    'alignment': ['alignment', 'aligned', 'aligning'],
+    'AI_safety': ['safety', 'safe', 'safer', 'safeguard'],
+    'AI_risks': ['risk', 'risks', 'danger', 'dangerous', 'threat'],
+    'interpretability': ['interpretability', 'interpretable', 'explainability', 'explainable', 'xai'],
+    'reward_hacking': ['reward hacking', 'reward gaming', 'reward manipulation'],
+    'robustness': ['robust', 'robustness', 'adversarial'],
+    'value_alignment': ['value alignment', 'human values', 'value learning'],
+    'corrigibility': ['corrigibility', 'corrigible', 'shutdown'],
+    'mesa_optimization': ['mesa-optimization', 'mesa optimization', 'inner alignment'],
+    'outer_alignment': ['outer alignment'],
+    'training': ['training', 'train', 'fine-tuning', 'fine tuning', 'finetuning'],
+    'RLHF': ['rlhf', 'reinforcement learning from human feedback', 'human feedback'],
+    'constitutional_AI': ['constitutional ai', 'constitutional'],
+    'deception': ['deception', 'deceptive', 'lying', 'dishonest'],
+    'goal_misgeneralization': ['goal misgeneralization', 'distributional shift'],
+    'scalable_oversight': ['scalable oversight', 'oversight'],
+    'red_teaming': ['red team', 'red-team', 'adversarial testing'],
+    'language_models': ['language model', 'llm', 'gpt', 'transformer', 'large language'],
+    'neural_networks': ['neural network', 'deep learning', 'deep neural'],
+    'machine_learning': ['machine learning', 'ml'],
+    'AGI': ['agi', 'artificial general intelligence', 'general intelligence'],
+    'superintelligence': ['superintelligence', 'superintelligent', 'super-intelligence'],
+    'existential_risk': ['existential risk', 'x-risk', 'extinction'],
+    'governance': ['governance', 'policy', 'regulation'],
+    'ethics': ['ethics', 'ethical', 'moral'],
+}
+
 
 class SerpAPIGoogleScholarConnector:
     """
@@ -187,19 +216,18 @@ class SerpAPIGoogleScholarConnector:
             citation_count = cited_by.get('total', 0)
 
             # Build normalized paper object
+            # Extract tags from title/abstract
+            tags = self._assign_tags(result.get('title', ''), result.get('snippet', ''))
+            
             paper = {
                 'title': result.get('title', 'N/A'),
                 'authors': ', '.join(authors) if authors else 'Unknown',
                 'year': year if year else None,
                 'abstract': result.get('snippet', ''),
-                'url': result.get('link', ''),
-                'source': 'Google Scholar',
+                'source': 'google_scholar',
                 'source_id': result.get('result_id', ''),
                 'citation_count': citation_count,
-                'pdf_url': result.get('resources', [{}])[0].get('link') if result.get('resources') else None,
-                'related_pages_link': result.get('inline_links', {}).get('related_pages_link'),
-                'versions': result.get('inline_links', {}).get('versions', {}).get('total', 0),
-                'raw_data': result  # Keep original for debugging
+                'tags': tags,
             }
 
             return paper
@@ -207,6 +235,20 @@ class SerpAPIGoogleScholarConnector:
         except Exception as e:
             current_app.logger.warning(f"Failed to parse SerpAPI paper result: {e}")
             return None
+    
+    def _assign_tags(self, title: str, abstract: str) -> List[str]:
+        """Assign AI safety tags based on title and abstract."""
+        import json
+        text = (title + ' ' + abstract).lower()
+        assigned_tags = []
+        
+        for tag, keywords in TAG_KEYWORDS.items():
+            for keyword in keywords:
+                if keyword.lower() in text:
+                    assigned_tags.append(tag)
+                    break
+        
+        return json.dumps(assigned_tags[:10])
 
     def get_paper_details(self, paper_id: str) -> Optional[Dict[str, Any]]:
         """
