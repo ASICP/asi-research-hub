@@ -741,8 +741,10 @@
             });
 
             Object.values(uniquePapers).forEach(paper => {
+                // Create unique key for internal papers (id) or external papers (source+source_id)
+                const paperKey = paper.id ? `internal_${paper.id}` : `${paper.source}_${paper.source_id}`;
                 html += `
-                    <div class="result-card" onclick="viewPaper(${paper.id})">
+                    <div class="result-card" onclick="viewPaper('${paperKey.replace(/'/g, "\\'")}')">
                         <div class="result-title">${paper.title}</div>
                         <div class="result-meta">${paper.authors} • ${paper.year}</div>
                         <div class="result-badges">
@@ -758,9 +760,19 @@
             container.innerHTML = html;
         }
 
-        function viewPaper(paperId) {
+        function viewPaper(paperKey) {
             // Find the paper in the last search results
-            const paper = window.lastSearchResults?.papers.find(p => p.id === paperId);
+            // paperKey format: 'internal_ID' for database papers or 'SOURCE_SOURCE_ID' for external papers
+            let paper;
+            if (paperKey.startsWith('internal_')) {
+                const paperId = parseInt(paperKey.substring(9));
+                paper = window.lastSearchResults?.papers.find(p => p.id === paperId);
+            } else {
+                const [source, ...sourceParts] = paperKey.split('_');
+                const sourceId = sourceParts.join('_');
+                paper = window.lastSearchResults?.papers.find(p => p.source === source && p.source_id === sourceId);
+            }
+            
             if (!paper) {
                 alert('Paper not found');
                 return;
