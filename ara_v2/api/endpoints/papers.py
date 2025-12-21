@@ -122,19 +122,50 @@ def search():
                     })
 
             if 'semantic_scholar' in sources:
+                # Semantic Scholar with CrossRef fallback on timeout/rate limit
                 try:
+                    current_app.logger.info(f"Searching Semantic Scholar for: {query}")
                     s2_result = ingestion_service.s2_connector.search_papers(
                         query, limit=max_results
                     )
-                    all_papers.extend(s2_result['papers'])
+                    papers_count = len(s2_result.get('papers', []))
+                    all_papers.extend(s2_result.get('papers', []))
+                    current_app.logger.info(f"✓ Semantic Scholar returned {papers_count} papers")
                 except Exception as e:
                     error_msg = str(e).lower()
-                    current_app.logger.error(f"Semantic Scholar search error: {e}")
-                    if '429' in str(e):
-                        warnings.append({
-                            'source': 'semantic_scholar',
-                            'message': 'Semantic Scholar rate limited - try again in a moment'
-                        })
+                    current_app.logger.error(f"Semantic Scholar search error (will check for timeout/rate limit): {e}")
+                    
+                    # Check if it's a timeout or rate limit error
+                    if 'timeout' in error_msg or 'timed out' in error_msg or '429' in str(e):
+                        if 'timeout' in error_msg or 'timed out' in error_msg:
+                            current_app.logger.warning(f"⚠️ Semantic Scholar search timed out: {e}")
+                        else:
+                            current_app.logger.warning(f"⚠️ Semantic Scholar rate limited (429): {e}")
+                        
+                        current_app.logger.info(f"→ Falling back to CrossRef for query: {query}")
+                        
+                        try:
+                            # Fallback to CrossRef
+                            crossref_fallback_result = ingestion_service.crossref_connector.search_papers(
+                                query, rows=max_results
+                            )
+                            fallback_papers = crossref_fallback_result.get('papers', [])
+                            all_papers.extend(fallback_papers)
+                            current_app.logger.info(f"✓ CrossRef fallback returned {len(fallback_papers)} papers")
+                            
+                            warnings.append({
+                                'source': 'semantic_scholar',
+                                'message': 'Semantic Scholar unavailable - results from CrossRef'
+                            })
+                        except Exception as crossref_error:
+                            current_app.logger.error(f"CrossRef fallback also failed: {crossref_error}")
+                            warnings.append({
+                                'source': 'semantic_scholar',
+                                'message': f'Semantic Scholar unavailable and CrossRef fallback failed'
+                            })
+                    else:
+                        # Not a timeout/rate limit - just log error
+                        current_app.logger.error(f"Semantic Scholar search failed (non-timeout/rate-limit): {e}")
 
             if 'arxiv' in sources:
                 try:
