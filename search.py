@@ -1,16 +1,11 @@
 import time
 import json
 import re
-import signal
 from typing import List, Dict, Optional
-from scholarly import scholarly
 from database import get_db
 from psycopg2.extras import RealDictCursor
 from models import Paper, SearchResult
 from config import Config
-
-def timeout_handler(signum, frame):
-    raise TimeoutError("Google Scholar search timed out")
 
 class SearchService:
     
@@ -56,55 +51,65 @@ class SearchService:
     
     @staticmethod
     def search_google_scholar(query: str, max_results: int = 20) -> List[Dict]:
-        """Search Google Scholar (free API via scholarly)"""
+        """
+        Search Google Scholar using SerpAPI.
+
+        SerpAPI handles proxy rotation, anti-scraping, and CAPTCHA automatically.
+        Requires SERPAPI_API_KEY environment variable.
+
+        Args:
+            query: Search query string
+            max_results: Maximum number of results to return (default: 20)
+
+        Returns:
+            List of paper dictionaries with title, authors, abstract, year, etc.
+
+        Note: Get API key from https://serpapi.com/
+        """
         results = []
-        
+
         try:
-            # Set a 10-second timeout for Google Scholar API
-            signal.signal(signal.SIGALRM, timeout_handler)
-            signal.alarm(10)
-            
-            try:
-                search_query = scholarly.search_pubs(query)
-                count = 0
-                
-                for pub in search_query:
-                    if count >= max_results:
-                        break
-                    
-                    try:
-                        bib = pub.get('bib', {})
-                        
-                        # Extract year safely
-                        year = bib.get('pub_year', 'N/A')
-                        if year == 'N/A':
-                            year = 2024  # Default for display purposes
-                        
-                        results.append({
-                            'title': bib.get('title', 'N/A'),
-                            'authors': ', '.join(bib.get('author', [])) if bib.get('author') else 'Unknown',
-                            'abstract': bib.get('abstract', '')[:500] if bib.get('abstract') else '',
-                            'year': year,
-                            'source': 'Google Scholar',
-                            'url': pub.get('pub_url', ''),
-                            'citation_count': pub.get('num_citations', 0)
-                        })
-                        count += 1
-                    except Exception as pub_error:
-                        print(f"⚠️ Error parsing Google Scholar result: {pub_error}")
-                        continue
-                
-                signal.alarm(0)  # Cancel alarm
-            
-            except TimeoutError:
-                signal.alarm(0)
-                print(f"⚠️ Google Scholar search timed out after 10 seconds for query: {query}")
-                print(f"   This may be due to Google Scholar rate limiting. Try again in a few moments.")
-                
+            # Check if API key is configured
+            if not Config.SERPAPI_API_KEY:
+                print("⚠️ SerpAPI key not configured. Set SERPAPI_API_KEY in .env")
+                print("   Get API key from https://serpapi.com/ (100 free searches/month)")
+                return []
+
+            # Import SerpAPI connector
+            from ara_v2.services.connectors import SerpAPIGoogleScholarConnector
+
+            # Initialize connector
+            connector = SerpAPIGoogleScholarConnector(api_key=Config.SERPAPI_API_KEY)
+
+            # Perform search (SerpAPI limits to 20 results per request)
+            # If max_results > 20, we'd need to make multiple requests with pagination
+            limit = min(max_results, 20)
+
+            response = connector.search_papers(
+                query=query,
+                limit=limit
+            )
+
+            # Extract papers from response
+            for paper_data in response.get('papers', []):
+                results.append({
+                    'title': paper_data.get('title', 'N/A'),
+                    'authors': paper_data.get('authors', 'Unknown'),
+                    'abstract': paper_data.get('abstract', '')[:500] if paper_data.get('abstract') else '',
+                    'year': paper_data.get('year'),
+                    'source': 'Google Scholar',
+                    'url': paper_data.get('url', ''),
+                    'citation_count': paper_data.get('citation_count', 0),
+                    'pdf_url': paper_data.get('pdf_url'),
+                })
+
+            print(f"✓ Google Scholar (SerpAPI): Found {len(results)} papers")
+
+        except ValueError as e:
+            print(f"⚠️ SerpAPI configuration error: {e}")
         except Exception as e:
-            signal.alarm(0)
             print(f"⚠️ Google Scholar API error: {type(e).__name__}: {str(e)[:100]}")
-        
+
         return results
     
     @staticmethod

@@ -76,10 +76,24 @@ def init_extensions(app):
     if not app.debug:
         csp = {
             'default-src': "'self'",
-            'script-src': ["'self'", "'unsafe-inline'", "https://d3js.org"],
+            'script-src': [
+                "'self'",
+                "'unsafe-inline'",
+                "'unsafe-eval'",  # Required for Google reCAPTCHA and d3.js
+                "https://d3js.org",
+                "https://www.google.com",
+                "https://www.gstatic.com"
+            ],
             'style-src': ["'self'", "'unsafe-inline'"],
             'img-src': ["'self'", "data:", "https:"],
-            'connect-src': ["'self'"],
+            'connect-src': [
+                "'self'",
+                "https://www.google.com",
+                "https://www.gstatic.com"
+            ],
+            'frame-src': [
+                "https://www.google.com"  # Required for reCAPTCHA
+            ],
         }
 
         Talisman(
