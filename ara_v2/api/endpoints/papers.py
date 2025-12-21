@@ -128,7 +128,13 @@ def search():
                     )
                     all_papers.extend(s2_result['papers'])
                 except Exception as e:
+                    error_msg = str(e).lower()
                     current_app.logger.error(f"Semantic Scholar search error: {e}")
+                    if '429' in str(e):
+                        warnings.append({
+                            'source': 'semantic_scholar',
+                            'message': 'Semantic Scholar rate limited - try again in a moment'
+                        })
 
             if 'arxiv' in sources:
                 try:
@@ -209,8 +215,9 @@ def search():
             current_app.logger.info(f"Final search result: {len(all_papers)} papers before dedup, {len(deduplicated)} after dedup")
 
             response_data = {
-                'total_fetched': len(deduplicated),
-                'papers': deduplicated if deduplicated else []
+                'total_count': len(deduplicated),
+                'papers': deduplicated if deduplicated else [],
+                'execution_time': 0  # Placeholder - can be enhanced with timing
             }
 
             if warnings:
