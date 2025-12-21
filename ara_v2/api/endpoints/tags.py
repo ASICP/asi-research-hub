@@ -131,9 +131,7 @@ def get_tag(tag_slug):
 
         # Get recent papers with this tag
         recent_papers = db.session.query(Paper).join(PaperTag).filter(
-            PaperTag.tag_id == tag.id,
-            Paper.deleted_at.is_(None)
-        ).order_by(
+            PaperTag.tag_id == tag.id).order_by(
             Paper.created_at.desc().nullslast()
         ).limit(10).all()
 

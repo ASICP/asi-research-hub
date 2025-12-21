@@ -269,14 +269,14 @@ class PaperIngestionService:
         # Try DOI first (most reliable)
         doi = paper_data.get('doi')
         if doi:
-            paper = Paper.query.filter_by(doi=doi, deleted_at=None).first()
+            paper = Paper.query.filter_by(doi=doi).first()
             if paper:
                 return paper
 
         # Try ArXiv ID
         arxiv_id = paper_data.get('arxiv_id')
         if arxiv_id:
-            paper = Paper.query.filter_by(arxiv_id=arxiv_id, deleted_at=None).first()
+            paper = Paper.query.filter_by(arxiv_id=arxiv_id).first()
             if paper:
                 return paper
 
@@ -286,8 +286,7 @@ class PaperIngestionService:
         if source and source_id:
             paper = Paper.query.filter_by(
                 source=source,
-                source_id=source_id,
-                deleted_at=None
+                source_id=source_id
             ).first()
             if paper:
                 return paper
@@ -297,9 +296,7 @@ class PaperIngestionService:
         if title and len(title) > 20:
             # Simple title matching (could be improved with fuzzy matching)
             paper = Paper.query.filter(
-                db.func.lower(Paper.title) == title,
-                Paper.deleted_at == None
-            ).first()
+                db.func.lower(Paper.title) == title).first()
             if paper:
                 return paper
 

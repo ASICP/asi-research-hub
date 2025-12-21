@@ -50,9 +50,7 @@ def list_bookmarks():
         query = db.session.query(Bookmark, Paper).join(
             Paper, Bookmark.paper_id == Paper.id
         ).filter(
-            Bookmark.user_id == user_id,
-            Paper.deleted_at == None
-        )
+            Bookmark.user_id == user_id)
 
         # Filter by tag if provided
         if tag_filter:
@@ -129,7 +127,7 @@ def create_bookmark():
             raise ValidationError('paper_id is required')
 
         # Check if paper exists
-        paper = Paper.query.filter_by(id=paper_id, deleted_at=None).first()
+        paper = Paper.query.filter_by(id=paper_id).first()
         if not paper:
             raise NotFoundError(f'Paper {paper_id} not found')
 
@@ -211,7 +209,7 @@ def get_bookmark(paper_id):
             raise NotFoundError(f'Bookmark for paper {paper_id} not found')
 
         # Get paper details
-        paper = Paper.query.filter_by(id=paper_id, deleted_at=None).first()
+        paper = Paper.query.filter_by(id=paper_id).first()
 
         bookmark_dict = bookmark.to_dict()
         if paper:

@@ -99,7 +99,7 @@ def search():
                 try:
                     # Search internal database
                     search_pattern = f'%{query}%'
-                    db_papers = Paper.query.filter_by(deleted_at=None).filter(
+                    db_papers = Paper.query.filter(
                         or_(
                             Paper.title.ilike(search_pattern),
                             Paper.abstract.ilike(search_pattern),
@@ -263,7 +263,7 @@ def list_papers():
         search_query = request.args.get('q', '').strip()
 
         # Build query
-        query = Paper.query.filter_by(deleted_at=None)
+        query = Paper.query
 
         # Filter by tag
         if tag_name:
@@ -348,7 +348,7 @@ def get_paper(paper_id):
         }
     """
     try:
-        paper = Paper.query.filter_by(id=paper_id, deleted_at=None).first()
+        paper = Paper.query.filter_by(id=paper_id).first()
 
         if not paper:
             raise NotFoundError(f'Paper {paper_id} not found')
@@ -374,8 +374,7 @@ def get_paper(paper_id):
         citations = db.session.query(Citation, Paper).join(
             Paper, Citation.citing_paper_id == Paper.id
         ).filter(
-            Citation.cited_paper_id == paper_id,
-            Paper.deleted_at == None
+            Citation.cited_paper_id == paper_id
         ).limit(10).all()
 
         paper_data['cited_by'] = [
@@ -392,8 +391,7 @@ def get_paper(paper_id):
         references = db.session.query(Citation, Paper).join(
             Paper, Citation.cited_paper_id == Paper.id
         ).filter(
-            Citation.citing_paper_id == paper_id,
-            Paper.deleted_at == None
+            Citation.citing_paper_id == paper_id
         ).limit(10).all()
 
         paper_data['references'] = [
@@ -436,7 +434,7 @@ def get_paper_scores(paper_id):
         }
     """
     try:
-        paper = Paper.query.filter_by(id=paper_id, deleted_at=None).first()
+        paper = Paper.query.filter_by(id=paper_id).first()
 
         if not paper:
             raise NotFoundError(f'Paper {paper_id} not found')
@@ -484,7 +482,7 @@ def get_paper_novel_combos(paper_id):
     try:
         from ara_v2.services.tag_combo_tracker import TagComboTracker
 
-        paper = Paper.query.filter_by(id=paper_id, deleted_at=None).first()
+        paper = Paper.query.filter_by(id=paper_id).first()
 
         if not paper:
             raise NotFoundError(f'Paper {paper_id} not found')
@@ -527,7 +525,7 @@ def build_citations(paper_id):
         }
     """
     try:
-        paper = Paper.query.filter_by(id=paper_id, deleted_at=None).first()
+        paper = Paper.query.filter_by(id=paper_id).first()
 
         if not paper:
             raise NotFoundError(f'Paper {paper_id} not found')
