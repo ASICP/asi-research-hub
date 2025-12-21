@@ -95,6 +95,32 @@ def search():
             all_papers = []
             warnings = []
 
+            if 'internal' in sources:
+                try:
+                    # Search internal database
+                    search_pattern = f'%{query}%'
+                    db_papers = Paper.query.filter_by(deleted_at=None).filter(
+                        or_(
+                            Paper.title.ilike(search_pattern),
+                            Paper.abstract.ilike(search_pattern),
+                            Paper.authors.ilike(search_pattern)
+                        )
+                    ).order_by(Paper.created_at.desc()).limit(max_results).all()
+                    
+                    # Convert to dict format
+                    for paper in db_papers:
+                        paper_dict = paper.to_dict()
+                        paper_dict['source'] = 'internal'
+                        all_papers.append(paper_dict)
+                    
+                    current_app.logger.info(f"Internal DB search returned {len(db_papers)} papers for query: {query}")
+                except Exception as e:
+                    current_app.logger.error(f"Internal database search error: {e}")
+                    warnings.append({
+                        'source': 'internal',
+                        'message': f'Internal database search failed: {str(e)}'
+                    })
+
             if 'semantic_scholar' in sources:
                 try:
                     s2_result = ingestion_service.s2_connector.search_papers(
