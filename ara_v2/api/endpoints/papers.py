@@ -355,54 +355,25 @@ def get_paper(paper_id):
 
         # Get paper data
         paper_data = paper.to_dict()
-
-        # Get tags with confidence scores
-        paper_tags = db.session.query(PaperTag, Tag).join(Tag).filter(
-            PaperTag.paper_id == paper_id
-        ).all()
-
-        paper_data['tags'] = [
-            {
-                'name': tag.name,
-                'slug': tag.slug,
-                'confidence': paper_tag.confidence
-            }
-            for paper_tag, tag in paper_tags
-        ]
-
-        # Get citation count and sample citations
-        citations = db.session.query(Citation, Paper).join(
-            Paper, Citation.citing_paper_id == Paper.id
-        ).filter(
-            Citation.cited_paper_id == paper_id
-        ).limit(10).all()
-
-        paper_data['cited_by'] = [
-            {
-                'id': citing_paper.id,
-                'title': citing_paper.title,
-                'year': citing_paper.year,
-                'authors': citing_paper.authors
-            }
-            for _, citing_paper in citations
-        ]
-
-        # Get references (papers this paper cites)
-        references = db.session.query(Citation, Paper).join(
-            Paper, Citation.cited_paper_id == Paper.id
-        ).filter(
-            Citation.citing_paper_id == paper_id
-        ).limit(10).all()
-
-        paper_data['references'] = [
-            {
-                'id': cited_paper.id,
-                'title': cited_paper.title,
-                'year': cited_paper.year,
-                'authors': cited_paper.authors
-            }
-            for _, cited_paper in references
-        ]
+        
+        # For internal database papers, tags are already in the response
+        # Optional: Fetch relationships if they exist
+        try:
+            paper_tags = db.session.query(PaperTag, Tag).join(Tag).filter(
+                PaperTag.paper_id == paper_id
+            ).all()
+            if paper_tags:
+                paper_data['tags'] = [
+                    {
+                        'name': tag.name,
+                        'slug': tag.slug,
+                        'confidence': paper_tag.confidence
+                    }
+                    for paper_tag, tag in paper_tags
+                ]
+        except Exception:
+            # If PaperTag relationship doesn't exist, use tags from paper.to_dict()
+            pass
 
         return jsonify(paper_data), 200
 

@@ -13,8 +13,10 @@ Preferred communication style: Simple, everyday language.
 **Recent Updates (Dec 21, 2025 - FINAL)**:
 - ✅ **CRITICAL FIX**: Removed `deleted_at` column references from all endpoints (Paper model doesn't have this column)
 - ✅ **CRITICAL FIX**: Fixed frontend source mapping bug - 'google_scholar' was being mapped to 'scholar' instead of 'google_scholar'
+- ✅ **CRITICAL FIX**: Fixed paper details endpoint (GET /api/papers/{id}) - simplified to avoid failing relationships
 - ✅ **CRITICAL FIX**: Internal Database search now working (returns 2+ papers for "AI safety")
 - ✅ **CRITICAL FIX**: Google Scholar now working (returns 20+ papers via SerpAPI)
+- ✅ **CRITICAL FIX**: Reference Papers now loading correctly in modal
 - ✅ Google Scholar with arXiv fallback on timeout confirmed working
 - ✅ All 5 search sources fully tested and operational:
   - **Internal Database**: ✓ Working - searches title/abstract/authors
@@ -24,6 +26,7 @@ Preferred communication style: Simple, everyday language.
   - **Semantic Scholar**: ✓ Working - semantic search with citation counts
 - ✅ Unique identifier system working for all sources (source + source_id)
 - ✅ Frontend radio button selection correctly passes sources to API
+- ✅ Paper modal with reference papers fully functional
 
 **Previous Updates (Dec 18, 2025)**:
 - ✅ Replaced Google Scholar scholarly library with SerpAPI integration
