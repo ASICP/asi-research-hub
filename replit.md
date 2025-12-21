@@ -10,14 +10,23 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes & TODO
 
-**Recent Updates (Dec 18, 2025)**:
-- ✅ **CRITICAL FIX**: Replaced Google Scholar scholarly library with SerpAPI integration
-- ✅ **CRITICAL FIX**: Fixed Google Scholar blocking issue by implementing SerpAPI connector
-- ✅ Created `ara_v2/services/connectors/serpapi.py` for SerpAPI integration
-- ✅ Updated `search.py` to use SerpAPI instead of scholarly library
-- ✅ Updated `paper_ingestion.py` to support google_scholar source via SerpAPI
+**Recent Updates (Dec 21, 2025)**:
+- ✅ **CRITICAL FIX**: Fixed Internal Database search - added 'internal' source handler to `/api/papers/search`
+- ✅ **CRITICAL FIX**: Fixed ArXiv/external paper display - all papers now use unique identifiers (source+source_id)
+- ✅ Fixed Google Scholar SerpAPI integration - properly returns Paper model format with tags
+- ✅ Added automatic AI safety tag assignment to Google Scholar results (24 TAG_KEYWORDS)
+- ✅ Enhanced search endpoint logging for debugging timeout/fallback behavior
+- ✅ All 5 search sources fully tested and working:
+  - Internal Database: Searches title/abstract/authors across Papers table
+  - Google Scholar: Via SerpAPI with arXiv fallback on timeout
+  - arXiv: Direct feed API integration
+  - CrossRef: DOI-based search across 140M+ articles
+  - Semantic Scholar: Semantic search with citation counts
+
+**Previous Updates (Dec 18, 2025)**:
+- ✅ Replaced Google Scholar scholarly library with SerpAPI integration
+- ✅ Created SerpAPI connector for reliable Google Scholar access
 - ✅ Added SERPAPI_API_KEY to secrets management
-- ✅ All 5 search sources now fully functional (Internal Database, Google Scholar via SerpAPI, arXiv, CrossRef, Semantic Scholar)
 
 **Previous Updates (Dec 3, 2025)**:
 - ✅ **SECURITY**: Added verification token expiration (24-hour window) with automatic token regeneration
