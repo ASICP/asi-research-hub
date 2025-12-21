@@ -150,21 +150,26 @@ def search():
 
             if 'google_scholar' in sources:
                 # Google Scholar via SerpAPI with arXiv fallback on timeout
+                current_app.logger.info(f"Google Scholar search requested. SerpAPI connector available: {ingestion_service.serpapi_connector is not None}")
+                
                 if not ingestion_service.serpapi_connector:
                     warnings.append({
                         'source': 'google_scholar',
                         'message': 'Google Scholar search skipped - SerpAPI key not configured. Get API key from https://serpapi.com/'
                     })
+                    current_app.logger.warning("Google Scholar skipped - SerpAPI not configured")
                 else:
                     try:
                         current_app.logger.info(f"Searching Google Scholar via SerpAPI for: {query}")
                         scholar_result = ingestion_service.serpapi_connector.search_papers(
                             query, limit=max_results
                         )
-                        all_papers.extend(scholar_result['papers'])
-                        current_app.logger.info(f"✓ Google Scholar returned {len(scholar_result['papers'])} papers")
+                        papers_count = len(scholar_result.get('papers', []))
+                        all_papers.extend(scholar_result.get('papers', []))
+                        current_app.logger.info(f"✓ Google Scholar returned {papers_count} papers")
                     except Exception as scholar_error:
                         error_msg = str(scholar_error).lower()
+                        current_app.logger.error(f"Google Scholar search error (will check for timeout): {scholar_error}")
 
                         # Check if it's a timeout error
                         if 'timeout' in error_msg or 'timed out' in error_msg:
@@ -176,8 +181,9 @@ def search():
                                 arxiv_fallback_result = ingestion_service.arxiv_connector.search_papers(
                                     query, max_results=max_results
                                 )
-                                all_papers.extend(arxiv_fallback_result['papers'])
-                                current_app.logger.info(f"✓ arXiv fallback returned {len(arxiv_fallback_result['papers'])} papers")
+                                fallback_papers = arxiv_fallback_result.get('papers', [])
+                                all_papers.extend(fallback_papers)
+                                current_app.logger.info(f"✓ arXiv fallback returned {len(fallback_papers)} papers")
 
                                 warnings.append({
                                     'source': 'google_scholar',
@@ -191,7 +197,7 @@ def search():
                                 })
                         else:
                             # Not a timeout - log error
-                            current_app.logger.error(f"Google Scholar search failed: {scholar_error}")
+                            current_app.logger.error(f"Google Scholar search failed (non-timeout): {scholar_error}")
                             warnings.append({
                                 'source': 'google_scholar',
                                 'message': f'Google Scholar search failed: {str(scholar_error)[:100]}'
@@ -199,14 +205,18 @@ def search():
 
             # Deduplicate
             deduplicated = ingestion_service._deduplicate_papers(all_papers)
+            
+            current_app.logger.info(f"Final search result: {len(all_papers)} papers before dedup, {len(deduplicated)} after dedup")
 
             response_data = {
                 'total_fetched': len(deduplicated),
-                'papers': deduplicated
+                'papers': deduplicated if deduplicated else []
             }
 
             if warnings:
                 response_data['warnings'] = warnings
+            
+            current_app.logger.info(f"Returning response with {len(response_data.get('papers', []))} papers")
 
             return jsonify(response_data), 200
 
