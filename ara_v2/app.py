@@ -3,8 +3,7 @@ ARA v2 Application Factory
 Creates and configures the Flask application with all extensions.
 """
 
-import os
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_talisman import Talisman
 
@@ -13,10 +12,6 @@ from ara_v2.utils.logger import configure_logging
 from ara_v2.utils.database import db, init_db
 from ara_v2.utils.redis_client import redis_client, init_redis
 from ara_v2.utils.errors import register_error_handlers
-
-# Get project root directory (parent of ara_v2)
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_FOLDER = os.path.join(PROJECT_ROOT, 'static')
 
 
 def create_app(config_name=None):
@@ -29,7 +24,7 @@ def create_app(config_name=None):
     Returns:
         Configured Flask application
     """
-    app = Flask(__name__, static_folder=STATIC_FOLDER, static_url_path='/static')
+    app = Flask(__name__)
 
     # Load configuration
     if config_name:
@@ -81,15 +76,29 @@ def init_extensions(app):
     if not app.debug:
         csp = {
             'default-src': "'self'",
-            'script-src': ["'self'", "'unsafe-inline'", "https://d3js.org"],
+            'script-src': [
+                "'self'",
+                "'unsafe-inline'",
+                "'unsafe-eval'",  # Required for Google reCAPTCHA and d3.js
+                "https://d3js.org",
+                "https://www.google.com",
+                "https://www.gstatic.com"
+            ],
             'style-src': ["'self'", "'unsafe-inline'"],
             'img-src': ["'self'", "data:", "https:"],
-            'connect-src': ["'self'", "https://hubt1.asi2.org"],
+            'connect-src': [
+                "'self'",
+                "https://www.google.com",
+                "https://www.gstatic.com"
+            ],
+            'frame-src': [
+                "https://www.google.com"  # Required for reCAPTCHA
+            ],
         }
 
         Talisman(
             app,
-            force_https=False,  # Cloud Run handles HTTPS
+            force_https=True,
             strict_transport_security=True,
             content_security_policy=csp,
             content_security_policy_nonce_in=['script-src']

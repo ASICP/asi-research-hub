@@ -53,6 +53,11 @@ class Config:
     SEMANTIC_SCHOLAR_API_KEY = os.getenv('SEMANTIC_SCHOLAR_API_KEY', '')
     CROSSREF_EMAIL = os.getenv('CROSSREF_EMAIL', '')
 
+    # SerpAPI (Google Scholar)
+    # SerpAPI handles proxy rotation, anti-scraping, and CAPTCHA automatically
+    # Get API key from https://serpapi.com/
+    SERPAPI_API_KEY = os.getenv('SERPAPI_API_KEY', '')
+
     # Rate Limiting
     RATELIMIT_STORAGE_URL = os.getenv('RATELIMIT_STORAGE_URL', REDIS_URL)
     RATELIMIT_DEFAULT = os.getenv('RATELIMIT_DEFAULT', '1000 per day;100 per hour')

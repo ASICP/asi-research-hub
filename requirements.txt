@@ -17,6 +17,8 @@ gunicorn==21.2.0
 Flask-JWT-Extended==4.5.3  # v1 auth
 bcrypt==4.1.1
 PyPDF2==3.0.1  # PDF processing for v1
+# Google Scholar: Now using SerpAPI (requires SERPAPI_API_KEY env variable)
+# No additional package needed - uses requests library above
 sendgrid==6.11.0  # Email for v1
 validators==0.22.0
 

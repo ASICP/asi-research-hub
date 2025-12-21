@@ -1,59 +1,11 @@
 import time
 import json
 import re
-import signal
-import os
-import requests
 from typing import List, Dict, Optional
 from database import get_db
 from psycopg2.extras import RealDictCursor
 from models import Paper, SearchResult
 from config import Config
-
-def timeout_handler(signum, frame):
-    raise TimeoutError("Google Scholar search timed out")
-
-# Tag keywords mapping for auto-assignment
-TAG_KEYWORDS = {
-    'alignment': ['alignment', 'aligned', 'aligning'],
-    'AI_safety': ['safety', 'safe', 'safer', 'safeguard'],
-    'AI_risks': ['risk', 'risks', 'danger', 'dangerous', 'threat'],
-    'interpretability': ['interpretability', 'interpretable', 'explainability', 'explainable', 'xai'],
-    'reward_hacking': ['reward hacking', 'reward gaming', 'reward manipulation'],
-    'robustness': ['robust', 'robustness', 'adversarial'],
-    'value_alignment': ['value alignment', 'human values', 'value learning'],
-    'corrigibility': ['corrigibility', 'corrigible', 'shutdown'],
-    'mesa_optimization': ['mesa-optimization', 'mesa optimization', 'inner alignment'],
-    'outer_alignment': ['outer alignment'],
-    'training': ['training', 'train', 'fine-tuning', 'fine tuning', 'finetuning'],
-    'RLHF': ['rlhf', 'reinforcement learning from human feedback', 'human feedback'],
-    'constitutional_AI': ['constitutional ai', 'constitutional'],
-    'deception': ['deception', 'deceptive', 'lying', 'dishonest'],
-    'goal_misgeneralization': ['goal misgeneralization', 'distributional shift'],
-    'scalable_oversight': ['scalable oversight', 'oversight'],
-    'red_teaming': ['red team', 'red-team', 'adversarial testing'],
-    'language_models': ['language model', 'llm', 'gpt', 'transformer', 'large language'],
-    'neural_networks': ['neural network', 'deep learning', 'deep neural'],
-    'machine_learning': ['machine learning', 'ml'],
-    'AGI': ['agi', 'artificial general intelligence', 'general intelligence'],
-    'superintelligence': ['superintelligence', 'superintelligent', 'super-intelligence'],
-    'existential_risk': ['existential risk', 'x-risk', 'extinction'],
-    'governance': ['governance', 'policy', 'regulation'],
-    'ethics': ['ethics', 'ethical', 'moral'],
-}
-
-def assign_tags_from_text(title: str, abstract: str) -> List[str]:
-    """Assign relevant AI safety tags based on title and abstract content"""
-    text = (title + ' ' + abstract).lower()
-    assigned_tags = []
-    
-    for tag, keywords in TAG_KEYWORDS.items():
-        for keyword in keywords:
-            if keyword.lower() in text:
-                assigned_tags.append(tag)
-                break
-    
-    return assigned_tags[:5]  # Limit to 5 most relevant tags
 
 class SearchService:
     
@@ -99,79 +51,65 @@ class SearchService:
     
     @staticmethod
     def search_google_scholar(query: str, max_results: int = 20) -> List[Dict]:
-        """Search Google Scholar via SerpAPI"""
+        """
+        Search Google Scholar using SerpAPI.
+
+        SerpAPI handles proxy rotation, anti-scraping, and CAPTCHA automatically.
+        Requires SERPAPI_API_KEY environment variable.
+
+        Args:
+            query: Search query string
+            max_results: Maximum number of results to return (default: 20)
+
+        Returns:
+            List of paper dictionaries with title, authors, abstract, year, etc.
+
+        Note: Get API key from https://serpapi.com/
+        """
         results = []
-        
+
         try:
-            api_key = os.getenv('SERPAPI_API_KEY')
-            if not api_key:
-                print("⚠️ SERPAPI_API_KEY not configured. Google Scholar search unavailable.")
-                return results
-            
-            params = {
-                'q': query.strip(),
-                'engine': 'google_scholar',
-                'api_key': api_key,
-                'num': min(max_results, 20),
-                'hl': 'en',
-            }
+            # Check if API key is configured
+            if not Config.SERPAPI_API_KEY:
+                print("⚠️ SerpAPI key not configured. Set SERPAPI_API_KEY in .env")
+                print("   Get API key from https://serpapi.com/ (100 free searches/month)")
+                return []
 
-            response = requests.get(
-                'https://serpapi.com/search',
-                params=params,
-                timeout=15
+            # Import SerpAPI connector
+            from ara_v2.services.connectors import SerpAPIGoogleScholarConnector
+
+            # Initialize connector
+            connector = SerpAPIGoogleScholarConnector(api_key=Config.SERPAPI_API_KEY)
+
+            # Perform search (SerpAPI limits to 20 results per request)
+            # If max_results > 20, we'd need to make multiple requests with pagination
+            limit = min(max_results, 20)
+
+            response = connector.search_papers(
+                query=query,
+                limit=limit
             )
-            response.raise_for_status()
 
-            data = response.json()
+            # Extract papers from response
+            for paper_data in response.get('papers', []):
+                results.append({
+                    'title': paper_data.get('title', 'N/A'),
+                    'authors': paper_data.get('authors', 'Unknown'),
+                    'abstract': paper_data.get('abstract', '')[:500] if paper_data.get('abstract') else '',
+                    'year': paper_data.get('year'),
+                    'source': 'Google Scholar',
+                    'url': paper_data.get('url', ''),
+                    'citation_count': paper_data.get('citation_count', 0),
+                    'pdf_url': paper_data.get('pdf_url'),
+                })
 
-            if data.get('error'):
-                print(f"⚠️ SerpAPI error: {data.get('error')}")
-                return results
+            print(f"✓ Google Scholar (SerpAPI): Found {len(results)} papers")
 
-            # Extract organic results
-            organic_results = data.get('organic_results', [])
-            
-            for result in organic_results:
-                try:
-                    # Parse publication date for year
-                    year = None
-                    pub_info = result.get('publication_info', {}).get('summary', '')
-                    if pub_info and ' - ' in pub_info:
-                        year_str = pub_info.split(' - ')[-1]
-                        try:
-                            year = int(year_str)
-                        except (ValueError, IndexError):
-                            year = 2024
-                    else:
-                        year = 2024
-
-                    # Extract authors from publication info
-                    authors = ''
-                    pub_info = result.get('publication_info', {}).get('summary', '')
-                    if pub_info and ' - ' in pub_info:
-                        authors = pub_info.split(' - ')[0].strip()
-
-                    results.append({
-                        'title': result.get('title', 'N/A'),
-                        'authors': authors if authors else 'Unknown',
-                        'abstract': result.get('snippet', '')[:500] if result.get('snippet') else '',
-                        'year': year,
-                        'source': 'Google Scholar',
-                        'url': result.get('link', ''),
-                        'citation_count': result.get('inline_links', {}).get('cited_by', {}).get('total', 0)
-                    })
-                except Exception as pub_error:
-                    print(f"⚠️ Error parsing Google Scholar result: {pub_error}")
-                    continue
-                
-        except requests.exceptions.Timeout:
-            print(f"⚠️ Google Scholar search timed out for query: {query}")
-        except requests.exceptions.RequestException as e:
-            print(f"⚠️ Google Scholar API error: {str(e)[:100]}")
+        except ValueError as e:
+            print(f"⚠️ SerpAPI configuration error: {e}")
         except Exception as e:
-            print(f"⚠️ Unexpected error in Google Scholar search: {str(e)[:100]}")
-        
+            print(f"⚠️ Google Scholar API error: {type(e).__name__}: {str(e)[:100]}")
+
         return results
     
     @staticmethod
@@ -264,8 +202,6 @@ class SearchService:
             arxiv_results = SearchService.search_arxiv(query)
             print(f"✅ arXiv returned {len(arxiv_results)} results")
             for result in arxiv_results:
-                # Auto-assign tags based on content
-                auto_tags = assign_tags_from_text(result['title'], result['abstract'])
                 paper = Paper(
                     id=0,
                     title=result['title'],
@@ -278,7 +214,7 @@ class SearchService:
                     pdf_path=None,
                     pdf_text=None,
                     asip_funded=False,
-                    tags=auto_tags,
+                    tags=[],
                     citation_count=0,
                     added_by=None,
                     created_at='',
@@ -291,8 +227,6 @@ class SearchService:
         if 'crossref' in sources:
             crossref_results = SearchService.search_crossref(query)
             for result in crossref_results:
-                # Auto-assign tags based on content
-                auto_tags = assign_tags_from_text(result['title'], result['abstract'])
                 paper = Paper(
                     id=0,
                     title=result['title'],
@@ -305,7 +239,7 @@ class SearchService:
                     pdf_path=None,
                     pdf_text=None,
                     asip_funded=False,
-                    tags=auto_tags,
+                    tags=[],
                     citation_count=0,
                     added_by=None,
                     created_at='',
@@ -320,8 +254,6 @@ class SearchService:
             semantic_results = SearchService.search_semantic_scholar(query)
             print(f"✅ Semantic Scholar returned {len(semantic_results)} results")
             for result in semantic_results:
-                # Auto-assign tags based on content
-                auto_tags = assign_tags_from_text(result['title'], result['abstract'])
                 paper = Paper(
                     id=0,
                     title=result['title'],
@@ -334,7 +266,7 @@ class SearchService:
                     pdf_path=None,
                     pdf_text=None,
                     asip_funded=False,
-                    tags=auto_tags,
+                    tags=[],
                     citation_count=result.get('citation_count', 0),
                     added_by=None,
                     created_at='',
