@@ -1,0 +1,44 @@
+ackupService: There was an error while looking for backups:  Error: Could not resolve an existing destination folder path.
+    resolveExistingArchiveDestFolderPath resource:///modules/backup/BackupService.sys.mjs:1267
+Caused by: 5
+BackupService.sys.mjs:4168:23
+BackupService: There was an error while looking for backups:  Error: Could not resolve an existing destination folder path.
+    resolveExistingArchiveDestFolderPath resource:///modules/backup/BackupService.sys.mjs:1267
+Caused by: 5
+BackupService.sys.mjs:4168:23
+BackupService: There was an error while looking for backups:  Error: Could not resolve an existing destination folder path.
+    resolveExistingArchiveDestFolderPath resource:///modules/backup/BackupService.sys.mjs:1267
+Caused by: 5
+BackupService.sys.mjs:4168:23
+NS_ERROR_NOT_AVAILABLE: 
+NS_ERROR_NOT_AVAILABLE: 
+NS_ERROR_NOT_AVAILABLE: 
+NS_ERROR_NOT_AVAILABLE: 
+BackupService: There was an error while looking for backups:  Error: Could not resolve an existing destination folder path.
+    resolveExistingArchiveDestFolderPath resource:///modules/backup/BackupService.sys.mjs:1267
+Caused by: 5
+BackupService.sys.mjs:4168:23
+BroadcastService: receivedBroadcastMessage: handler for remote-settings/monitor_changes threw error: Error: Polling for changes failed: NetworkError: Network request failed.
+    pollChanges resource://services-settings/remote-settings.sys.mjs:478
+PushBroadcastService.sys.mjs:255:22
+URLBar - MerinoClient [HNT_WEATHER_FEED]: Fetch error TypeError: NetworkError when attempting to fetch resource. MerinoClient.sys.mjs:347:31
+URLBar - MerinoClient [HNT_WEATHER_FEED]: Fetch error TypeError: NetworkError when attempting to fetch resource. MerinoClient.sys.mjs:347:31
+URLBar - MerinoClient [HNT_WEATHER_FEED]: Fetch error TypeError: NetworkError when attempting to fetch resource. MerinoClient.sys.mjs:347:31
+URLBar - MerinoClient [HNT_WEATHER_FEED]: Fetch error TypeError: NetworkError when attempting to fetch resource. MerinoClient.sys.mjs:347:31
+NS_ERROR_NOT_AVAILABLE: 
+NS_ERROR_NOT_AVAILABLE: 
+BackupService: There was an error while looking for backups:  Error: Could not resolve an existing destination folder path.
+    resolveExistingArchiveDestFolderPath resource:///modules/backup/BackupService.sys.mjs:1267
+Caused by: 5
+BackupService.sys.mjs:4168:23
+NS_ERROR_NOT_AVAILABLE: 
+BackupService: There was an error while looking for backups:  Error: Could not resolve an existing destination folder path.
+    resolveExistingArchiveDestFolderPath resource:///modules/backup/BackupService.sys.mjs:1267
+Caused by: 5
+BackupService.sys.mjs:4168:23
+NS_ERROR_NOT_AVAILABLE: 
+BackupService: There was an error while looking for backups:  Error: Could not resolve an existing destination folder path.
+    resolveExistingArchiveDestFolderPath resource:///modules/backup/BackupService.sys.mjs:1267
+Caused by: 5
+BackupService.sys.mjs:4168:23
+NS_ERROR_NOT_AVAILABLE: 

@@ -747,7 +747,8 @@
 
             Object.values(uniquePapers).forEach(paper => {
                 // Create unique key for internal papers (id) or external papers (source+source_id)
-                const paperKey = paper.id ? `internal_${paper.id}` : `${paper.source}_${paper.source_id}`;
+                // Use :: delimiter to avoid conflicts with underscores in source names and URLs
+                const paperKey = paper.id ? `internal::${paper.id}` : `${paper.source}::${paper.source_id}`;
                 html += `
                     <div class="result-card" onclick="viewPaper('${paperKey.replace(/'/g, "\\'")}')">
                         <div class="result-title">${paper.title}</div>
@@ -767,14 +768,22 @@
 
         function viewPaper(paperKey) {
             // Find the paper in the last search results
-            // paperKey format: 'internal_ID' for database papers or 'SOURCE_SOURCE_ID' for external papers
+            // paperKey format: 'internal::ID' for database papers or 'SOURCE::SOURCE_ID' for external papers
             let paper;
-            if (paperKey.startsWith('internal_')) {
-                const paperId = parseInt(paperKey.substring(9));
+            if (paperKey.startsWith('internal::')) {
+                const paperId = parseInt(paperKey.substring(10));
                 paper = window.lastSearchResults?.papers.find(p => p.id === paperId);
             } else {
-                const [source, ...sourceParts] = paperKey.split('_');
-                const sourceId = sourceParts.join('_');
+                // Split by :: delimiter (safe for URLs and source names with underscores)
+                const delimiterIndex = paperKey.indexOf('::');
+                if (delimiterIndex === -1) {
+                    console.warn('Invalid paperKey format:', paperKey);
+                    alert('Paper not found. Please try searching again.');
+                    return;
+                }
+                const source = paperKey.substring(0, delimiterIndex);
+                const sourceId = paperKey.substring(delimiterIndex + 2);
+                
                 // Try to find paper with exact match
                 paper = window.lastSearchResults?.papers.find(p => p.source === source && p.source_id === sourceId);
                 
@@ -1055,8 +1064,8 @@
                     refLink = `<a href="${ref.url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;">🔗 View Paper</a>`;
                 }
                 
-                // Create proper paper key for clicking
-                const paperKey = ref.id ? `internal_${ref.id}` : `${ref.source}_${ref.source_id}`;
+                // Create proper paper key for clicking (use :: delimiter)
+                const paperKey = ref.id ? `internal::${ref.id}` : `${ref.source}::${ref.source_id}`;
                 
                 html += `
                     <div class="reference-item" onclick="viewPaper('${paperKey.replace(/'/g, "\\'")}')">
