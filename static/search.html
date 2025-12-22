@@ -745,12 +745,20 @@
                 }
             });
 
+            // Helper function to escape HTML entities for use in attributes
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            }
+            
             Object.values(uniquePapers).forEach(paper => {
                 // Create unique key for internal papers (id) or external papers (source+source_id)
                 // Use :: delimiter to avoid conflicts with underscores in source names and URLs
                 const paperKey = paper.id ? `internal::${paper.id}` : `${paper.source}::${paper.source_id}`;
+                // Escape for safe HTML attribute usage
+                const escapedKey = escapeHtml(paperKey);
                 html += `
-                    <div class="result-card" onclick="viewPaper('${paperKey.replace(/'/g, "\\'")}')">
+                    <div class="result-card" onclick="viewPaper('${escapedKey}')">
                         <div class="result-title">${paper.title}</div>
                         <div class="result-meta">${paper.authors} • ${paper.year}</div>
                         <div class="result-badges">
@@ -1066,9 +1074,12 @@
                 
                 // Create proper paper key for clicking (use :: delimiter)
                 const paperKey = ref.id ? `internal::${ref.id}` : `${ref.source}::${ref.source_id}`;
+                // Escape for safe HTML attribute usage
+                const escapeHtml = (str) => str ? str.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+                const escapedKey = escapeHtml(paperKey);
                 
                 html += `
-                    <div class="reference-item" onclick="viewPaper('${paperKey.replace(/'/g, "\\'")}')">
+                    <div class="reference-item" onclick="viewPaper('${escapedKey}')">
                         <div class="reference-title">${ref.title}</div>
                         <div class="reference-meta">${ref.authors || 'Unknown'} • ${ref.year || 'N/A'}</div>
                         <div class="reference-snippet">${snippet}</div>
