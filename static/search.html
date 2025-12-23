@@ -745,26 +745,23 @@
                 }
             });
 
-            // Helper function to escape HTML entities for use in attributes
-            function escapeHtml(str) {
-                if (!str) return '';
-                return str.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            }
+            // Store papers in a lookup map for click handling
+            window.paperLookup = {};
             
-            Object.values(uniquePapers).forEach(paper => {
+            Object.values(uniquePapers).forEach((paper, index) => {
                 // Create unique key for internal papers (id) or external papers (source+source_id)
-                // Use :: delimiter to avoid conflicts with underscores in source names and URLs
                 const paperKey = paper.id ? `internal::${paper.id}` : `${paper.source}::${paper.source_id}`;
-                // Escape for safe HTML attribute usage
-                const escapedKey = escapeHtml(paperKey);
+                // Store paper in lookup map using index as simpler key
+                window.paperLookup[index] = paper;
+                
                 html += `
-                    <div class="result-card" onclick="viewPaper('${escapedKey}')">
+                    <div class="result-card" data-paper-index="${index}">
                         <div class="result-title">${paper.title}</div>
                         <div class="result-meta">${paper.authors} • ${paper.year}</div>
                         <div class="result-badges">
                             ${paper.asip_funded ? '<span class="badge badge-featured">ASI Featured</span>' : ''}
-                            ${paper.arxiv_id ? `<a href="https://arxiv.org/abs/${paper.arxiv_id}" target="_blank" class="badge badge-link" onclick="event.stopPropagation()">📄 arXiv</a>` : ''}
-                            ${paper.doi ? `<a href="https://doi.org/${paper.doi}" target="_blank" class="badge badge-link" onclick="event.stopPropagation()">🔗 DOI</a>` : ''}
+                            ${paper.arxiv_id ? `<a href="https://arxiv.org/abs/${paper.arxiv_id}" target="_blank" class="badge badge-link" data-external-link>📄 arXiv</a>` : ''}
+                            ${paper.doi ? `<a href="https://doi.org/${paper.doi}" target="_blank" class="badge badge-link" data-external-link>🔗 DOI</a>` : ''}
                         </div>
                     </div>
                 `;
@@ -772,63 +769,32 @@
 
             html += '</div>';
             container.innerHTML = html;
+            
+            // Add click event listeners using event delegation
+            container.querySelectorAll('.result-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Don't trigger if clicking external links
+                    if (e.target.hasAttribute('data-external-link')) return;
+                    
+                    const index = parseInt(this.dataset.paperIndex);
+                    const paper = window.paperLookup[index];
+                    if (paper) {
+                        showPaperModal(paper);
+                    } else {
+                        console.warn('Paper not found for index:', index);
+                        alert('Paper not found. Please try searching again.');
+                    }
+                });
+            });
         }
 
-        function viewPaper(paperKey) {
-            // Debug: log incoming key
-            console.log('viewPaper called with:', paperKey);
-            console.log('lastSearchResults exists:', !!window.lastSearchResults);
-            console.log('Papers count:', window.lastSearchResults?.papers?.length || 0);
-            
-            // Decode HTML entities that may have been passed from onclick attribute
-            const decodeHtml = (str) => {
-                const txt = document.createElement('textarea');
-                txt.innerHTML = str;
-                return txt.value;
-            };
-            paperKey = decodeHtml(paperKey);
-            console.log('After HTML decode:', paperKey);
-            
-            // Find the paper in the last search results
-            // paperKey format: 'internal::ID' for database papers or 'SOURCE::SOURCE_ID' for external papers
-            let paper;
-            if (paperKey.startsWith('internal::')) {
-                const paperId = parseInt(paperKey.substring(10));
-                paper = window.lastSearchResults?.papers.find(p => p.id === paperId);
-            } else {
-                // Split by :: delimiter (safe for URLs and source names with underscores)
-                const delimiterIndex = paperKey.indexOf('::');
-                if (delimiterIndex === -1) {
-                    console.warn('Invalid paperKey format (no :: delimiter):', paperKey);
-                    alert('Paper not found. Please try searching again.');
-                    return;
-                }
-                const source = paperKey.substring(0, delimiterIndex);
-                const sourceId = paperKey.substring(delimiterIndex + 2);
-                console.log('Looking for source:', source, 'sourceId:', sourceId);
-                
-                // Debug: log available papers
-                if (window.lastSearchResults?.papers) {
-                    console.log('Available papers sources/ids:', window.lastSearchResults.papers.map(p => ({source: p.source, source_id: p.source_id})));
-                }
-                
-                // Try to find paper with exact match
-                paper = window.lastSearchResults?.papers.find(p => p.source === source && p.source_id === sourceId);
-                
-                // If not found, try case-insensitive source match (e.g., 'google_scholar' vs 'Google Scholar')
-                if (!paper) {
-                    paper = window.lastSearchResults?.papers.find(p => 
-                        p.source?.toLowerCase() === source.toLowerCase() && p.source_id === sourceId
-                    );
-                }
-            }
-            
+        // Show paper modal with given paper object
+        function showPaperModal(paper) {
             if (!paper) {
-                console.warn(`Paper not found in cache: ${paperKey}. Available papers:`, window.lastSearchResults?.papers);
                 alert('Paper not found. Please try searching again.');
                 return;
             }
-
+            
             // Store current paper for keyword highlighting
             window.currentPaper = paper;
 
@@ -1076,30 +1042,28 @@
                 return;
             }
 
+            // Store references in a lookup map
+            window.referenceLookup = {};
+            
             let html = '';
-            references.forEach(ref => {
+            references.forEach((ref, index) => {
+                window.referenceLookup[index] = ref;
                 const snippet = ref.abstract ? ref.abstract.substring(0, 100) + '...' : 'No abstract available.';
                 
                 // Build reference link
                 let refLink = '';
                 if (ref.arxiv_id) {
-                    refLink = `<a href="https://arxiv.org/abs/${ref.arxiv_id}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;">🔗 View Paper</a>`;
+                    refLink = `<a href="https://arxiv.org/abs/${ref.arxiv_id}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
                 } else if (ref.doi) {
-                    refLink = `<a href="https://doi.org/${ref.doi}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;">🔗 View Paper</a>`;
+                    refLink = `<a href="https://doi.org/${ref.doi}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
                 } else if (ref.pdf_url) {
-                    refLink = `<a href="${ref.pdf_url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;">🔗 View Paper</a>`;
+                    refLink = `<a href="${ref.pdf_url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
                 } else if (ref.url) {
-                    refLink = `<a href="${ref.url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;">🔗 View Paper</a>`;
+                    refLink = `<a href="${ref.url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
                 }
                 
-                // Create proper paper key for clicking (use :: delimiter)
-                const paperKey = ref.id ? `internal::${ref.id}` : `${ref.source}::${ref.source_id}`;
-                // Escape for safe HTML attribute usage
-                const escapeHtml = (str) => str ? str.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
-                const escapedKey = escapeHtml(paperKey);
-                
                 html += `
-                    <div class="reference-item" onclick="viewPaper('${escapedKey}')">
+                    <div class="reference-item" data-ref-index="${index}">
                         <div class="reference-title">${ref.title}</div>
                         <div class="reference-meta">${ref.authors || 'Unknown'} • ${ref.year || 'N/A'}</div>
                         <div class="reference-snippet">${snippet}</div>
@@ -1108,6 +1072,19 @@
                 `;
             });
             container.innerHTML = html;
+            
+            // Add click event listeners
+            container.querySelectorAll('.reference-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (e.target.hasAttribute('data-external-link')) return;
+                    
+                    const index = parseInt(this.dataset.refIndex);
+                    const ref = window.referenceLookup[index];
+                    if (ref) {
+                        showPaperModal(ref);
+                    }
+                });
+            });
         }
 
         function closeModal() {
