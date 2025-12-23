@@ -745,15 +745,10 @@
                 }
             });
 
-            // Store papers in a lookup map for click handling
-            window.paperLookup = {};
+            // Convert to array for processing
+            const papersArray = Object.values(uniquePapers);
             
-            Object.values(uniquePapers).forEach((paper, index) => {
-                // Create unique key for internal papers (id) or external papers (source+source_id)
-                const paperKey = paper.id ? `internal::${paper.id}` : `${paper.source}::${paper.source_id}`;
-                // Store paper in lookup map using index as simpler key
-                window.paperLookup[index] = paper;
-                
+            papersArray.forEach((paper, index) => {
                 html += `
                     <div class="result-card" data-paper-index="${index}">
                         <div class="result-title">${paper.title}</div>
@@ -770,18 +765,16 @@
             html += '</div>';
             container.innerHTML = html;
             
-            // Add click event listeners using event delegation
-            container.querySelectorAll('.result-card').forEach(card => {
+            // Add click event listeners - capture paper data directly in closure
+            container.querySelectorAll('.result-card').forEach((card, idx) => {
+                const paper = papersArray[idx]; // Capture paper in closure
                 card.addEventListener('click', function(e) {
                     // Don't trigger if clicking external links
                     if (e.target.hasAttribute('data-external-link')) return;
                     
-                    const index = parseInt(this.dataset.paperIndex);
-                    const paper = window.paperLookup[index];
                     if (paper) {
                         showPaperModal(paper);
                     } else {
-                        console.warn('Paper not found for index:', index);
                         alert('Paper not found. Please try searching again.');
                     }
                 });
@@ -851,10 +844,10 @@
 
             // Explore Paper button - for Google Scholar, use the URL; otherwise use PDF
             let exploreUrl = null;
-            if (paper.source === 'Google Scholar' && paper.url) {
+            if (paper.source === 'google_scholar' && paper.url) {
                 exploreUrl = paper.url;
             } else {
-                exploreUrl = paper.pdf_url || (paper.arxiv_id ? `https://arxiv.org/pdf/${paper.arxiv_id}.pdf` : null);
+                exploreUrl = paper.pdf_url || paper.url || (paper.arxiv_id ? `https://arxiv.org/pdf/${paper.arxiv_id}.pdf` : null);
             }
             
             if (exploreUrl) {
@@ -876,7 +869,7 @@
             document.getElementById('paper-tags').innerHTML = tagsHTML;
 
             // For Google Scholar papers, auto-load related papers from Internal Database
-            if (paper.source === 'Google Scholar' || paper.id === 0) {
+            if (paper.source === 'google_scholar' || !paper.id) {
                 loadRelatedPapersForGoogleScholar(paper.title);
             } else {
                 // For Internal Database papers, show placeholder
@@ -1041,13 +1034,9 @@
                 container.innerHTML = '<div class="no-references" style="text-align: center; padding: 30px 10px; line-height: 1.6;">👇<br><br>CLICK A TAG BELOW TO VIEW RELATED PAPERS</div>';
                 return;
             }
-
-            // Store references in a lookup map
-            window.referenceLookup = {};
             
             let html = '';
             references.forEach((ref, index) => {
-                window.referenceLookup[index] = ref;
                 const snippet = ref.abstract ? ref.abstract.substring(0, 100) + '...' : 'No abstract available.';
                 
                 // Build reference link
@@ -1073,13 +1062,11 @@
             });
             container.innerHTML = html;
             
-            // Add click event listeners
-            container.querySelectorAll('.reference-item').forEach(item => {
+            // Add click event listeners - capture ref data in closure
+            container.querySelectorAll('.reference-item').forEach((item, idx) => {
+                const ref = references[idx]; // Capture reference in closure
                 item.addEventListener('click', function(e) {
                     if (e.target.hasAttribute('data-external-link')) return;
-                    
-                    const index = parseInt(this.dataset.refIndex);
-                    const ref = window.referenceLookup[index];
                     if (ref) {
                         showPaperModal(ref);
                     }
