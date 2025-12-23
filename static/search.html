@@ -775,6 +775,20 @@
         }
 
         function viewPaper(paperKey) {
+            // Debug: log incoming key
+            console.log('viewPaper called with:', paperKey);
+            console.log('lastSearchResults exists:', !!window.lastSearchResults);
+            console.log('Papers count:', window.lastSearchResults?.papers?.length || 0);
+            
+            // Decode HTML entities that may have been passed from onclick attribute
+            const decodeHtml = (str) => {
+                const txt = document.createElement('textarea');
+                txt.innerHTML = str;
+                return txt.value;
+            };
+            paperKey = decodeHtml(paperKey);
+            console.log('After HTML decode:', paperKey);
+            
             // Find the paper in the last search results
             // paperKey format: 'internal::ID' for database papers or 'SOURCE::SOURCE_ID' for external papers
             let paper;
@@ -785,12 +799,18 @@
                 // Split by :: delimiter (safe for URLs and source names with underscores)
                 const delimiterIndex = paperKey.indexOf('::');
                 if (delimiterIndex === -1) {
-                    console.warn('Invalid paperKey format:', paperKey);
+                    console.warn('Invalid paperKey format (no :: delimiter):', paperKey);
                     alert('Paper not found. Please try searching again.');
                     return;
                 }
                 const source = paperKey.substring(0, delimiterIndex);
                 const sourceId = paperKey.substring(delimiterIndex + 2);
+                console.log('Looking for source:', source, 'sourceId:', sourceId);
+                
+                // Debug: log available papers
+                if (window.lastSearchResults?.papers) {
+                    console.log('Available papers sources/ids:', window.lastSearchResults.papers.map(p => ({source: p.source, source_id: p.source_id})));
+                }
                 
                 // Try to find paper with exact match
                 paper = window.lastSearchResults?.papers.find(p => p.source === source && p.source_id === sourceId);
