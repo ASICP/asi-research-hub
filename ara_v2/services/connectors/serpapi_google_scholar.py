@@ -238,7 +238,6 @@ class SerpAPIGoogleScholarConnector:
                 'authors': ', '.join(authors) if authors else 'Unknown',
                 'year': year if year else None,
                 'abstract': result.get('snippet', ''),
-                'source': 'google_scholar',
                 'source_id': source_id,
                 'citation_count': citation_count,
                 'tags': tags,
@@ -252,7 +251,6 @@ class SerpAPIGoogleScholarConnector:
     
     def _assign_tags(self, title: str, abstract: str) -> List[str]:
         """Assign AI safety tags based on title and abstract."""
-        import json
         text = (title + ' ' + abstract).lower()
         assigned_tags = []
         
@@ -262,7 +260,7 @@ class SerpAPIGoogleScholarConnector:
                     assigned_tags.append(tag)
                     break
         
-        return json.dumps(assigned_tags[:10])
+        return assigned_tags[:10]
 
     def get_paper_details(self, paper_id: str) -> Optional[Dict[str, Any]]:
         """
