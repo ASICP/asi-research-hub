@@ -238,6 +238,8 @@ class SerpAPIGoogleScholarConnector:
                 'authors': ', '.join(authors) if authors else 'Unknown',
                 'year': year if year else None,
                 'abstract': result.get('snippet', ''),
+                'source': 'google_scholar',
+                'url': result.get('link', ''),
                 'source_id': source_id,
                 'citation_count': citation_count,
                 'tags': tags,
