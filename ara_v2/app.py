@@ -3,7 +3,7 @@ ARA v2 Application Factory
 Creates and configures the Flask application with all extensions.
 """
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_talisman import Talisman
 
@@ -48,6 +48,15 @@ def create_app(config_name=None):
 
     # Health check endpoints
     register_health_checks(app)
+    
+    # Disable caching for static files to prevent CDN/browser caching issues
+    @app.after_request
+    def add_cache_control(response):
+        if request.path.startswith('/static/'):
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response.headers['Pragma'] = 'no-cache'
+            response.headers['Expires'] = '0'
+        return response
 
     app.logger.info(f"ARA v2 started in {app.config.get('FLASK_ENV', 'unknown')} mode")
 

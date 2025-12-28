@@ -146,10 +146,13 @@ class SerpAPIGoogleScholarConnector:
             # Parse response
             papers = []
             organic_results = data.get('organic_results', [])
+            
+            current_app.logger.info(f"SerpAPI returned {len(organic_results)} results for query: {query}")
 
             for result in organic_results:
                 paper = self._parse_paper(result)
                 if paper:
+                    current_app.logger.info(f"Parsed paper - title: {paper.get('title', 'N/A')[:50]}... source_id: {paper.get('source_id', 'EMPTY')}")
                     papers.append(paper)
 
             # Estimate total results
@@ -188,6 +191,8 @@ class SerpAPIGoogleScholarConnector:
             Normalized paper dictionary or None if parsing fails
         """
         try:
+            import uuid
+            
             # Extract publication info
             pub_info = result.get('publication_info', {})
 
@@ -218,15 +223,23 @@ class SerpAPIGoogleScholarConnector:
             # Build normalized paper object
             # Extract tags from title/abstract
             tags = self._assign_tags(result.get('title', ''), result.get('snippet', ''))
-
+            # Generate a unique source_id (UUID-based for consistency)
+            # Use link if available, otherwise generate from title+authors
+            source_id = result.get('link', '')
+            if not source_id or source_id.strip() == '':
+                # Create consistent ID from title and authors
+                import hashlib
+                id_seed = f"{result.get('title', 'unknown')}_{','.join(authors)}"
+                source_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, id_seed))[:16]
+            
             paper = {
                 'title': result.get('title', 'N/A'),
                 'authors': ', '.join(authors) if authors else 'Unknown',
                 'year': year if year else None,
                 'abstract': result.get('snippet', ''),
                 'source': 'google_scholar',
-                'source_id': result.get('result_id', ''),
                 'url': result.get('link', ''),
+                'source_id': source_id,
                 'citation_count': citation_count,
                 'tags': tags,
             }
@@ -247,7 +260,6 @@ class SerpAPIGoogleScholarConnector:
                 if keyword.lower() in text:
                     assigned_tags.append(tag)
                     break
-
         return assigned_tags[:10]
 
     def get_paper_details(self, paper_id: str) -> Optional[Dict[str, Any]]:

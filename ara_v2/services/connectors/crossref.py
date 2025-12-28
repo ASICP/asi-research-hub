@@ -305,9 +305,16 @@ class CrossRefConnector:
         # Get reference count
         reference_count = item.get('reference-count', 0)
 
+        import uuid
+        # Generate consistent source_id from DOI, or create from title if missing
+        source_id = doi
+        if not source_id or source_id.strip() == '':
+            id_seed = title
+            source_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, id_seed))[:16]
+        
         return {
             'source': 'crossref',
-            'source_id': doi,
+            'source_id': source_id,
             'doi': doi,
             'title': title.strip() if title else '',
             'abstract': abstract.strip() if abstract else None,

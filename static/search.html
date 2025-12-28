@@ -701,7 +701,7 @@
             <div style="display: flex; gap: 8px;">
                 <button class="theme-toggle" onclick="openUploadModal()" title="Upload Paper">📄</button>
                 <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
-                <button class="theme-toggle" onclick="logout()" title="Logout">🚪</button>
+                <button class="theme-toggle" onclick="logout()" title="Logout">⏻</button>
             </div>
         </div>
 
@@ -998,17 +998,18 @@
                 }
             });
 
-            Object.values(uniquePapers).forEach(paper => {
-                // Create unique key for internal papers (id) or external papers (source+source_id)
-                const paperKey = paper.id ? `internal_${paper.id}` : `${paper.source}_${paper.source_id}`;
+            // Convert to array for processing
+            const papersArray = Object.values(uniquePapers);
+
+            papersArray.forEach((paper, index) => {
                 html += `
-                    <div class="result-card" onclick="viewPaper('${paperKey.replace(/'/g, "\\'")}')">
+                    <div class="result-card" data-paper-index="${index}">
                         <div class="result-title">${paper.title}</div>
                         <div class="result-meta">${paper.authors} • ${paper.year}</div>
                         <div class="result-badges">
                             ${paper.asip_funded ? '<span class="badge badge-featured">ASI Featured</span>' : ''}
-                            ${paper.arxiv_id ? `<a href="https://arxiv.org/abs/${paper.arxiv_id}" target="_blank" class="badge badge-link" onclick="event.stopPropagation()">📄 arXiv</a>` : ''}
-                            ${paper.doi ? `<a href="https://doi.org/${paper.doi}" target="_blank" class="badge badge-link" onclick="event.stopPropagation()">🔗 DOI</a>` : ''}
+                            ${paper.arxiv_id ? `<a href="https://arxiv.org/abs/${paper.arxiv_id}" target="_blank" class="badge badge-link" data-external-link>📄 arXiv</a>` : ''}
+                            ${paper.doi ? `<a href="https://doi.org/${paper.doi}" target="_blank" class="badge badge-link" data-external-link>🔗 DOI</a>` : ''}
                         </div>
                     </div>
                 `;
@@ -1016,8 +1017,24 @@
 
             html += '</div>';
             container.innerHTML = html;
+
+            // Add click event listeners - capture paper data directly in closure
+            container.querySelectorAll('.result-card').forEach((card, idx) => {
+                const paper = papersArray[idx]; // Capture paper in closure
+                card.addEventListener('click', function (e) {
+                    // Don't trigger if clicking external links
+                    if (e.target.hasAttribute('data-external-link')) return;
+
+                    if (paper) {
+                        showPaperModal(paper);
+                    } else {
+                        alert('Paper not found. Please try searching again.');
+                    }
+                });
+            });
         }
 
+<<<<<<< HEAD
         function viewPaper(paperKey) {
             // Find the paper in the last search results
             // paperKey format: 'internal_ID' for database papers or 'SOURCE_SOURCE_ID' for external papers
@@ -1039,8 +1056,11 @@
                 }
             }
 
+=======
+        // Show paper modal with given paper object
+        function showPaperModal(paper) {
+>>>>>>> 036d5c403cab4ad60a74f7ba1eaec1abc91452a0
             if (!paper) {
-                console.warn(`Paper not found in cache: ${paperKey}. Available papers:`, window.lastSearchResults?.papers);
                 alert('Paper not found. Please try searching again.');
                 return;
             }
@@ -1101,10 +1121,10 @@
 
             // Explore Paper button - for Google Scholar, use the URL; otherwise use PDF
             let exploreUrl = null;
-            if (paper.source === 'Google Scholar' && paper.url) {
+            if (paper.source === 'google_scholar' && paper.url) {
                 exploreUrl = paper.url;
             } else {
-                exploreUrl = paper.pdf_url || (paper.arxiv_id ? `https://arxiv.org/pdf/${paper.arxiv_id}.pdf` : null);
+                exploreUrl = paper.pdf_url || paper.url || (paper.arxiv_id ? `https://arxiv.org/pdf/${paper.arxiv_id}.pdf` : null);
             }
 
             if (exploreUrl) {
@@ -1126,7 +1146,7 @@
             document.getElementById('paper-tags').innerHTML = tagsHTML;
 
             // For Google Scholar papers, auto-load related papers from Internal Database
-            if (paper.source === 'Google Scholar' || paper.id === 0) {
+            if (paper.source === 'google_scholar' || !paper.id) {
                 loadRelatedPapersForGoogleScholar(paper.title);
             } else {
                 // For Internal Database papers, show placeholder
@@ -1293,26 +1313,26 @@
             }
 
             let html = '';
-            references.forEach(ref => {
+            references.forEach((ref, index) => {
                 const snippet = ref.abstract ? ref.abstract.substring(0, 100) + '...' : 'No abstract available.';
 
                 // Build reference link
                 let refLink = '';
                 if (ref.arxiv_id) {
-                    refLink = `<a href="https://arxiv.org/abs/${ref.arxiv_id}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;">🔗 View Paper</a>`;
+                    refLink = `<a href="https://arxiv.org/abs/${ref.arxiv_id}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
                 } else if (ref.doi) {
-                    refLink = `<a href="https://doi.org/${ref.doi}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;">🔗 View Paper</a>`;
+                    refLink = `<a href="https://doi.org/${ref.doi}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
                 } else if (ref.pdf_url) {
-                    refLink = `<a href="${ref.pdf_url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;">🔗 View Paper</a>`;
+                    refLink = `<a href="${ref.pdf_url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
                 } else if (ref.url) {
-                    refLink = `<a href="${ref.url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;">🔗 View Paper</a>`;
+                    refLink = `<a href="${ref.url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
                 }
 
                 // Create proper paper key for clicking
                 const paperKey = ref.id ? `internal_${ref.id}` : `${ref.source}_${ref.source_id}`;
 
                 html += `
-                    <div class="reference-item" onclick="viewPaper('${paperKey.replace(/'/g, "\\'")}')">
+                    <div class="reference-item" data-ref-index="${index}">
                         <div class="reference-title">${ref.title}</div>
                         <div class="reference-meta">${ref.authors || 'Unknown'} • ${ref.year || 'N/A'}</div>
                         <div class="reference-snippet">${snippet}</div>
@@ -1321,6 +1341,17 @@
                 `;
             });
             container.innerHTML = html;
+
+            // Add click event listeners - capture ref data in closure
+            container.querySelectorAll('.reference-item').forEach((item, idx) => {
+                const ref = references[idx]; // Capture reference in closure
+                item.addEventListener('click', function (e) {
+                    if (e.target.hasAttribute('data-external-link')) return;
+                    if (ref) {
+                        showPaperModal(ref);
+                    }
+                });
+            });
         }
 
         function closeModal() {
