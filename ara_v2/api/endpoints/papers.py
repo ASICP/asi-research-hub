@@ -715,4 +715,5 @@ def upload_paper():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"Upload error: {e}", exc_info=True)
-        raise ARAError('Upload failed')
+        # FORCE DEBUG MESSAGE
+        return jsonify({'error': f"SYSTEM ERROR: {str(e)}"}), 500
