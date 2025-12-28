@@ -25,6 +25,7 @@ class Paper(db.Model):
     # Identifiers
     doi = Column(String(255))
     arxiv_id = Column(String(100))
+    source_id = Column(String(255))  # External ID (e.g., S2 ID, Google Scholar ID)
 
     # Content storage
     pdf_path = Column(String(255))
@@ -59,6 +60,7 @@ class Paper(db.Model):
             'abstract': self.abstract,
             'year': self.year,
             'source': self.source,
+            'source_id': self.source_id,
             'doi': self.doi,
             'arxiv_id': self.arxiv_id,
             'pdf_path': self.pdf_path,

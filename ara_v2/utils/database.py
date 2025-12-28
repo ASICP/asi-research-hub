@@ -22,9 +22,9 @@ def init_db(app):
         # Import models here to avoid circular imports
         import ara_v2.models  # noqa
 
-        # Create tables (only in development)
-        if app.debug:
-            db.create_all()
+        # Create tables (Safe to run always, SQLAlchemy skips existing tables)
+        # Note: This does not handle migrations (adding columns), so DB must be reset if schema changes
+        db.create_all()
 
     app.logger.info("Database initialized successfully")
 
