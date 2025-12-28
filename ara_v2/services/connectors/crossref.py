@@ -331,7 +331,10 @@ class CrossRefConnector:
             'url': url,
             'issn': item.get('ISSN', []),
             'isbn': item.get('ISBN', []),
-            'raw_data': item  # Store full response for reference
+            'raw_data': {
+                'subjects': subjects, # Explicitly put in raw_data for tagger
+                **item
+            }  # Store full response for reference
         }
 
     @staticmethod

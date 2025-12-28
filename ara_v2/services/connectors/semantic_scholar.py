@@ -348,7 +348,10 @@ class SemanticScholarConnector:
             'publication_types': raw_paper.get('publicationTypes', []) or [],
             'url': raw_paper.get('url', ''),
             'external_ids': external_ids,
-            'raw_data': raw_paper  # Store full response for reference
+            'raw_data': {
+                'fieldsOfStudy': all_fields, # Explicitly put in raw_data for tagger
+                **raw_paper
+            }  # Store full response for reference
         }
 
     def search_ai_safety_papers(

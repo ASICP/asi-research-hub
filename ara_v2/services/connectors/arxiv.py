@@ -276,7 +276,10 @@ class ArxivConnector:
             'url': entry.id,
             'citation_count': 0,  # ArXiv doesn't provide citation counts
             'fields_of_study': categories,  # Use categories as fields
-            'raw_data': dict(entry)  # Store full entry for reference
+            'raw_data': {
+                'categories': categories, # Explicitly put in raw_data for tagger
+                **dict(entry)
+            }  # Store full entry for reference
         }
 
     @staticmethod
