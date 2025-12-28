@@ -40,6 +40,9 @@ class Paper(db.Model):
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
+    # Relationships
+    tags_relationship = db.relationship('PaperTag', back_populates='paper', lazy='dynamic')
+
     def __repr__(self):
         return f'<Paper {self.id}: {self.title[:50]}...>'
 
