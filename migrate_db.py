@@ -25,7 +25,7 @@ def run_migration():
                 try:
                     conn.execute(text("SELECT source_id FROM papers LIMIT 1"))
                     print("✓ Column 'source_id' already exists. No action needed.")
-                    return
+                    # return - Removed to allow proceeding to next migrations
                 except Exception:
                     # Column likely missing, proceed to add it
                     conn.rollback()
