@@ -219,11 +219,7 @@ class PaperIngestionService:
                 abstract=paper_data.get('abstract'),
                 authors=paper_data.get('authors', []),
                 year=paper_data.get('year'),
-                published_date=paper_data.get('published_date'),
-                venue=paper_data.get('venue'),
-                citation_count=paper_data.get('citation_count', 0),
-                url=paper_data.get('url', ''),
-                raw_data=paper_data.get('raw_data', {})
+                citation_count=paper_data.get('citation_count', 0)
             )
 
             db.session.add(paper)
