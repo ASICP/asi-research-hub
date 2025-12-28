@@ -44,7 +44,8 @@ class TagComboTracker:
             return {'combos_tracked': 0, 'novel_combos': 0, 'new_combos': 0}
 
         # Get all tag IDs for this paper
-        tag_ids = [pt.tag_id for pt in paper.tags]
+        paper_tags = db.session.query(PaperTag).filter(PaperTag.paper_id == paper_id).all()
+        tag_ids = [pt.tag_id for pt in paper_tags]
 
         if len(tag_ids) < 2:
             current_app.logger.debug(f"Paper {paper_id} has < 2 tags, no combos to track")
@@ -320,7 +321,8 @@ class TagComboTracker:
         if not paper:
             return []
 
-        tag_ids = [pt.tag_id for pt in paper.tags]
+        paper_tags = db.session.query(PaperTag).filter(PaperTag.paper_id == paper_id).all()
+        tag_ids = [pt.tag_id for pt in paper_tags]
         if len(tag_ids) < 2:
             return []
 
