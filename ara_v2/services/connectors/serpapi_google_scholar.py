@@ -218,7 +218,7 @@ class SerpAPIGoogleScholarConnector:
             # Build normalized paper object
             # Extract tags from title/abstract
             tags = self._assign_tags(result.get('title', ''), result.get('snippet', ''))
-            
+
             paper = {
                 'title': result.get('title', 'N/A'),
                 'authors': ', '.join(authors) if authors else 'Unknown',
@@ -226,6 +226,7 @@ class SerpAPIGoogleScholarConnector:
                 'abstract': result.get('snippet', ''),
                 'source': 'google_scholar',
                 'source_id': result.get('result_id', ''),
+                'url': result.get('link', ''),
                 'citation_count': citation_count,
                 'tags': tags,
             }
@@ -238,17 +239,16 @@ class SerpAPIGoogleScholarConnector:
     
     def _assign_tags(self, title: str, abstract: str) -> List[str]:
         """Assign AI safety tags based on title and abstract."""
-        import json
         text = (title + ' ' + abstract).lower()
         assigned_tags = []
-        
+
         for tag, keywords in TAG_KEYWORDS.items():
             for keyword in keywords:
                 if keyword.lower() in text:
                     assigned_tags.append(tag)
                     break
-        
-        return json.dumps(assigned_tags[:10])
+
+        return assigned_tags[:10]
 
     def get_paper_details(self, paper_id: str) -> Optional[Dict[str, Any]]:
         """

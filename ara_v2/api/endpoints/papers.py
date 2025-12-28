@@ -3,19 +3,47 @@ Paper endpoints for ARA v2.
 Handles paper search, retrieval, and management.
 """
 
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, current_app, g
 from ara_v2.models.paper import Paper
 from ara_v2.models.tag import Tag
 from ara_v2.models.paper_tag import PaperTag
 from ara_v2.models.citation import Citation
 from ara_v2.middleware.auth import require_auth, optional_auth, get_current_user
 from ara_v2.utils.database import db
-from ara_v2.utils.errors import ValidationError, NotFoundError
+from ara_v2.utils.errors import ValidationError, NotFoundError, ARAError, ConflictError
 from ara_v2.utils.rate_limiter import limiter
 from ara_v2.services.paper_ingestion import PaperIngestionService
 from sqlalchemy import func, or_, and_
+from werkzeug.utils import secure_filename
+from typing import Optional
+import PyPDF2
+import os
+from datetime import datetime
 
 papers_bp = Blueprint('papers', __name__)
+
+
+# Helper functions for file upload
+def extract_pdf_text(pdf_path: str) -> str:
+    """Extract text from PDF using PyPDF2."""
+    with open(pdf_path, 'rb') as file:
+        reader = PyPDF2.PdfReader(file)
+        text = ""
+        for page in reader.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text + "\n"
+        return text.strip()
+
+
+def allowed_file(filename: str) -> bool:
+    """Check if file is PDF."""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'pdf'
+
+
+def check_duplicate_by_title(title: str) -> Optional[Paper]:
+    """Check if paper with similar title exists."""
+    return Paper.query.filter(db.func.lower(Paper.title) == title.lower()).first()
 
 
 @papers_bp.route('/search', methods=['POST'])
@@ -599,3 +627,88 @@ def diamonds():
         'message': 'Diamond classification coming in Phase 2',
         'papers': []
     }), 200
+
+
+@papers_bp.route('/upload', methods=['POST'])
+@require_auth
+@limiter.limit("10 per hour")
+def upload_paper():
+    """Upload PDF paper with automatic tagging."""
+    try:
+        # 1. Validate file
+        if 'file' not in request.files:
+            raise ValidationError('No file provided')
+
+        file = request.files['file']
+        if not file.filename or not allowed_file(file.filename):
+            raise ValidationError('Only PDF files allowed')
+
+        # 2. Save file
+        filename = secure_filename(file.filename)
+        timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        filename = f"{g.current_user.id}_{timestamp}_{filename}"
+
+        upload_folder = os.path.join(current_app.root_path, '..', 'static', 'uploads')
+        os.makedirs(upload_folder, exist_ok=True)
+        filepath = os.path.join(upload_folder, filename)
+        file.save(filepath)
+
+        # 3. Extract text
+        try:
+            pdf_text = extract_pdf_text(filepath)
+            if len(pdf_text.strip()) < 100:
+                os.remove(filepath)
+                raise ValidationError('Could not extract text from PDF')
+        except Exception as e:
+            if os.path.exists(filepath):
+                os.remove(filepath)
+            raise ValidationError(f'PDF processing failed: {str(e)}')
+
+        # 4. Get metadata
+        title = request.form.get('title', '').strip() or filename.replace('.pdf', '')
+        authors = request.form.get('authors', '').strip() or 'Unknown'
+        year = request.form.get('year', type=int)
+        abstract = request.form.get('abstract', '').strip()
+
+        # 5. Check duplicates
+        if check_duplicate_by_title(title):
+            os.remove(filepath)
+            raise ConflictError('Paper with similar title already exists')
+
+        # 6. Create paper data
+        paper_data = {
+            'source': 'internal',
+            'source_id': f'upload_{g.current_user.id}_{timestamp}',
+            'title': title,
+            'authors': authors,
+            'year': year,
+            'abstract': abstract,
+            'pdf_path': f'static/uploads/{filename}',
+            'pdf_text': pdf_text,
+            'url': f'/static/uploads/{filename}',
+            'added_by': g.current_user.email
+        }
+
+        # 7. Ingest with auto-tagging
+        ingestion_service = PaperIngestionService()
+        paper, is_new = ingestion_service.ingest_paper(paper_data, assign_tags=True)
+
+        if not paper:
+            os.remove(filepath)
+            raise ARAError('Failed to save paper')
+
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'paper': paper.to_dict(),
+            'message': 'Paper uploaded successfully'
+        }), 201
+
+    except (ValidationError, ConflictError):
+        db.session.rollback()
+        raise
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Upload error: {e}", exc_info=True)
+        raise ARAError('Upload failed')

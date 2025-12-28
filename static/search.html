@@ -551,6 +551,55 @@
             border-color: var(--accent-primary);
             transform: translateY(-2px);
         }
+
+        /* Upload Modal Styles */
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            background: var(--bg-tertiary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .drop-zone.drag-over {
+            border-color: var(--accent-primary);
+            background: rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+        }
+
+        .drop-zone-content {
+            pointer-events: none;
+        }
+
+        .file-preview-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .upload-progress {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .upload-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), #764ba2);
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
     </style>
 </head>
 
@@ -559,6 +608,7 @@
         <div class="header">
             <h1 style="display: flex; align-items: center; gap: 8px;"><img src="/static/asi-logo.png" alt="ASI" style="height: 32px;">Alignment Research Application</h1>
             <div style="display: flex; gap: 8px;">
+                <button class="theme-toggle" onclick="openUploadModal()" title="Upload Paper">📄</button>
                 <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
                 <button class="theme-toggle" onclick="logout()" title="Logout">🚪</button>
             </div>
@@ -631,6 +681,66 @@
                     <div class="sidebar-title">📚 Reference Papers</div>
                     <div id="references-list"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Paper Modal -->
+    <div id="upload-modal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-title">Upload Research Paper</div>
+                <button class="close-btn" onclick="closeUploadModal()">×</button>
+            </div>
+            <div class="modal-body" style="padding: 24px;">
+                <form id="upload-form" onsubmit="handleUpload(event)">
+                    <!-- Drag and drop zone -->
+                    <div id="drop-zone" class="drop-zone">
+                        <div style="font-size: 48px; margin-bottom: 16px;">📄</div>
+                        <p style="font-size: 16px; margin-bottom: 8px;">Drag and drop your PDF here</p>
+                        <p style="font-size: 14px; color: var(--text-tertiary); margin-bottom: 16px;">or click to browse (max 16MB)</p>
+                        <input type="file" id="file-input" accept=".pdf" style="display: none;">
+                        <button type="button" onclick="document.getElementById('file-input').click()"
+                                style="width: auto; margin-top: 16px; padding: 10px 24px;">Browse Files</button>
+                    </div>
+
+                    <!-- File preview (hidden initially) -->
+                    <div id="file-preview" style="display: none; margin-top: 20px;">
+                        <div class="file-preview-card">
+                            <div style="font-weight: 600; margin-bottom: 4px;" id="file-name"></div>
+                            <div style="font-size: 13px; color: var(--text-secondary);" id="file-size"></div>
+                        </div>
+                    </div>
+
+                    <!-- Optional metadata -->
+                    <div id="metadata-fields" style="display: none; margin-top: 20px;">
+                        <div class="input-group">
+                            <label for="upload-title">Title (optional)</label>
+                            <input type="text" id="upload-title" placeholder="Auto-extracted if not provided">
+                        </div>
+                        <div class="input-group">
+                            <label for="upload-authors">Authors (optional)</label>
+                            <input type="text" id="upload-authors" placeholder="e.g., John Doe, Jane Smith">
+                        </div>
+                        <div class="input-group">
+                            <label for="upload-year">Year (optional)</label>
+                            <input type="number" id="upload-year" placeholder="2025" min="1900" max="2100">
+                        </div>
+                        <div class="input-group">
+                            <label for="upload-abstract">Abstract (optional)</label>
+                            <textarea id="upload-abstract" rows="4" placeholder="Brief description"
+                                      style="width: 100%; padding: 12px; background: var(--bg-tertiary);
+                                             border: 1px solid var(--border-color); border-radius: 8px;
+                                             color: var(--text-primary); font-family: inherit; resize: vertical;"></textarea>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 24px;">
+                        <button type="submit" id="upload-btn" disabled>Upload Paper</button>
+                    </div>
+
+                    <div id="upload-status" style="margin-top: 16px; display: none;"></div>
+                </form>
             </div>
         </div>
     </div>
@@ -1106,6 +1216,122 @@
         document.getElementById('search-query').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') search();
         });
+
+        // Upload functionality
+        let selectedFile = null;
+
+        function openUploadModal() {
+            document.getElementById('upload-modal').style.display = 'block';
+            setupDragAndDrop();
+        }
+
+        function closeUploadModal() {
+            document.getElementById('upload-modal').style.display = 'none';
+            selectedFile = null;
+            document.getElementById('upload-form').reset();
+            document.getElementById('drop-zone').style.display = 'block';
+            document.getElementById('file-preview').style.display = 'none';
+            document.getElementById('metadata-fields').style.display = 'none';
+            document.getElementById('upload-btn').disabled = true;
+            document.getElementById('upload-status').style.display = 'none';
+        }
+
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('file-input');
+
+            dropZone.onclick = () => fileInput.click();
+
+            dropZone.ondragover = (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            };
+
+            dropZone.ondragleave = () => dropZone.classList.remove('drag-over');
+
+            dropZone.ondrop = (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+            };
+
+            fileInput.onchange = (e) => {
+                if (e.target.files.length) handleFile(e.target.files[0]);
+            };
+        }
+
+        function handleFile(file) {
+            if (!file.name.toLowerCase().endsWith('.pdf')) {
+                alert('Please select a PDF file');
+                return;
+            }
+
+            if (file.size > 16 * 1024 * 1024) {
+                alert('File must be less than 16MB');
+                return;
+            }
+
+            selectedFile = file;
+            document.getElementById('drop-zone').style.display = 'none';
+            document.getElementById('file-preview').style.display = 'block';
+            document.getElementById('metadata-fields').style.display = 'block';
+            document.getElementById('file-name').textContent = file.name;
+            document.getElementById('file-size').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            document.getElementById('upload-btn').disabled = false;
+        }
+
+        async function handleUpload(event) {
+            event.preventDefault();
+
+            if (!selectedFile) return;
+
+            if (!accessToken) {
+                alert('Please log in to upload papers');
+                window.location.href = '/static/login.html';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            const title = document.getElementById('upload-title').value.trim();
+            const authors = document.getElementById('upload-authors').value.trim();
+            const year = document.getElementById('upload-year').value;
+            const abstract = document.getElementById('upload-abstract').value.trim();
+
+            if (title) formData.append('title', title);
+            if (authors) formData.append('authors', authors);
+            if (year) formData.append('year', year);
+            if (abstract) formData.append('abstract', abstract);
+
+            document.getElementById('upload-status').innerHTML = '⏳ Uploading and processing...';
+            document.getElementById('upload-status').style.display = 'block';
+            document.getElementById('upload-btn').disabled = true;
+
+            try {
+                const response = await fetch(`${API_URL}/papers/upload`, {
+                    method: 'POST',
+                    headers: {'Authorization': `Bearer ${accessToken}`},
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('upload-status').innerHTML =
+                        `<div class="status-message status-success">✅ ${data.message}</div>`;
+                    setTimeout(() => closeUploadModal(), 2000);
+                } else {
+                    document.getElementById('upload-status').innerHTML =
+                        `<div class="status-message status-error">❌ ${data.error?.message || 'Upload failed'}</div>`;
+                    document.getElementById('upload-btn').disabled = false;
+                }
+            } catch (error) {
+                document.getElementById('upload-status').innerHTML =
+                    `<div class="status-message status-error">❌ Network error: ${error.message}</div>`;
+                document.getElementById('upload-btn').disabled = false;
+            }
+        }
     </script>
     <script src="/static/session-manager.js"></script>
 </body>
