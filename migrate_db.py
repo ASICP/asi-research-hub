@@ -28,6 +28,7 @@ def run_migration():
                     return
                 except Exception:
                     # Column likely missing, proceed to add it
+                    conn.rollback()
                     pass
                 
                 # Add the column
