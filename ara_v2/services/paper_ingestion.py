@@ -254,7 +254,7 @@ class PaperIngestionService:
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f"Error creating paper: {e}")
-            return None, False
+            raise e # Re-raise to debug upload failures
 
     def _find_existing_paper(self, paper_data: Dict[str, Any]) -> Optional[Paper]:
         """
