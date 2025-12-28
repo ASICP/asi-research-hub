@@ -407,8 +407,7 @@ class PaperIngestionService:
             paper_tag = PaperTag(
                 paper_id=paper.id,
                 tag_id=tag.id,
-                confidence=confidence,
-                assigned_by='auto'
+                confidence=confidence
             )
             db.session.add(paper_tag)
 
