@@ -414,6 +414,7 @@ class PaperIngestionService:
         # Update tag statistics
         for tag, _ in tag_assignments:
             tag.paper_count = db.session.query(PaperTag).filter_by(tag_id=tag.id).count()
+            tag.frequency = tag.paper_count  # Sync frequency with paper count for dashboard
             tag.last_used = datetime.utcnow()
 
             # Update tag growth rate

@@ -28,14 +28,27 @@ def get_dashboard_metrics():
         } for t in top_tags]
 
         # 2. Most Cited Papers
-        # Filter for alignment/safety/governance if possible, but assuming all papers in DB are relevant
-        top_cited = Paper.query.filter(Paper.citation_count > 0).order_by(desc(Paper.citation_count)).limit(5).all()
-        cited_data = [{
-            'id': p.id,
-            'title': p.title,
-            'citations': p.citation_count,
-            'year': p.year
-        } for p in top_cited]
+        # Fetch more candidates to allow for deduplication
+        candidate_papers = Paper.query.filter(Paper.citation_count > 0).order_by(desc(Paper.citation_count)).limit(20).all()
+        
+        seen_titles = set()
+        cited_data = []
+        for p in candidate_papers:
+            # Normalize title for dedup
+            norm_title = p.title.lower().strip()
+            if norm_title in seen_titles:
+                continue
+            seen_titles.add(norm_title)
+            
+            cited_data.append({
+                'id': p.id,
+                'title': p.title,
+                'citations': p.citation_count,
+                'year': p.year
+            })
+            
+            if len(cited_data) >= 5:
+                break
 
         # 3. Novel/Unique Ideas (TagCombos)
         # We look for combos with low frequency (rare) but marked as novel
