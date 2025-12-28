@@ -126,6 +126,7 @@ def register_blueprints(app):
     from ara_v2.api.endpoints.papers import papers_bp
     from ara_v2.api.endpoints.bookmarks import bookmarks_bp
     from ara_v2.api.endpoints.tags import tags_bp
+    from ara_v2.api.endpoints.metrics import metrics_bp
     # from ara_v2.api.endpoints.mindmap import mindmap_bp  # Phase 3
     # from ara_v2.api.endpoints.export import export_bp  # Phase 4
     # from ara_v2.api.endpoints.analytics import analytics_bp  # Phase 5
@@ -136,6 +137,7 @@ def register_blueprints(app):
     app.register_blueprint(papers_bp, url_prefix='/api/papers')
     app.register_blueprint(bookmarks_bp, url_prefix='/api/bookmarks')
     app.register_blueprint(tags_bp, url_prefix='/api/tags')
+    app.register_blueprint(metrics_bp, url_prefix='/api/metrics')
 
     app.logger.info("All blueprints registered")
 
