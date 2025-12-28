@@ -901,7 +901,9 @@
                     </div>
 
                     <div style="margin-top: 24px;">
-                        <!-- Auto-upload on file select, no button needed -->
+                        <button type="submit" id="upload-btn" class="paper-link-btn"
+                            style="width:100%; justify-content:center; cursor:pointer;" disabled>Confirm & Upload
+                            Paper</button>
                     </div>
 
                     <div id="upload-status" style="margin-top: 16px; display: none;"></div>
@@ -1423,7 +1425,7 @@
             document.getElementById('drop-zone').style.display = 'block';
             document.getElementById('file-preview').style.display = 'none';
             document.getElementById('metadata-fields').style.display = 'none';
-            // Button removed
+            if(document.getElementById('upload-btn')) document.getElementById('upload-btn').disabled = true;
             document.getElementById('upload-status').style.display = 'none';
         }
 
@@ -1469,9 +1471,12 @@
             document.getElementById('file-name').textContent = file.name;
             document.getElementById('file-size').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
 
-            // Auto-Upload Trigger
-            const form = document.getElementById('upload-form');
-            if (form) form.dispatchEvent(new Event('submit'));
+            // Enable button for manual upload
+            const btn = document.getElementById('upload-btn');
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Confirm & Upload Paper';
+            }
         }
 
         async function handleUpload(event) {
@@ -1489,6 +1494,12 @@
             const statusDiv = document.getElementById('upload-status');
             statusDiv.style.display = 'block';
             statusDiv.innerHTML = '<div class="status-message">⏳ Uploading and processing...</div>';
+
+            const btn = document.getElementById('upload-btn');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Uploading...';
+            }
 
             const formData = new FormData();
             formData.append('file', selectedFile);
@@ -1516,14 +1527,18 @@
                     statusDiv.innerHTML = `<div class="status-message status-success">✅ ${result.message}</div>`;
                     setTimeout(() => {
                         closeUploadModal();
-                        // Refresh search?
+                        // Refresh search results if relevant?
                     }, 2000);
                 } else {
                     throw new Error(result.error || 'Upload failed');
                 }
             } catch (error) {
-                document.getElementById('upload-status').innerHTML =
-                    `<div class="status-message status-error">❌ Network error: ${error.message}</div>`;
+                statusDiv.innerHTML = `<div class="status-message status-error">❌ ${error.message}</div>`;
+                const btn = document.getElementById('upload-btn');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'Retry Upload';
+                }
             }
         }
 
