@@ -242,7 +242,7 @@ class PaperIngestionService:
 
             current_app.logger.info(
                 f"Created new paper: {paper.title[:50]}... "
-                f"(tags={len(paper.tags)}, novel_combos={combo_stats.get('novel_combos', 0)})"
+                f"(tags={paper.tags_relationship.count()}, novel_combos={combo_stats.get('novel_combos', 0)})"
             )
 
             return paper, True
