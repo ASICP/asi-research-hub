@@ -431,6 +431,10 @@ class TagAssigner:
 
             tags.append(tag)
 
+        # Flush to ensure all new tags have IDs assigned
+        if tags:
+            db.session.flush()
+
         return tags
 
     def assign_and_save_tags(
