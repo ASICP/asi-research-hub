@@ -41,8 +41,37 @@ def run_migration():
                     if "duplicate" in str(e).lower() or "exists" in str(e).lower():
                         print("✓ Column 'source_id' already exists (caught exception).")
                     else:
-                        print(f"❌ ERROR adding column: {str(e)}")
-                        raise e
+                        print(f"❌ ERROR adding source_id: {str(e)}")
+
+                # --- MIGRATION 2: Add 'confidence' to 'paper_tags' ---
+                print("\nChecking 'paper_tags' table for 'confidence'...")
+                try:
+                    conn.execute(text("SELECT confidence FROM paper_tags LIMIT 1"))
+                    print("✓ Column 'confidence' already exists.")
+                except Exception:
+                    conn.rollback()
+                    try:
+                        print("Adding 'confidence' column...")
+                        conn.execute(text("ALTER TABLE paper_tags ADD COLUMN confidence NUMERIC(3, 2) DEFAULT 1.0"))
+                        conn.commit()
+                        print("✅ SUCCESS: Added 'confidence' to 'paper_tags'.")
+                    except Exception as e:
+                         print(f"❌ ERROR adding confidence: {str(e)}")
+                
+                # --- MIGRATION 3: Add 'is_novel_combo' to 'paper_tags' ---
+                print("\nChecking 'paper_tags' table for 'is_novel_combo'...")
+                try:
+                    conn.execute(text("SELECT is_novel_combo FROM paper_tags LIMIT 1"))
+                    print("✓ Column 'is_novel_combo' already exists.")
+                except Exception:
+                    conn.rollback()
+                    try:
+                        print("Adding 'is_novel_combo' column...")
+                        conn.execute(text("ALTER TABLE paper_tags ADD COLUMN is_novel_combo BOOLEAN DEFAULT FALSE"))
+                        conn.commit()
+                        print("✅ SUCCESS: Added 'is_novel_combo' to 'paper_tags'.")
+                    except Exception as e:
+                         print(f"❌ ERROR adding is_novel_combo: {str(e)}")
                         
         except Exception as main_e:
             print(f"❌ MIGRATION FAILED: {str(main_e)}")
