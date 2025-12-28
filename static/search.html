@@ -92,8 +92,30 @@
         }
 
         .theme-toggle:hover {
-            transform: scale(1.1);
-            background: var(--accent-primary);
+            transform: translateY(-2px);
+            background: var(--bg-tertiary);
+            border-color: var(--accent-primary);
+        }
+
+        .header-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.2rem;
+        }
+
+        .header-btn:hover {
+            transform: translateY(-2px);
+            background: var(--bg-tertiary);
+            border-color: var(--accent-primary);
         }
 
         .search-section {
@@ -699,7 +721,7 @@
             <h1 style="display: flex; align-items: center; gap: 8px;"><img src="/static/asi-logo.png" alt="ASI"
                     style="height: 32px;">Alignment Research Application</h1>
             <div style="display: flex; gap: 8px;">
-                <button class="theme-toggle" onclick="openUploadModal()" title="Upload Paper">📄</button>
+                <button class="header-btn" onclick="openUploadModal()" title="Upload Paper">📄</button>
                 <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
                 <button class="theme-toggle" onclick="logout()" title="Logout">⏻</button>
             </div>
@@ -879,7 +901,7 @@
                     </div>
 
                     <div style="margin-top: 24px;">
-                        <button type="submit" id="upload-btn" disabled>Upload Paper</button>
+                        <!-- Auto-upload on file select, no button needed -->
                     </div>
 
                     <div id="upload-status" style="margin-top: 16px; display: none;"></div>
@@ -1000,16 +1022,18 @@
 
             // Convert to array for processing
             const papersArray = Object.values(uniquePapers);
+            // Store for access via onclick
+            window.currentPapersArray = papersArray;
 
             papersArray.forEach((paper, index) => {
                 html += `
-                    <div class="result-card" data-paper-index="${index}">
+                    <div class="result-card" onclick="viewPaperByIndex(${index})">
                         <div class="result-title">${paper.title}</div>
                         <div class="result-meta">${paper.authors} • ${paper.year}</div>
                         <div class="result-badges">
                             ${paper.asip_funded ? '<span class="badge badge-featured">ASI Featured</span>' : ''}
-                            ${paper.arxiv_id ? `<a href="https://arxiv.org/abs/${paper.arxiv_id}" target="_blank" class="badge badge-link" data-external-link>📄 arXiv</a>` : ''}
-                            ${paper.doi ? `<a href="https://doi.org/${paper.doi}" target="_blank" class="badge badge-link" data-external-link>🔗 DOI</a>` : ''}
+                            ${paper.arxiv_id ? `<a href="https://arxiv.org/abs/${paper.arxiv_id}" target="_blank" class="badge badge-link" onclick="event.stopPropagation()">📄 arXiv</a>` : ''}
+                            ${paper.doi ? `<a href="https://doi.org/${paper.doi}" target="_blank" class="badge badge-link" onclick="event.stopPropagation()">🔗 DOI</a>` : ''}
                         </div>
                     </div>
                 `;
@@ -1017,320 +1041,313 @@
 
             html += '</div>';
             container.innerHTML = html;
-
-            // Add click event listeners - capture paper data directly in closure
-            container.querySelectorAll('.result-card').forEach((card, idx) => {
-                const paper = papersArray[idx]; // Capture paper in closure
-                card.addEventListener('click', function (e) {
-                    // Don't trigger if clicking external links
-                    if (e.target.hasAttribute('data-external-link')) return;
-
-                    if (paper) {
-                        showPaperModal(paper);
-                    } else {
-                        alert('Paper not found. Please try searching again.');
-                    }
-                });
-            });
         }
 
-
-        function viewPaper(paperKey) {
-            // Find the paper in the last search results
-            // paperKey format: 'internal_ID' for database papers or 'SOURCE_SOURCE_ID' for external papers
-            let paper;
-            if (paperKey.startsWith('internal_')) {
-                const paperId = parseInt(paperKey.substring(9));
-                paper = window.lastSearchResults?.papers.find(p => p.id === paperId);
+        function viewPaperByIndex(index) {
+            const paper = window.currentPapersArray?.[index];
+            if (paper) {
+                showPaperModal(paper);
             } else {
-                const [source, ...sourceParts] = paperKey.split('_');
-                const sourceId = sourceParts.join('_');
-                // Try to find paper with exact match
-                paper = window.lastSearchResults?.papers.find(p => p.source === source && p.source_id === sourceId);
+                alert('Paper not found.');
+            }
 
-                // If not found, try case-insensitive source match (e.g., 'google_scholar' vs 'Google Scholar')
-                if (!paper) {
-                    paper = window.lastSearchResults?.papers.find(p =>
-                        p.source?.toLowerCase() === source.toLowerCase() && p.source_id === sourceId
-                    );
+
+            function viewPaper(paperKey) {
+                // Find the paper in the last search results
+                // paperKey format: 'internal_ID' for database papers or 'SOURCE_SOURCE_ID' for external papers
+                let paper;
+                if (paperKey.startsWith('internal_')) {
+                    const paperId = parseInt(paperKey.substring(9));
+                    paper = window.lastSearchResults?.papers.find(p => p.id === paperId);
+                } else {
+                    const [source, ...sourceParts] = paperKey.split('_');
+                    const sourceId = sourceParts.join('_');
+                    // Try to find paper with exact match
+                    paper = window.lastSearchResults?.papers.find(p => p.source === source && p.source_id === sourceId);
+
+                    // If not found, try case-insensitive source match (e.g., 'google_scholar' vs 'Google Scholar')
+                    if (!paper) {
+                        paper = window.lastSearchResults?.papers.find(p =>
+                            p.source?.toLowerCase() === source.toLowerCase() && p.source_id === sourceId
+                        );
+                    }
                 }
             }
-        }
 
-        // Show paper modal with given paper object
-        function showPaperModal(paper) {
-            if (!paper) {
-                alert('Paper not found. Please try searching again.');
-                return;
-            }
+            // Show paper modal with given paper object
+            function showPaperModal(paper) {
+                if (!paper) {
+                    alert('Paper not found. Please try searching again.');
+                    return;
+                }
 
-            // Store current paper for keyword highlighting
-            window.currentPaper = paper;
+                // Store current paper for keyword highlighting
+                window.currentPaper = paper;
 
-            // Populate modal
-            document.getElementById('modal-title').textContent = paper.title;
+                // Populate modal
+                document.getElementById('modal-title').textContent = paper.title;
 
-            // Meta information
-            let metaHTML = '';
-            if (paper.authors) {
-                metaHTML += `
+                // Meta information
+                let metaHTML = '';
+                if (paper.authors) {
+                    metaHTML += `
                     <div class="paper-meta-item">
                         <div class="paper-meta-label">Authors:</div>
                         <div class="paper-meta-value">${paper.authors}</div>
                     </div>
                 `;
-            }
-            if (paper.year) {
-                metaHTML += `
+                }
+                if (paper.year) {
+                    metaHTML += `
                     <div class="paper-meta-item">
                         <div class="paper-meta-label">Year:</div>
                         <div class="paper-meta-value">${paper.year}</div>
                     </div>
                 `;
-            }
-            if (paper.venue) {
-                metaHTML += `
+                }
+                if (paper.venue) {
+                    metaHTML += `
                     <div class="paper-meta-item">
                         <div class="paper-meta-label">Venue:</div>
                         <div class="paper-meta-value">${paper.venue}</div>
                     </div>
                 `;
-            }
-            if (paper.citation_count) {
-                metaHTML += `
+                }
+                if (paper.citation_count) {
+                    metaHTML += `
                     <div class="paper-meta-item">
                         <div class="paper-meta-label">Citations:</div>
                         <div class="paper-meta-value">${paper.citation_count}</div>
                     </div>
                 `;
+                }
+                document.getElementById('paper-meta').innerHTML = metaHTML;
+
+                // Abstract
+                document.getElementById('paper-abstract').innerHTML = paper.abstract || 'No abstract available.';
+
+                // Links with Explore Paper button
+                let linksHTML = '';
+                if (paper.arxiv_id) {
+                    linksHTML += `<a href="https://arxiv.org/abs/${paper.arxiv_id}" target="_blank" class="paper-link-btn">📄 View on arXiv</a>`;
+                }
+                if (paper.doi) {
+                    linksHTML += `<a href="https://doi.org/${paper.doi}" target="_blank" class="paper-link-btn">🔗 View DOI</a>`;
+                }
+
+                // Explore Paper button - for Google Scholar, use the URL; otherwise use PDF
+                let exploreUrl = null;
+                if (paper.source === 'google_scholar' && paper.url) {
+                    exploreUrl = paper.url;
+                } else {
+                    exploreUrl = paper.pdf_url || paper.url || (paper.arxiv_id ? `https://arxiv.org/pdf/${paper.arxiv_id}.pdf` : null);
+                }
+
+                if (exploreUrl) {
+                    linksHTML += `<a href="${exploreUrl}" target="_blank" class="paper-link-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🔬 Explore Paper</a>`;
+                }
+
+                document.getElementById('paper-links').innerHTML = linksHTML;
+
+                // Tags - make them clickable
+                let tagsHTML = '';
+                if (paper.tags && paper.tags.length > 0) {
+                    paper.tags.forEach(tag => {
+                        tagsHTML += `<span class="tag" onclick="loadPapersByTag('${tag.replace(/'/g, "\\'")}', event)">${tag}</span>`;
+                    });
+                }
+                if (paper.asip_funded) {
+                    tagsHTML += `<span class="tag" style="background: rgba(102, 126, 234, 0.2); color: var(--accent-primary); border-color: var(--accent-primary);">⭐ ASI Featured</span>`;
+                }
+                document.getElementById('paper-tags').innerHTML = tagsHTML;
+
+                // For Google Scholar papers, auto-load related papers from Internal Database
+                if (paper.source === 'google_scholar' || !paper.id) {
+                    loadRelatedPapersForGoogleScholar(paper.title);
+                } else {
+                    // For Internal Database papers, show placeholder
+                    displayReferences([]);
+                }
+
+                // Show modal
+                document.getElementById('paper-modal').style.display = 'block';
             }
-            document.getElementById('paper-meta').innerHTML = metaHTML;
 
-            // Abstract
-            document.getElementById('paper-abstract').innerHTML = paper.abstract || 'No abstract available.';
+            async function loadRelatedPapersForGoogleScholar(title) {
+                const container = document.getElementById('references-list');
+                container.innerHTML = '<div class="no-references">Loading related papers...</div>';
 
-            // Links with Explore Paper button
-            let linksHTML = '';
-            if (paper.arxiv_id) {
-                linksHTML += `<a href="https://arxiv.org/abs/${paper.arxiv_id}" target="_blank" class="paper-link-btn">📄 View on arXiv</a>`;
-            }
-            if (paper.doi) {
-                linksHTML += `<a href="https://doi.org/${paper.doi}" target="_blank" class="paper-link-btn">🔗 View DOI</a>`;
-            }
+                try {
+                    const response = await fetch(`${API_URL}/papers/search`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${accessToken}`
+                        },
+                        body: JSON.stringify({
+                            query: title,
+                            sources: ['internal']
+                        })
+                    });
 
-            // Explore Paper button - for Google Scholar, use the URL; otherwise use PDF
-            let exploreUrl = null;
-            if (paper.source === 'google_scholar' && paper.url) {
-                exploreUrl = paper.url;
-            } else {
-                exploreUrl = paper.pdf_url || paper.url || (paper.arxiv_id ? `https://arxiv.org/pdf/${paper.arxiv_id}.pdf` : null);
-            }
+                    if (response.ok) {
+                        const data = await response.json();
+                        const relatedPapers = data.papers || [];
 
-            if (exploreUrl) {
-                linksHTML += `<a href="${exploreUrl}" target="_blank" class="paper-link-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🔬 Explore Paper</a>`;
-            }
-
-            document.getElementById('paper-links').innerHTML = linksHTML;
-
-            // Tags - make them clickable
-            let tagsHTML = '';
-            if (paper.tags && paper.tags.length > 0) {
-                paper.tags.forEach(tag => {
-                    tagsHTML += `<span class="tag" onclick="loadPapersByTag('${tag.replace(/'/g, "\\'")}', event)">${tag}</span>`;
-                });
-            }
-            if (paper.asip_funded) {
-                tagsHTML += `<span class="tag" style="background: rgba(102, 126, 234, 0.2); color: var(--accent-primary); border-color: var(--accent-primary);">⭐ ASI Featured</span>`;
-            }
-            document.getElementById('paper-tags').innerHTML = tagsHTML;
-
-            // For Google Scholar papers, auto-load related papers from Internal Database
-            if (paper.source === 'google_scholar' || !paper.id) {
-                loadRelatedPapersForGoogleScholar(paper.title);
-            } else {
-                // For Internal Database papers, show placeholder
-                displayReferences([]);
-            }
-
-            // Show modal
-            document.getElementById('paper-modal').style.display = 'block';
-        }
-
-        async function loadRelatedPapersForGoogleScholar(title) {
-            const container = document.getElementById('references-list');
-            container.innerHTML = '<div class="no-references">Loading related papers...</div>';
-
-            try {
-                const response = await fetch(`${API_URL}/papers/search`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`
-                    },
-                    body: JSON.stringify({
-                        query: title,
-                        sources: ['internal']
-                    })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const relatedPapers = data.papers || [];
-
-                    if (relatedPapers.length > 0) {
-                        displayReferences(relatedPapers.slice(0, 5));
+                        if (relatedPapers.length > 0) {
+                            displayReferences(relatedPapers.slice(0, 5));
+                        } else {
+                            container.innerHTML = '<div class="no-references">No related papers found in Internal Database</div>';
+                        }
                     } else {
                         container.innerHTML = '<div class="no-references">No related papers found in Internal Database</div>';
                     }
-                } else {
+                } catch (error) {
+                    console.error('Error loading related papers:', error);
                     container.innerHTML = '<div class="no-references">No related papers found in Internal Database</div>';
                 }
-            } catch (error) {
-                console.error('Error loading related papers:', error);
-                container.innerHTML = '<div class="no-references">No related papers found in Internal Database</div>';
             }
-        }
 
-        // New function to fetch and display a paper by ID (used for reference clicks)
-        async function viewPaperById(paperId) {
-            try {
-                const response = await fetch(`${API_URL}/papers/${paperId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
+            // New function to fetch and display a paper by ID (used for reference clicks)
+            async function viewPaperById(paperId) {
+                try {
+                    const response = await fetch(`${API_URL}/papers/${paperId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Populate modal using the same logic as viewPaper but with fetched data
+                        // Store current paper
+                        window.currentPaper = data;
+                        // Populate modal fields
+                        document.getElementById('modal-title').textContent = data.title;
+                        // Meta
+                        let metaHTML = '';
+                        if (data.authors) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Authors:</div><div class="paper-meta-value">${data.authors}</div></div>`;
+                        if (data.year) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Year:</div><div class="paper-meta-value">${data.year}</div></div>`;
+                        if (data.venue) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Venue:</div><div class="paper-meta-value">${data.venue}</div></div>`;
+                        if (data.citation_count) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Citations:</div><div class="paper-meta-value">${data.citation_count}</div></div>`;
+                        document.getElementById('paper-meta').innerHTML = metaHTML;
+                        // Abstract
+                        document.getElementById('paper-abstract').innerHTML = data.abstract || 'No abstract available.';
+                        // Links
+                        let linksHTML = '';
+                        if (data.arxiv_id) linksHTML += `<a href="https://arxiv.org/abs/${data.arxiv_id}" target="_blank" class="paper-link-btn">📄 View on arXiv</a>`;
+                        if (data.doi) linksHTML += `<a href="https://doi.org/${data.doi}" target="_blank" class="paper-link-btn">🔗 View DOI</a>`;
+                        const pdfUrl = data.pdf_url || (data.arxiv_id ? `https://arxiv.org/pdf/${data.arxiv_id}.pdf` : null);
+                        if (pdfUrl) linksHTML += `<a href="${pdfUrl}" target="_blank" class="paper-link-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🔬 Explore Paper</a>`;
+                        document.getElementById('paper-links').innerHTML = linksHTML;
+                        // Tags
+                        let tagsHTML = '';
+                        if (data.tags && data.tags.length > 0) {
+                            data.tags.forEach(tag => {
+                                tagsHTML += `<span class="tag" onclick="loadPapersByTag('${tag.replace(/'/g, "\\'")}', event)">${tag}</span>`;
+                            });
+                        }
+                        if (data.asip_funded) tagsHTML += `<span class="tag" style="background: rgba(102, 126, 234, 0.2); color: var(--accent-primary); border-color: var(--accent-primary);">⭐ ASI Featured</span>`;
+                        document.getElementById('paper-tags').innerHTML = tagsHTML;
+                        // Clear keyword search
+                        // document.getElementById('keyword-input').value = ''; // This element doesn't exist in the provided HTML
+                        // Show modal
+                        document.getElementById('paper-modal').style.display = 'block';
+                    } else {
+                        alert('Failed to load paper details');
                     }
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    // Populate modal using the same logic as viewPaper but with fetched data
-                    // Store current paper
-                    window.currentPaper = data;
-                    // Populate modal fields
-                    document.getElementById('modal-title').textContent = data.title;
-                    // Meta
-                    let metaHTML = '';
-                    if (data.authors) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Authors:</div><div class="paper-meta-value">${data.authors}</div></div>`;
-                    if (data.year) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Year:</div><div class="paper-meta-value">${data.year}</div></div>`;
-                    if (data.venue) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Venue:</div><div class="paper-meta-value">${data.venue}</div></div>`;
-                    if (data.citation_count) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Citations:</div><div class="paper-meta-value">${data.citation_count}</div></div>`;
-                    document.getElementById('paper-meta').innerHTML = metaHTML;
-                    // Abstract
-                    document.getElementById('paper-abstract').innerHTML = data.abstract || 'No abstract available.';
-                    // Links
-                    let linksHTML = '';
-                    if (data.arxiv_id) linksHTML += `<a href="https://arxiv.org/abs/${data.arxiv_id}" target="_blank" class="paper-link-btn">📄 View on arXiv</a>`;
-                    if (data.doi) linksHTML += `<a href="https://doi.org/${data.doi}" target="_blank" class="paper-link-btn">🔗 View DOI</a>`;
-                    const pdfUrl = data.pdf_url || (data.arxiv_id ? `https://arxiv.org/pdf/${data.arxiv_id}.pdf` : null);
-                    if (pdfUrl) linksHTML += `<a href="${pdfUrl}" target="_blank" class="paper-link-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🔬 Explore Paper</a>`;
-                    document.getElementById('paper-links').innerHTML = linksHTML;
-                    // Tags
-                    let tagsHTML = '';
-                    if (data.tags && data.tags.length > 0) {
-                        data.tags.forEach(tag => {
-                            tagsHTML += `<span class="tag" onclick="loadPapersByTag('${tag.replace(/'/g, "\\'")}', event)">${tag}</span>`;
-                        });
-                    }
-                    if (data.asip_funded) tagsHTML += `<span class="tag" style="background: rgba(102, 126, 234, 0.2); color: var(--accent-primary); border-color: var(--accent-primary);">⭐ ASI Featured</span>`;
-                    document.getElementById('paper-tags').innerHTML = tagsHTML;
-                    // Clear keyword search
-                    // document.getElementById('keyword-input').value = ''; // This element doesn't exist in the provided HTML
-                    // Show modal
-                    document.getElementById('paper-modal').style.display = 'block';
-                } else {
-                    alert('Failed to load paper details');
+                } catch (err) {
+                    console.error('Error fetching paper:', err);
+                    alert('Error loading paper');
                 }
-            } catch (err) {
-                console.error('Error fetching paper:', err);
-                alert('Error loading paper');
             }
-        }
 
-        async function loadPapersByTag(tag, event) {
-            event.stopPropagation(); // Prevent modal from closing
+            async function loadPapersByTag(tag, event) {
+                event.stopPropagation(); // Prevent modal from closing
 
-            const container = document.getElementById('references-list');
-            container.innerHTML = '<div class="no-references">Loading papers with tag: ' + tag + '...</div>';
+                const container = document.getElementById('references-list');
+                container.innerHTML = '<div class="no-references">Loading papers with tag: ' + tag + '...</div>';
 
-            try {
-                const response = await fetch(`${API_URL}/papers/search`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`
-                    },
-                    body: JSON.stringify({
-                        query: tag,
-                        sources: ['internal'],
-                        tags: [tag]
-                    })
-                });
+                try {
+                    const response = await fetch(`${API_URL}/papers/search`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${accessToken}`
+                        },
+                        body: JSON.stringify({
+                            query: tag,
+                            sources: ['internal'],
+                            tags: [tag]
+                        })
+                    });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    // Filter out the current paper
-                    const currentPaperId = window.currentPaper?.id;
-                    const filteredPapers = data.papers.filter(p => p.id !== currentPaperId).slice(0, 5);
-                    displayReferences(filteredPapers);
-                } else {
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Filter out the current paper
+                        const currentPaperId = window.currentPaper?.id;
+                        const filteredPapers = data.papers.filter(p => p.id !== currentPaperId).slice(0, 5);
+                        displayReferences(filteredPapers);
+                    } else {
+                        displayReferences([]);
+                    }
+                } catch (error) {
+                    console.error('Error loading papers by tag:', error);
                     displayReferences([]);
                 }
-            } catch (error) {
-                console.error('Error loading papers by tag:', error);
-                displayReferences([]);
             }
-        }
 
-        async function loadReferences(paperId) {
-            const container = document.getElementById('references-list');
-            container.innerHTML = '<div class="no-references">Loading...</div>';
+            async function loadReferences(paperId) {
+                const container = document.getElementById('references-list');
+                container.innerHTML = '<div class="no-references">Loading...</div>';
 
-            try {
-                const response = await fetch(`${API_URL}/papers/${paperId}/references`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
+                try {
+                    const response = await fetch(`${API_URL}/papers/${paperId}/references`, {
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        displayReferences(data.references || []);
+                    } else {
+                        // If endpoint doesn't exist or fails, show placeholder
+                        displayReferences([]);
                     }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    displayReferences(data.references || []);
-                } else {
-                    // If endpoint doesn't exist or fails, show placeholder
+                } catch (error) {
+                    // Show placeholder for now
                     displayReferences([]);
                 }
-            } catch (error) {
-                // Show placeholder for now
-                displayReferences([]);
-            }
-        }
-
-        function displayReferences(references) {
-            const container = document.getElementById('references-list');
-
-            if (!references || references.length === 0) {
-                container.innerHTML = '<div class="no-references" style="text-align: center; padding: 30px 10px; line-height: 1.6;">👇<br><br>CLICK A TAG BELOW TO VIEW RELATED PAPERS</div>';
-                return;
             }
 
-            let html = '';
-            references.forEach((ref, index) => {
-                const snippet = ref.abstract ? ref.abstract.substring(0, 100) + '...' : 'No abstract available.';
+            function displayReferences(references) {
+                const container = document.getElementById('references-list');
 
-                // Build reference link
-                let refLink = '';
-                if (ref.arxiv_id) {
-                    refLink = `<a href="https://arxiv.org/abs/${ref.arxiv_id}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
-                } else if (ref.doi) {
-                    refLink = `<a href="https://doi.org/${ref.doi}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
-                } else if (ref.pdf_url) {
-                    refLink = `<a href="${ref.pdf_url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
-                } else if (ref.url) {
-                    refLink = `<a href="${ref.url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
+                if (!references || references.length === 0) {
+                    container.innerHTML = '<div class="no-references" style="text-align: center; padding: 30px 10px; line-height: 1.6;">👇<br><br>CLICK A TAG BELOW TO VIEW RELATED PAPERS</div>';
+                    return;
                 }
 
-                // Create proper paper key for clicking
-                const paperKey = ref.id ? `internal_${ref.id}` : `${ref.source}_${ref.source_id}`;
+                let html = '';
+                references.forEach((ref, index) => {
+                    const snippet = ref.abstract ? ref.abstract.substring(0, 100) + '...' : 'No abstract available.';
 
-                html += `
+                    // Build reference link
+                    let refLink = '';
+                    if (ref.arxiv_id) {
+                        refLink = `<a href="https://arxiv.org/abs/${ref.arxiv_id}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
+                    } else if (ref.doi) {
+                        refLink = `<a href="https://doi.org/${ref.doi}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
+                    } else if (ref.pdf_url) {
+                        refLink = `<a href="${ref.pdf_url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
+                    } else if (ref.url) {
+                        refLink = `<a href="${ref.url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
+                    }
+
+                    // Create proper paper key for clicking
+                    const paperKey = ref.id ? `internal_${ref.id}` : `${ref.source}_${ref.source_id}`;
+
+                    html += `
                     <div class="reference-item" data-ref-index="${index}">
                         <div class="reference-title">${ref.title}</div>
                         <div class="reference-meta">${ref.authors || 'Unknown'} • ${ref.year || 'N/A'}</div>
@@ -1338,262 +1355,265 @@
                         ${refLink}
                     </div>
                 `;
-            });
-            container.innerHTML = html;
-
-            // Add click event listeners - capture ref data in closure
-            container.querySelectorAll('.reference-item').forEach((item, idx) => {
-                const ref = references[idx]; // Capture reference in closure
-                item.addEventListener('click', function (e) {
-                    if (e.target.hasAttribute('data-external-link')) return;
-                    if (ref) {
-                        showPaperModal(ref);
-                    }
                 });
+                container.innerHTML = html;
+
+                // Add click event listeners - capture ref data in closure
+                container.querySelectorAll('.reference-item').forEach((item, idx) => {
+                    const ref = references[idx]; // Capture reference in closure
+                    item.addEventListener('click', function (e) {
+                        if (e.target.hasAttribute('data-external-link')) return;
+                        if (ref) {
+                            showPaperModal(ref);
+                        }
+                    });
+                });
+            }
+
+            function closeModal() {
+                document.getElementById('paper-modal').style.display = 'none';
+                window.currentPaper = null;
+            }
+
+            // Close modal when clicking outside
+            window.onclick = function (event) {
+                const modal = document.getElementById('paper-modal');
+                if (event.target === modal) {
+                    closeModal();
+                }
+            }
+
+            // Close modal on Escape key
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    closeModal();
+                }
             });
-        }
 
-        function closeModal() {
-            document.getElementById('paper-modal').style.display = 'none';
-            window.currentPaper = null;
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function (event) {
-            const modal = document.getElementById('paper-modal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
-
-        // Close modal on Escape key
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape') {
-                closeModal();
-            }
-        });
-
-        function showLoading() {
-            document.getElementById('results-container').innerHTML = `
+            function showLoading() {
+                document.getElementById('results-container').innerHTML = `
                 <div class="loading">🔍 Searching...</div>
             `;
-        }
+            }
 
-        function showError(message) {
-            document.getElementById('results-container').innerHTML = `
+            function showError(message) {
+                document.getElementById('results-container').innerHTML = `
                 <div class="status-message status-error">❌ ${message}</div>
             `;
-        }
-
-        // Allow search on Enter key
-        document.getElementById('search-query').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') search();
-        });
-
-        // Upload functionality
-        let selectedFile = null;
-
-        function openUploadModal() {
-            document.getElementById('upload-modal').style.display = 'block';
-            setupDragAndDrop();
-        }
-
-        function closeUploadModal() {
-            document.getElementById('upload-modal').style.display = 'none';
-            selectedFile = null;
-            document.getElementById('upload-form').reset();
-            document.getElementById('drop-zone').style.display = 'block';
-            document.getElementById('file-preview').style.display = 'none';
-            document.getElementById('metadata-fields').style.display = 'none';
-            document.getElementById('upload-btn').disabled = true;
-            document.getElementById('upload-status').style.display = 'none';
-        }
-
-        function setupDragAndDrop() {
-            const dropZone = document.getElementById('drop-zone');
-            const fileInput = document.getElementById('file-input');
-
-            dropZone.onclick = () => fileInput.click();
-
-            dropZone.ondragover = (e) => {
-                e.preventDefault();
-                dropZone.classList.add('drag-over');
-            };
-
-            dropZone.ondragleave = () => dropZone.classList.remove('drag-over');
-
-            dropZone.ondrop = (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('drag-over');
-                if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-            };
-
-            fileInput.onchange = (e) => {
-                if (e.target.files.length) handleFile(e.target.files[0]);
-            };
-        }
-
-        function handleFile(file) {
-            if (!file.name.toLowerCase().endsWith('.pdf')) {
-                alert('Please select a PDF file');
-                return;
             }
 
-            if (file.size > 16 * 1024 * 1024) {
-                alert('File must be less than 16MB');
-                return;
+            // Allow search on Enter key
+            document.getElementById('search-query').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') search();
+            });
+
+            // Upload functionality
+            let selectedFile = null;
+
+            function openUploadModal() {
+                document.getElementById('upload-modal').style.display = 'block';
+                setupDragAndDrop();
             }
 
-            selectedFile = file;
-            document.getElementById('drop-zone').style.display = 'none';
-            document.getElementById('file-preview').style.display = 'block';
-            document.getElementById('metadata-fields').style.display = 'block';
-            document.getElementById('file-name').textContent = file.name;
-            document.getElementById('file-size').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-            document.getElementById('upload-btn').disabled = false;
-        }
-
-        async function handleUpload(event) {
-            event.preventDefault();
-
-            if (!selectedFile) return;
-
-            if (!accessToken) {
-                alert('Please log in to upload papers');
-                window.location.href = '/static/login.html';
-                return;
+            function closeUploadModal() {
+                document.getElementById('upload-modal').style.display = 'none';
+                selectedFile = null;
+                document.getElementById('upload-form').reset();
+                document.getElementById('drop-zone').style.display = 'block';
+                document.getElementById('file-preview').style.display = 'none';
+                document.getElementById('metadata-fields').style.display = 'none';
+                // Button removed
+                document.getElementById('upload-status').style.display = 'none';
             }
 
-            const formData = new FormData();
-            formData.append('file', selectedFile);
+            function setupDragAndDrop() {
+                const dropZone = document.getElementById('drop-zone');
+                const fileInput = document.getElementById('file-input');
 
-            const title = document.getElementById('upload-title').value.trim();
-            const authors = document.getElementById('upload-authors').value.trim();
-            const year = document.getElementById('upload-year').value;
-            const abstract = document.getElementById('upload-abstract').value.trim();
+                dropZone.onclick = () => fileInput.click();
 
-            if (title) formData.append('title', title);
-            if (authors) formData.append('authors', authors);
-            if (year) formData.append('year', year);
-            if (abstract) formData.append('abstract', abstract);
+                dropZone.ondragover = (e) => {
+                    e.preventDefault();
+                    dropZone.classList.add('drag-over');
+                };
 
-            document.getElementById('upload-status').innerHTML = '⏳ Uploading and processing...';
-            document.getElementById('upload-status').style.display = 'block';
-            document.getElementById('upload-btn').disabled = true;
+                dropZone.ondragleave = () => dropZone.classList.remove('drag-over');
 
-            try {
-                const response = await fetch(`${API_URL}/papers/upload`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${accessToken}` },
-                    body: formData
-                });
+                dropZone.ondrop = (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('drag-over');
+                    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+                };
 
-                const data = await response.json();
+                fileInput.onchange = (e) => {
+                    if (e.target.files.length) handleFile(e.target.files[0]);
+                };
+            }
 
-                if (response.ok) {
-                    document.getElementById('upload-status').innerHTML =
-                        `<div class="status-message status-success">✅ ${data.message}</div>`;
-                    setTimeout(() => closeUploadModal(), 2000);
-                } else {
-                    document.getElementById('upload-status').innerHTML =
-                        `<div class="status-message status-error">❌ ${data.error?.message || 'Upload failed'}</div>`;
-                    document.getElementById('upload-btn').disabled = false;
+            function handleFile(file) {
+                if (!file.name.toLowerCase().endsWith('.pdf')) {
+                    alert('Please select a PDF file');
+                    return;
                 }
-            } catch (error) {
-                document.getElementById('upload-status').innerHTML =
-                    `<div class="status-message status-error">❌ Network error: ${error.message}</div>`;
-                document.getElementById('upload-btn').disabled = false;
+
+                if (file.size > 16 * 1024 * 1024) {
+                    alert('File must be less than 16MB');
+                    return;
+                }
+
+                selectedFile = file;
+                document.getElementById('drop-zone').style.display = 'none';
+                document.getElementById('file-preview').style.display = 'block';
+                document.getElementById('metadata-fields').style.display = 'block';
+                document.getElementById('file-name').textContent = file.name;
+                document.getElementById('file-size').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+
+                // Auto-Upload Trigger
+                const form = document.getElementById('upload-form');
+                if (form) form.dispatchEvent(new Event('submit'));
             }
-        }
 
-        // Metrics & NotebookLM Logic
-        async function loadMetrics() {
-            try {
-                const response = await fetch(`${API_URL}/metrics/dashboard`);
-                if (!response.ok) throw new Error('Failed to load metrics');
-                const data = await response.json();
+            async function handleUpload(event) {
+                event.preventDefault();
 
-                // Render Top Tags
-                const tagsList = document.getElementById('top-tags-list');
-                if (data.top_tags && data.top_tags.length > 0) {
-                    tagsList.innerHTML = data.top_tags.map(t =>
-                        `<li class="metric-item">
+                if (!selectedFile) return;
+
+                if (!accessToken) {
+                    alert('Please log in to upload papers');
+                    window.location.href = '/static/login.html';
+                    return;
+                }
+
+                // Show status
+                const statusDiv = document.getElementById('upload-status');
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = '<div class="status-message">⏳ Uploading and processing...</div>';
+
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+
+                const title = document.getElementById('upload-title').value.trim();
+                const authors = document.getElementById('upload-authors').value.trim();
+                const year = document.getElementById('upload-year').value;
+                const abstract = document.getElementById('upload-abstract').value.trim();
+
+                if (title) formData.append('title', title);
+                if (authors) formData.append('authors', authors);
+                if (year) formData.append('year', year);
+                if (abstract) formData.append('abstract', abstract);
+
+                try {
+                    const response = await fetch(`${API_URL}/papers/upload`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${accessToken}` },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        statusDiv.innerHTML = `<div class="status-message status-success">✅ ${result.message}</div>`;
+                        setTimeout(() => {
+                            closeUploadModal();
+                            // Refresh search?
+                        }, 2000);
+                    } else {
+                        throw new Error(result.error || 'Upload failed');
+                    }
+                } catch (error) {
+                    document.getElementById('upload-status').innerHTML =
+                        `<div class="status-message status-error">❌ Network error: ${error.message}</div>`;
+                }
+            }
+
+            // Metrics & NotebookLM Logic
+            async function loadMetrics() {
+                try {
+                    const response = await fetch(`${API_URL}/metrics/dashboard`);
+                    if (!response.ok) throw new Error('Failed to load metrics');
+                    const data = await response.json();
+
+                    // Render Top Tags
+                    const tagsList = document.getElementById('top-tags-list');
+                    if (data.top_tags && data.top_tags.length > 0) {
+                        tagsList.innerHTML = data.top_tags.map(t =>
+                            `<li class="metric-item">
                             <span>#${t.name}</span> 
                             <span class="metric-score">${t.frequency}</span>
                         </li>`
-                    ).join('');
-                } else {
-                    tagsList.innerHTML = '<li class="metric-item" style="justify-content:center">No data yet</li>';
-                }
+                        ).join('');
+                    } else {
+                        tagsList.innerHTML = '<li class="metric-item" style="justify-content:center">No data yet</li>';
+                    }
 
-                // Render Top Cited
-                const citedList = document.getElementById('top-citations-list');
-                if (data.top_cited_papers && data.top_cited_papers.length > 0) {
-                    citedList.innerHTML = data.top_cited_papers.map(p =>
-                        `<li class="metric-item" style="display:block; cursor:pointer" onclick="window.location.href='/api/papers/${p.id}'"> <!-- Simple link for now, or open modal -->
+                    // Render Top Cited
+                    const citedList = document.getElementById('top-citations-list');
+                    if (data.top_cited_papers && data.top_cited_papers.length > 0) {
+                        citedList.innerHTML = data.top_cited_papers.map(p =>
+                            `<li class="metric-item" style="display:block; cursor:pointer" onclick="viewPaperById('${p.id}'); return false;"> <!-- Opens modal -->
                             <div style="font-weight:500; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--accent-primary)">${p.title}</div>
                             <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-tertiary)">
                                 <span>${p.year || 'N/A'}</span>
                                 <span style="color:var(--text-secondary)">${p.citations} citations</span>
                             </div>
                         </li>`
-                    ).join('');
-                } else {
-                    citedList.innerHTML = '<li class="metric-item" style="justify-content:center">No citations yet</li>';
-                }
+                        ).join('');
+                    } else {
+                        citedList.innerHTML = '<li class="metric-item" style="justify-content:center">No citations yet</li>';
+                    }
 
-                // Render Novel Ideas
-                const novelList = document.getElementById('novel-ideas-list');
-                if (data.novel_ideas && data.novel_ideas.length > 0) {
-                    novelList.innerHTML = data.novel_ideas.map(n =>
-                        `<li class="metric-item">
+                    // Render Novel Ideas
+                    const novelList = document.getElementById('novel-ideas-list');
+                    if (data.novel_ideas && data.novel_ideas.length > 0) {
+                        novelList.innerHTML = data.novel_ideas.map(n =>
+                            `<li class="metric-item">
                             <span title="${n.tags.join(', ')}">${n.tags.slice(0, 2).join(' + ')}${n.tags.length > 2 ? '...' : ''}</span> 
                             <span class="metric-score" title="Rarity Score">${n.score} pts</span>
                         </li>`
-                    ).join('');
-                } else {
-                    novelList.innerHTML = '<li class="metric-item" style="justify-content:center">No novel combos yet</li>';
+                        ).join('');
+                    } else {
+                        novelList.innerHTML = '<li class="metric-item" style="justify-content:center">No novel combos yet</li>';
+                    }
+
+                } catch (e) {
+                    console.error("Failed to load metrics", e);
+                    // Show error state in all three boxes
+                    document.getElementById('top-tags-list').innerHTML =
+                        '<li class="metric-item" style="justify-content:center; color: var(--text-tertiary);">Unable to load</li>';
+                    document.getElementById('top-citations-list').innerHTML =
+                        '<li class="metric-item" style="justify-content:center; color: var(--text-tertiary);">Unable to load</li>';
+                    document.getElementById('novel-ideas-list').innerHTML =
+                        '<li class="metric-item" style="justify-content:center; color: var(--text-tertiary);">Unable to load</li>';
                 }
-
-            } catch (e) {
-                console.error("Failed to load metrics", e);
-                // Show error state in all three boxes
-                document.getElementById('top-tags-list').innerHTML =
-                    '<li class="metric-item" style="justify-content:center; color: var(--text-tertiary);">Unable to load</li>';
-                document.getElementById('top-citations-list').innerHTML =
-                    '<li class="metric-item" style="justify-content:center; color: var(--text-tertiary);">Unable to load</li>';
-                document.getElementById('novel-ideas-list').innerHTML =
-                    '<li class="metric-item" style="justify-content:center; color: var(--text-tertiary);">Unable to load</li>';
             }
-        }
 
-        function checkNotebookLMAccess() {
-            const email = localStorage.getItem('user_email');
-            const gmailContainer = document.getElementById('notebook-lm-gmail');
-            const nonGmailContainer = document.getElementById('notebook-lm-non-gmail');
+            function checkNotebookLMAccess() {
+                const email = localStorage.getItem('user_email');
+                const gmailContainer = document.getElementById('notebook-lm-gmail');
+                const nonGmailContainer = document.getElementById('notebook-lm-non-gmail');
 
-            if (email) {
-                // Check if Gmail user
-                if (email.toLowerCase().endsWith('@gmail.com') || email.toLowerCase().endsWith('@googlemail.com')) {
-                    gmailContainer.style.display = 'block';
-                    nonGmailContainer.style.display = 'none';
+                if (email) {
+                    // Check if Gmail user
+                    if (email.toLowerCase().endsWith('@gmail.com') || email.toLowerCase().endsWith('@googlemail.com')) {
+                        gmailContainer.style.display = 'block';
+                        nonGmailContainer.style.display = 'none';
+                    } else {
+                        // Non-Gmail user (still logged in)
+                        gmailContainer.style.display = 'none';
+                        nonGmailContainer.style.display = 'block';
+                    }
                 } else {
-                    // Non-Gmail user (still logged in)
+                    // Not logged in - hide both
                     gmailContainer.style.display = 'none';
-                    nonGmailContainer.style.display = 'block';
+                    nonGmailContainer.style.display = 'none';
                 }
-            } else {
-                // Not logged in - hide both
-                gmailContainer.style.display = 'none';
-                nonGmailContainer.style.display = 'none';
             }
-        }
 
-        // Initialize Metrics
-        document.addEventListener('DOMContentLoaded', () => {
-            loadMetrics();
-            checkNotebookLMAccess();
-        });
+            // Initialize Metrics
+            document.addEventListener('DOMContentLoaded', () => {
+                loadMetrics();
+                checkNotebookLMAccess();
+            });
     </script>
     <script src="/static/session-manager.js"></script>
 </body>
