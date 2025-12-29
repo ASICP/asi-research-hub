@@ -661,6 +661,65 @@
               flex-shrink: 0;
           }
             font-weight: 600;
+  
+          /* Data Rigor Section */
+          .data-rigor-section {
+              background: var(--bg-secondary);
+              border: 1px solid var(--border-color);
+              border-radius: 12px;
+              padding: 24px;
+              margin-bottom: 24px;
+          }
+  
+          .rigor-title {
+              font-size: 18px;
+              font-weight: 600;
+              margin-bottom: 12px;
+              color: var(--text-primary);
+          }
+  
+          .rigor-intro {
+              font-size: 14px;
+              color: var(--text-secondary);
+              margin-bottom: 20px;
+          }
+  
+          .rigor-criteria {
+              display: flex;
+              flex-direction: column;
+              gap: 16px;
+              margin-bottom: 20px;
+          }
+  
+          .rigor-item {
+              display: flex;
+              flex-direction: column;
+              gap: 6px;
+              padding: 12px;
+              background: var(--bg-primary);
+              border-radius: 8px;
+              border-left: 3px solid var(--accent-primary);
+          }
+  
+          .rigor-label {
+              font-weight: 600;
+              font-size: 14px;
+              color: var(--text-primary);
+          }
+  
+          .rigor-desc {
+              font-size: 13px;
+              color: var(--text-tertiary);
+              line-height: 1.5;
+          }
+  
+          .rigor-footer {
+              font-size: 13px;
+              color: var(--text-secondary);
+              font-style: italic;
+              text-align: center;
+              margin-top: 16px;
+          }
             margin-bottom: 12px;
             color: var(--text-primary);
             border-bottom: 1px solid var(--border-color);
@@ -802,6 +861,7 @@
 
             <!-- 3. Novel Ideas & NotebookLM -->
             <div class="metric-box">
+                <div class="metric-content">
                 <h3 class="metric-title">Novel Ideas & Tools</h3>
                 <ul class="metric-list" id="novel-ideas-list">
                     <li class="metric-item" style="justify-content:center">Loading...</li>
@@ -821,6 +881,7 @@
                 <div class="notebook-lm-link" id="notebook-lm-non-gmail" style="display: none;">
                     <a href="https://notebooklm.google.com/" target="_blank" class="notebook-btn">
                         📓 Open NotebookLM
+                </div>
                     </a>
                     <p style="font-size: 11px; color: var(--text-tertiary); margin-top: 6px;">
                         Sign in with any Google account to use AI research tools
@@ -828,6 +889,37 @@
                 </div>
             </div>
         </div>
+  
+          <!-- Data Rigor: Novelty Scoring Explanation -->
+          <div class="data-rigor-section">
+              <h3 class="rigor-title">📐 Data Rigor: How We Score Novelty</h3>
+              <p class="rigor-intro">Each paper in <strong>Novel Ideas & Tools</strong> is scored on a 100-point scale across 5 criteria:</p>
+              
+              <div class="rigor-criteria">
+                  <div class="rigor-item">
+                      <span class="rigor-label">1. Recency (0-20 pts)</span>
+                      <span class="rigor-desc">Last 30 days: 20 pts | 31-60 days: 15 pts | 61-90 days: 10 pts</span>
+                  </div>
+                  <div class="rigor-item">
+                      <span class="rigor-label">2. Interdisciplinary Signal (0-25 pts)</span>
+                      <span class="rigor-desc">AI + Neuroscience: 25 pts | AI + Data Governance/Security: 25 pts | AI + Economics/Philosophy/Biology: 20 pts</span>
+                  </div>
+                  <div class="rigor-item">
+                      <span class="rigor-label">3. Tooling/Framework (0-25 pts)</span>
+                      <span class="rigor-desc">Has GitHub/code repo: 15 pts | Contains keywords (framework, toolkit, method, benchmark): 10 pts</span>
+                  </div>
+                  <div class="rigor-item">
+                      <span class="rigor-label">4. Contrarian/Challenge (0-15 pts)</span>
+                      <span class="rigor-desc">Keywords (critique, alternative, rethinking): 15 pts | Low citations but recent (underexplored): 10 pts</span>
+                  </div>
+                  <div class="rigor-item">
+                      <span class="rigor-label">5. Impact (0-25 pts) - Derived Score</span>
+                      <span class="rigor-desc">4 criteria met: 25 pts | 3 met: 15 pts | 2 met: 8 pts | 1 met: 3 pts</span>
+                  </div>
+              </div>
+              
+              <p class="rigor-footer">Papers are ranked by total score. Top 8 papers (from last 90 days) are displayed above.</p>
+          </div>
 
 
 
