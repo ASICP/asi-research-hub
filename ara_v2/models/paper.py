@@ -5,6 +5,7 @@ Stores research papers with metadata matching the production database schema.
 
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime
+from sqlalchemy.dialects.postgresql import JSONB
 from ara_v2.utils.database import db
 
 
@@ -20,6 +21,7 @@ class Paper(db.Model):
     authors = Column(Text)
     abstract = Column(Text)
     year = Column(Integer)
+    venue = Column(Text)  # Journal, conference, or publication venue
     source = Column(String(50), nullable=False, index=True)
 
     # Identifiers
@@ -36,6 +38,7 @@ class Paper(db.Model):
     asip_funded = Column(Boolean, default=False)
     added_by = Column(String(255))
     tags = Column(Text)  # JSON array of tag strings
+    raw_data = Column(JSONB)  # Source-specific metadata (categories, fieldsOfStudy, subjects, etc.)
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
