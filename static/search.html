@@ -1577,19 +1577,31 @@
                 } else {
                     citedList.innerHTML = '<li class="metric-item" style="justify-content:center">No citations yet</li>';
                 }
+                  // Render Novel Ideas (now shows top scored papers)
+                  const novelList = document.getElementById('novel-ideas-list');
+                  if (data.novel_ideas && data.novel_ideas.length > 0) {
+                      novelList.innerHTML = data.novel_ideas.map(n =>
+                          `<li class="metric-item">
+                              <span title="${n.title}" style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${n.title.substring(0, 60)}${n.title.length > 60 ? '...' : ''}</span>
+                              <span class="metric-score" title="Novelty Score: R:${n.breakdown.recency} I:${n.breakdown.interdisciplinary} T:${n.breakdown.tooling} C:${n.breakdown.contrarian} Impact:${n.breakdown.impact}">${n.score} pts</span>
+                          </li>`
+                      ).join('');
+                  } else {
+                      novelList.innerHTML = '<li class="metric-item" style="justify-content:center">No novel ideas found</li>';
+                  }
 
-                // Render Novel Ideas
-                const novelList = document.getElementById('novel-ideas-list');
-                if (data.novel_ideas && data.novel_ideas.length > 0) {
-                    novelList.innerHTML = data.novel_ideas.map(n =>
-                        `<li class="metric-item">
-                            <span title="${n.tags.join(', ')}">${n.tags.slice(0, 2).join(' + ')}${n.tags.length > 2 ? '...' : ''}</span> 
-                            <span class="metric-score" title="Rarity Score">${n.score} pts</span>
-                        </li>`
-                    ).join('');
-                } else {
-                    novelList.innerHTML = '<li class="metric-item" style="justify-content:center">No novel combos yet</li>';
-                }
+
+
+
+
+
+
+
+
+
+
+
+
 
             } catch (e) {
                 console.error("Failed to load metrics", e);
