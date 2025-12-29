@@ -219,7 +219,8 @@ class PaperIngestionService:
                 abstract=paper_data.get('abstract'),
                 authors=paper_data.get('authors', []),
                 year=paper_data.get('year'),
-                citation_count=paper_data.get('citation_count', 0)
+                citation_count=paper_data.get('citation_count', 0),
+                raw_data=paper_data.get('raw_data')  # Store source-specific metadata for tag assignment
             )
 
             db.session.add(paper)
@@ -334,6 +335,11 @@ class PaperIngestionService:
             paper.venue = paper_data['venue']
             updated = True
 
+        # Update raw_data if not present (for tag assignment)
+        if not paper.raw_data and paper_data.get('raw_data'):
+            paper.raw_data = paper_data['raw_data']
+            updated = True
+
         if updated:
             current_app.logger.info(f"Updated paper: {paper.title[:50]}...")
 
@@ -410,6 +416,9 @@ class PaperIngestionService:
                 confidence=confidence
             )
             db.session.add(paper_tag)
+
+        # Flush to ensure PaperTag records are in the database before counting
+        db.session.flush()
 
         # Update tag statistics
         for tag, _ in tag_assignments:

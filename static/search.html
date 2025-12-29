@@ -686,31 +686,16 @@
             font-size: 12px;
         }
 
-        .notebook-lm-link {
-            display: none;
-            /* Hidden by default */
-            margin-top: 16px;
-            text-align: center;
-            padding-top: 12px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .notebook-btn {
-            background: #4285f4;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+        .google-btn {
+            background: transparent;
+            border: none;
+            padding: 0;
+            cursor: pointer;
             transition: transform 0.2s;
         }
 
-        .notebook-btn:hover {
+        .google-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(66, 133, 244, 0.3);
         }
     </style>
 </head>
@@ -722,6 +707,9 @@
                     style="height: 32px;">Alignment Research Application</h1>
             <div style="display: flex; gap: 8px;">
                 <button class="header-btn" onclick="openUploadModal()" title="Upload Paper">📄</button>
+                <button class="header-btn google-btn" onclick="window.open('https://notebooklm.google.com/', '_blank')" title="Open NotebookLM">
+                    <div style="width: 24px; height: 24px; background: #4285f4; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">G</div>
+                </button>
                 <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
                 <button class="theme-toggle" onclick="logout()" title="Logout">⏻</button>
             </div>
@@ -783,32 +771,12 @@
                 </ul>
             </div>
 
-            <!-- 3. Novel Ideas & NotebookLM -->
+            <!-- 3. Novel Ideas & Tools -->
             <div class="metric-box">
                 <h3 class="metric-title">💡 Novel Ideas & Tools</h3>
                 <ul class="metric-list" id="novel-ideas-list">
                     <li class="metric-item" style="justify-content:center">Loading...</li>
                 </ul>
-
-                <!-- NotebookLM for Gmail users -->
-                <div class="notebook-lm-link" id="notebook-lm-gmail" style="display: none;">
-                    <a href="https://notebooklm.google.com/" target="_blank" class="notebook-btn">
-                        📓 Open NotebookLM
-                    </a>
-                    <p style="font-size: 11px; color: var(--text-tertiary); margin-top: 6px;">
-                        Seamlessly research with your Gmail account
-                    </p>
-                </div>
-
-                <!-- NotebookLM for non-Gmail users -->
-                <div class="notebook-lm-link" id="notebook-lm-non-gmail" style="display: none;">
-                    <a href="https://notebooklm.google.com/" target="_blank" class="notebook-btn">
-                        📓 Open NotebookLM
-                    </a>
-                    <p style="font-size: 11px; color: var(--text-tertiary); margin-top: 6px;">
-                        Sign in with any Google account to use AI research tools
-                    </p>
-                </div>
             </div>
         </div>
 
@@ -858,27 +826,23 @@
             </div>
             <div class="modal-body" style="padding: 24px;">
                 <form id="upload-form" onsubmit="handleUpload(event)">
-                    <!-- Drag and drop zone -->
-                    <div id="drop-zone" class="drop-zone">
-                        <div style="font-size: 48px; margin-bottom: 16px;">📄</div>
-                        <p style="font-size: 16px; margin-bottom: 8px;">Drag and drop your PDF here</p>
-                        <p style="font-size: 14px; color: var(--text-tertiary); margin-bottom: 16px;">or click to browse
-                            (max 16MB)</p>
-                        <input type="file" id="file-input" accept=".pdf" style="display: none;">
-                        <button type="button" onclick="document.getElementById('file-input').click()"
-                            style="width: auto; margin-top: 16px; padding: 10px 24px;">Browse Files</button>
+                    <!-- Public Link Input -->
+                    <div class="input-group">
+                        <label for="paper-url">Paper URL (required)</label>
+                        <input type="url" id="paper-url" placeholder="https://example.com/paper.pdf" required
+                               style="width: 100%; padding: 12px; background: var(--bg-tertiary);
+                                      border: 1px solid var(--border-color); border-radius: 8px;
+                                      color: var(--text-primary); font-size: 14px;">
+                        <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px;">
+                            Provide a publicly accessible link to your paper (PDF format)
+                        </p>
                     </div>
 
-                    <!-- File preview (hidden initially) -->
-                    <div id="file-preview" style="display: none; margin-top: 20px;">
-                        <div class="file-preview-card">
-                            <div style="font-weight: 600; margin-bottom: 4px;" id="file-name"></div>
-                            <div style="font-size: 13px; color: var(--text-secondary);" id="file-size"></div>
-                        </div>
-                    </div>
+                    <!-- URL validation status -->
+                    <div id="url-validation" style="display: none; margin-top: 12px; padding: 12px; border-radius: 8px;"></div>
 
                     <!-- Optional metadata -->
-                    <div id="metadata-fields" style="display: none; margin-top: 20px;">
+                    <div id="metadata-fields" style="margin-top: 20px;">
                         <div class="input-group">
                             <label for="upload-title">Title (optional)</label>
                             <input type="text" id="upload-title" placeholder="Auto-extracted if not provided">
@@ -898,12 +862,18 @@
                                              border: 1px solid var(--border-color); border-radius: 8px;
                                              color: var(--text-primary); font-family: inherit; resize: vertical;"></textarea>
                         </div>
+                        <div class="input-group">
+                            <label for="upload-tags">Tags (optional)</label>
+                            <input type="text" id="upload-tags" placeholder="e.g., alignment, safety, reinforcement-learning">
+                            <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px;">
+                                Separate multiple tags with commas
+                            </p>
+                        </div>
                     </div>
 
                     <div style="margin-top: 24px;">
                         <button type="submit" id="upload-btn" class="paper-link-btn"
-                            style="width:100%; justify-content:center; cursor:pointer;" disabled>Confirm & Upload
-                            Paper</button>
+                            style="width:100%; justify-content:center; cursor:pointer;">Add Paper</button>
                     </div>
 
                     <div id="upload-status" style="margin-top: 16px; display: none;"></div>
@@ -1411,78 +1381,25 @@
         });
 
         // Upload functionality
-        let selectedFile = null;
-
         function openUploadModal() {
             document.getElementById('upload-modal').style.display = 'block';
-            setupDragAndDrop();
         }
 
         function closeUploadModal() {
             document.getElementById('upload-modal').style.display = 'none';
-            selectedFile = null;
             document.getElementById('upload-form').reset();
-            document.getElementById('drop-zone').style.display = 'block';
-            document.getElementById('file-preview').style.display = 'none';
-            document.getElementById('metadata-fields').style.display = 'none';
-            if(document.getElementById('upload-btn')) document.getElementById('upload-btn').disabled = true;
+            document.getElementById('url-validation').style.display = 'none';
             document.getElementById('upload-status').style.display = 'none';
-        }
-
-        function setupDragAndDrop() {
-            const dropZone = document.getElementById('drop-zone');
-            const fileInput = document.getElementById('file-input');
-
-            dropZone.onclick = () => fileInput.click();
-
-            dropZone.ondragover = (e) => {
-                e.preventDefault();
-                dropZone.classList.add('drag-over');
-            };
-
-            dropZone.ondragleave = () => dropZone.classList.remove('drag-over');
-
-            dropZone.ondrop = (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('drag-over');
-                if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-            };
-
-            fileInput.onchange = (e) => {
-                if (e.target.files.length) handleFile(e.target.files[0]);
-            };
-        }
-
-        function handleFile(file) {
-            if (!file.name.toLowerCase().endsWith('.pdf')) {
-                alert('Please select a PDF file');
-                return;
-            }
-
-            if (file.size > 16 * 1024 * 1024) {
-                alert('File must be less than 16MB');
-                return;
-            }
-
-            selectedFile = file;
-            document.getElementById('drop-zone').style.display = 'none';
-            document.getElementById('file-preview').style.display = 'block';
-            document.getElementById('metadata-fields').style.display = 'block';
-            document.getElementById('file-name').textContent = file.name;
-            document.getElementById('file-size').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-
-            // Enable button for manual upload
-            const btn = document.getElementById('upload-btn');
-            if (btn) {
-                btn.disabled = false;
-                btn.textContent = 'Confirm & Upload Paper';
-            }
         }
 
         async function handleUpload(event) {
             event.preventDefault();
 
-            if (!selectedFile) return;
+            const paperUrl = document.getElementById('paper-url').value.trim();
+            if (!paperUrl) {
+                alert('Please provide a paper URL');
+                return;
+            }
 
             if (!accessToken) {
                 alert('Please log in to upload papers');
@@ -1493,32 +1410,41 @@
             // Show status
             const statusDiv = document.getElementById('upload-status');
             statusDiv.style.display = 'block';
-            statusDiv.innerHTML = '<div class="status-message">⏳ Uploading and processing...</div>';
+            statusDiv.innerHTML = '<div class="status-message">⏳ Validating URL and processing...</div>';
 
             const btn = document.getElementById('upload-btn');
             if (btn) {
                 btn.disabled = true;
-                btn.textContent = 'Uploading...';
+                btn.textContent = 'Processing...';
             }
-
-            const formData = new FormData();
-            formData.append('file', selectedFile);
 
             const title = document.getElementById('upload-title').value.trim();
             const authors = document.getElementById('upload-authors').value.trim();
             const year = document.getElementById('upload-year').value;
             const abstract = document.getElementById('upload-abstract').value.trim();
+            const tagsInput = document.getElementById('upload-tags').value.trim();
 
-            if (title) formData.append('title', title);
-            if (authors) formData.append('authors', authors);
-            if (year) formData.append('year', year);
-            if (abstract) formData.append('abstract', abstract);
+            const payload = {
+                url: paperUrl
+            };
+
+            if (title) payload.title = title;
+            if (authors) payload.authors = authors;
+            if (year) payload.year = parseInt(year);
+            if (abstract) payload.abstract = abstract;
+            if (tagsInput) {
+                // Parse comma-separated tags and clean them
+                payload.tags = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+            }
 
             try {
                 const response = await fetch(`${API_URL}/papers/upload`, {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${accessToken}` },
-                    body: formData
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
                 });
 
                 const result = await response.json();
@@ -1527,7 +1453,7 @@
                     statusDiv.innerHTML = `<div class="status-message status-success">✅ ${result.message}</div>`;
                     setTimeout(() => {
                         closeUploadModal();
-                        // Refresh search results if relevant?
+                        // Refresh search results if relevant
                     }, 2000);
                 } else {
                     throw new Error(result.error || 'Upload failed');
@@ -1537,7 +1463,7 @@
                 const btn = document.getElementById('upload-btn');
                 if (btn) {
                     btn.disabled = false;
-                    btn.textContent = 'Retry Upload';
+                    btn.textContent = 'Retry';
                 }
             }
         }
@@ -1603,32 +1529,9 @@
             }
         }
 
-        function checkNotebookLMAccess() {
-            const email = localStorage.getItem('user_email');
-            const gmailContainer = document.getElementById('notebook-lm-gmail');
-            const nonGmailContainer = document.getElementById('notebook-lm-non-gmail');
-
-            if (email) {
-                // Check if Gmail user
-                if (email.toLowerCase().endsWith('@gmail.com') || email.toLowerCase().endsWith('@googlemail.com')) {
-                    gmailContainer.style.display = 'block';
-                    nonGmailContainer.style.display = 'none';
-                } else {
-                    // Non-Gmail user (still logged in)
-                    gmailContainer.style.display = 'none';
-                    nonGmailContainer.style.display = 'block';
-                }
-            } else {
-                // Not logged in - hide both
-                gmailContainer.style.display = 'none';
-                nonGmailContainer.style.display = 'none';
-            }
-        }
-
         // Initialize Metrics
         document.addEventListener('DOMContentLoaded', () => {
             loadMetrics();
-            checkNotebookLMAccess();
         });
     </script>
     <script src="/static/session-manager.js"></script>
