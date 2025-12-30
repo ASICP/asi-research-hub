@@ -32,6 +32,7 @@ class Paper(db.Model):
     # Content storage
     pdf_path = Column(String(255))
     pdf_text = Column(Text)  # Full-text searchable PDF content
+    url = Column(String(500))  # External URL to paper (for public links)
 
     # Metadata
     citation_count = Column(Integer, default=0)
@@ -39,7 +40,7 @@ class Paper(db.Model):
     added_by = Column(String(255))
     tags = Column(Text)  # JSON array of tag strings
     raw_data = Column(JSONB)  # Source-specific metadata (categories, fieldsOfStudy, subjects, etc.)
-    
+
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
@@ -70,6 +71,7 @@ class Paper(db.Model):
             'doi': self.doi,
             'arxiv_id': self.arxiv_id,
             'pdf_path': self.pdf_path,
+            'url': self.url,
             'citation_count': self.citation_count,
             'asip_funded': self.asip_funded,
             'tags': tags_list,

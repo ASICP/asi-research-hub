@@ -18,7 +18,10 @@ from werkzeug.utils import secure_filename
 from typing import Optional
 import PyPDF2
 import os
+import requests
+import tempfile
 from datetime import datetime
+from urllib.parse import urlparse
 
 papers_bp = Blueprint('papers', __name__)
 
@@ -39,6 +42,76 @@ def extract_pdf_text(pdf_path: str) -> str:
 def allowed_file(filename: str) -> bool:
     """Check if file is PDF."""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'pdf'
+
+
+def download_pdf_from_url(url: str, save_dir: str) -> str:
+    """
+    Download PDF from URL and validate it's accessible.
+
+    Args:
+        url: URL to download PDF from
+        save_dir: Directory to save the PDF
+
+    Returns:
+        str: Path to the downloaded file
+
+    Raises:
+        ValidationError: If URL is invalid or not accessible
+    """
+    # Validate URL format
+    try:
+        parsed = urlparse(url)
+        if not all([parsed.scheme, parsed.netloc]):
+            raise ValidationError('Invalid URL format')
+        if parsed.scheme not in ['http', 'https']:
+            raise ValidationError('URL must use HTTP or HTTPS protocol')
+    except Exception as e:
+        raise ValidationError(f'Invalid URL: {str(e)}')
+
+    # Download the file
+    try:
+        response = requests.get(url, timeout=30, stream=True, allow_redirects=True)
+        response.raise_for_status()
+
+        # Check content type
+        content_type = response.headers.get('Content-Type', '').lower()
+        if 'application/pdf' not in content_type and not url.lower().endswith('.pdf'):
+            raise ValidationError('URL does not point to a PDF file')
+
+        # Check file size (max 50MB)
+        content_length = response.headers.get('Content-Length')
+        if content_length and int(content_length) > 50 * 1024 * 1024:
+            raise ValidationError('PDF file too large (max 50MB)')
+
+        # Generate filename from URL
+        filename = os.path.basename(urlparse(url).path)
+        if not filename or not filename.endswith('.pdf'):
+            filename = 'paper.pdf'
+        filename = secure_filename(filename)
+
+        # Save file
+        timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        filename = f"{timestamp}_{filename}"
+        filepath = os.path.join(save_dir, filename)
+
+        with open(filepath, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+
+        return filepath
+
+    except requests.exceptions.Timeout:
+        raise ValidationError('URL request timed out - server did not respond')
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            raise ValidationError('URL not found (404)')
+        elif e.response.status_code == 403:
+            raise ValidationError('Access forbidden (403) - URL may not be publicly accessible')
+        else:
+            raise ValidationError(f'HTTP error {e.response.status_code}')
+    except requests.exceptions.RequestException as e:
+        raise ValidationError(f'Failed to download from URL: {str(e)}')
 
 
 def check_duplicate_by_title(title: str) -> Optional[Paper]:
@@ -637,49 +710,83 @@ def diamonds():
 @require_auth
 @limiter.limit("10 per hour")
 def upload_paper():
-    """Upload PDF paper with automatic tagging."""
+    """Upload PDF paper from URL or file with automatic tagging."""
+    filepath = None
     try:
-        # 1. Validate file
-        if 'file' not in request.files:
-            raise ValidationError('No file provided')
-
-        file = request.files['file']
-        if not file.filename or not allowed_file(file.filename):
-            raise ValidationError('Only PDF files allowed')
-
-        # 2. Save file
-        filename = secure_filename(file.filename)
-        timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
-        filename = f"{g.current_user.id}_{timestamp}_{filename}"
-
         upload_folder = os.path.join(current_app.root_path, '..', 'static', 'uploads')
         os.makedirs(upload_folder, exist_ok=True)
-        filepath = os.path.join(upload_folder, filename)
-        file.save(filepath)
 
-        # 3. Extract text
+        # Determine if this is a URL-based or file-based upload
+        is_json = request.is_json
+
+        if is_json:
+            # URL-based upload
+            data = request.get_json()
+            url = data.get('url', '').strip()
+
+            if not url:
+                raise ValidationError('No URL provided')
+
+            # Download PDF from URL
+            filepath = download_pdf_from_url(url, upload_folder)
+            filename = os.path.basename(filepath)
+
+            # Get metadata from JSON
+            title = data.get('title', '').strip()
+            authors = data.get('authors', '').strip() or 'Unknown'
+            year = data.get('year')
+            abstract = data.get('abstract', '').strip()
+            tags = data.get('tags', [])  # User-provided tags
+            external_url = url  # Store the original URL
+
+        else:
+            # File-based upload (backward compatibility)
+            if 'file' not in request.files:
+                raise ValidationError('No file or URL provided')
+
+            file = request.files['file']
+            if not file.filename or not allowed_file(file.filename):
+                raise ValidationError('Only PDF files allowed')
+
+            # Save file
+            filename = secure_filename(file.filename)
+            timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+            filename = f"{g.current_user.id}_{timestamp}_{filename}"
+            filepath = os.path.join(upload_folder, filename)
+            file.save(filepath)
+
+            # Get metadata from form
+            title = request.form.get('title', '').strip()
+            authors = request.form.get('authors', '').strip() or 'Unknown'
+            year = request.form.get('year', type=int)
+            abstract = request.form.get('abstract', '').strip()
+            tags = []
+            external_url = None
+
+        # Extract text from PDF
         try:
             pdf_text = extract_pdf_text(filepath)
             if len(pdf_text.strip()) < 100:
-                os.remove(filepath)
+                if filepath and os.path.exists(filepath):
+                    os.remove(filepath)
                 raise ValidationError('Could not extract text from PDF')
         except Exception as e:
-            if os.path.exists(filepath):
+            if filepath and os.path.exists(filepath):
                 os.remove(filepath)
             raise ValidationError(f'PDF processing failed: {str(e)}')
 
-        # 4. Get metadata
-        title = request.form.get('title', '').strip() or filename.replace('.pdf', '')
-        authors = request.form.get('authors', '').strip() or 'Unknown'
-        year = request.form.get('year', type=int)
-        abstract = request.form.get('abstract', '').strip()
+        # Use extracted title if not provided
+        if not title:
+            title = filename.replace('.pdf', '')
 
-        # 5. Check duplicates
+        # Check duplicates
         if check_duplicate_by_title(title):
-            os.remove(filepath)
+            if filepath and os.path.exists(filepath):
+                os.remove(filepath)
             raise ConflictError('Paper with similar title already exists')
 
-        # 6. Create paper data
+        # Create paper data
+        timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
         paper_data = {
             'source': 'internal',
             'source_id': f'upload_{g.current_user.id}_{timestamp}',
@@ -687,19 +794,28 @@ def upload_paper():
             'authors': authors,
             'year': year,
             'abstract': abstract,
-            'pdf_path': f'static/uploads/{filename}',
+            'pdf_path': f'static/uploads/{os.path.basename(filepath)}',
             'pdf_text': pdf_text,
-            'url': f'/static/uploads/{filename}',
+            'url': external_url or f'/static/uploads/{os.path.basename(filepath)}',
             'added_by': g.current_user.email
         }
 
-        # 7. Ingest with auto-tagging
+        # Ingest with auto-tagging
         ingestion_service = PaperIngestionService()
         paper, is_new = ingestion_service.ingest_paper(paper_data, assign_tags=True)
 
         if not paper:
-            os.remove(filepath)
+            if filepath and os.path.exists(filepath):
+                os.remove(filepath)
             raise ARAError('Failed to save paper')
+
+        # Add user-provided tags if any
+        if tags and isinstance(tags, list):
+            from ara_v2.services.tag_assigner import TagAssigner
+            tag_assigner = TagAssigner()
+            for tag_name in tags:
+                if tag_name and isinstance(tag_name, str):
+                    tag_assigner.assign_tag_to_paper(paper.id, tag_name.strip())
 
         db.session.commit()
 
@@ -711,9 +827,18 @@ def upload_paper():
 
     except (ValidationError, ConflictError):
         db.session.rollback()
+        if filepath and os.path.exists(filepath):
+            try:
+                os.remove(filepath)
+            except:
+                pass
         raise
     except Exception as e:
         db.session.rollback()
+        if filepath and os.path.exists(filepath):
+            try:
+                os.remove(filepath)
+            except:
+                pass
         current_app.logger.error(f"Upload error: {e}", exc_info=True)
-        # FORCE DEBUG MESSAGE
         return jsonify({'error': f"SYSTEM ERROR: {str(e)}"}), 500
