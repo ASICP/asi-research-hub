@@ -756,13 +756,16 @@
             font-size: 12px;
         }
 
-        .notebook-lm-link {
-            display: none;
-            /* Hidden by default */
-            margin-top: 16px;
-            text-align: center;
-            padding-top: 12px;
-            border-top: 1px solid var(--border-color);
+        .google-btn {
+            background: transparent;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .google-btn:hover {
+            transform: translateY(-2px);
         }
 
         .notebook-btn {
@@ -793,6 +796,9 @@
                     style="height: 32px;">Alignment Research Application</h1>
             <div style="display: flex; gap: 8px;">
                 <button class="header-btn" onclick="openUploadModal()" title="Upload Paper">📄</button>
+                  <button class="header-btn google-btn" onclick="window.open('https://notebooklm.google.com/', '_blank')" title="Open NotebookLM">
+                      <div style="width: 24px; height: 24px; background: #4285f4; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">G</div>
+                  </button>
                 <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
                 <button class="theme-toggle" onclick="logout()" title="Logout">⏻</button>
             </div>
@@ -867,27 +873,7 @@
                     <li class="metric-item" style="justify-content:center">Loading...</li>
                 </ul>
 
-                <!-- NotebookLM for Gmail users -->
-                <div class="notebook-lm-link" id="notebook-lm-gmail" style="display: none;">
-                    <a href="https://notebooklm.google.com/" target="_blank" class="notebook-btn">
-                        📓 Open NotebookLM
-                    </a>
-                    <p style="font-size: 11px; color: var(--text-tertiary); margin-top: 6px;">
-                        Seamlessly research with your Gmail account
-                    </p>
-                </div>
-
-                <!-- NotebookLM for non-Gmail users -->
-                <div class="notebook-lm-link" id="notebook-lm-non-gmail" style="display: none;">
-                    <a href="https://notebooklm.google.com/" target="_blank" class="notebook-btn">
-                        📓 Open NotebookLM
-                </div>
-                    </a>
-                    <p style="font-size: 11px; color: var(--text-tertiary); margin-top: 6px;">
-                        Sign in with any Google account to use AI research tools
-                    </p>
-                </div>
-            </div>
+</div>
         </div>
   
           <!-- Data Rigor: Novelty Scoring Explanation -->
@@ -967,27 +953,23 @@
             </div>
             <div class="modal-body" style="padding: 24px;">
                 <form id="upload-form" onsubmit="handleUpload(event)">
-                    <!-- Drag and drop zone -->
-                    <div id="drop-zone" class="drop-zone">
-                        <div style="font-size: 48px; margin-bottom: 16px;">📄</div>
-                        <p style="font-size: 16px; margin-bottom: 8px;">Drag and drop your PDF here</p>
-                        <p style="font-size: 14px; color: var(--text-tertiary); margin-bottom: 16px;">or click to browse
-                            (max 16MB)</p>
-                        <input type="file" id="file-input" accept=".pdf" style="display: none;">
-                        <button type="button" onclick="document.getElementById('file-input').click()"
-                            style="width: auto; margin-top: 16px; padding: 10px 24px;">Browse Files</button>
+                    <!-- Public Link Input -->
+                    <div class="input-group">
+                        <label for="paper-url">Paper URL (required)</label>
+                        <input type="url" id="paper-url" placeholder="https://example.com/paper.pdf" required
+                               style="width: 100%; padding: 12px; background: var(--bg-tertiary);
+                                      border: 1px solid var(--border-color); border-radius: 8px;
+                                      color: var(--text-primary); font-size: 14px;">
+                        <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px;">
+                            Provide a publicly accessible link to your paper (PDF format)
+                        </p>
                     </div>
 
-                    <!-- File preview (hidden initially) -->
-                    <div id="file-preview" style="display: none; margin-top: 20px;">
-                        <div class="file-preview-card">
-                            <div style="font-weight: 600; margin-bottom: 4px;" id="file-name"></div>
-                            <div style="font-size: 13px; color: var(--text-secondary);" id="file-size"></div>
-                        </div>
-                    </div>
+                    <!-- URL validation status -->
+                    <div id="url-validation" style="display: none; margin-top: 12px; padding: 12px; border-radius: 8px;"></div>
 
                     <!-- Optional metadata -->
-                    <div id="metadata-fields" style="display: none; margin-top: 20px;">
+                    <div id="metadata-fields" style="margin-top: 20px;">
                         <div class="input-group">
                             <label for="upload-title">Title (optional)</label>
                             <input type="text" id="upload-title" placeholder="Auto-extracted if not provided">
@@ -1520,34 +1502,21 @@
         });
 
         // Upload functionality
-        let selectedFile = null;
+        
 
         function openUploadModal() {
             document.getElementById('upload-modal').style.display = 'block';
-            setupDragAndDrop();
+
         }
 
         function closeUploadModal() {
             document.getElementById('upload-modal').style.display = 'none';
-            selectedFile = null;
             document.getElementById('upload-form').reset();
-            document.getElementById('drop-zone').style.display = 'block';
-            document.getElementById('file-preview').style.display = 'none';
-            document.getElementById('metadata-fields').style.display = 'none';
-            if(document.getElementById('upload-btn')) document.getElementById('upload-btn').disabled = true;
+            document.getElementById('url-validation').style.display = 'none';
             document.getElementById('upload-status').style.display = 'none';
         }
 
-        function setupDragAndDrop() {
-            const dropZone = document.getElementById('drop-zone');
-            const fileInput = document.getElementById('file-input');
-
-            dropZone.onclick = () => fileInput.click();
-
-            dropZone.ondragover = (e) => {
-                e.preventDefault();
-                dropZone.classList.add('drag-over');
-            };
+;
 
             dropZone.ondragleave = () => dropZone.classList.remove('drag-over');
 
@@ -1562,11 +1531,7 @@
             };
         }
 
-        function handleFile(file) {
-            if (!file.name.toLowerCase().endsWith('.pdf')) {
-                alert('Please select a PDF file');
-                return;
-            }
+
 
             if (file.size > 16 * 1024 * 1024) {
                 alert('File must be less than 16MB');
@@ -1588,10 +1553,14 @@
             }
         }
 
-        async function handleUpload(event) {
+                async function handleUpload(event) {
             event.preventDefault();
 
-            if (!selectedFile) return;
+            const paperUrl = document.getElementById('paper-url').value.trim();
+            if (!paperUrl) {
+                alert('Please provide a paper URL');
+                return;
+            }
 
             if (!accessToken) {
                 alert('Please log in to upload papers');
@@ -1599,36 +1568,60 @@
                 return;
             }
 
-            // Show status
             const statusDiv = document.getElementById('upload-status');
             statusDiv.style.display = 'block';
-            statusDiv.innerHTML = '<div class="status-message">⏳ Uploading and processing...</div>';
+            statusDiv.innerHTML = '<div class="status-message">⏳ Validating URL and processing...</div>';
 
             const btn = document.getElementById('upload-btn');
             if (btn) {
                 btn.disabled = true;
-                btn.textContent = 'Uploading...';
+                btn.textContent = 'Processing...';
             }
-
-            const formData = new FormData();
-            formData.append('file', selectedFile);
 
             const title = document.getElementById('upload-title').value.trim();
             const authors = document.getElementById('upload-authors').value.trim();
             const year = document.getElementById('upload-year').value;
             const abstract = document.getElementById('upload-abstract').value.trim();
+            const tagsInput = document.getElementById('upload-tags').value.trim();
 
-            if (title) formData.append('title', title);
-            if (authors) formData.append('authors', authors);
-            if (year) formData.append('year', year);
-            if (abstract) formData.append('abstract', abstract);
+            const payload = { url: paperUrl };
+            if (title) payload.title = title;
+            if (authors) payload.authors = authors;
+            if (year) payload.year = parseInt(year);
+            if (abstract) payload.abstract = abstract;
+            if (tagsInput) {
+                payload.tags = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+            }
 
             try {
                 const response = await fetch(`${API_URL}/papers/upload`, {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${accessToken}` },
-                    body: formData
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload
                 });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    statusDiv.innerHTML = `<div class="status-message status-success">✅ ${result.message}</div>`;
+                    setTimeout(() => {
+                        closeUploadModal();
+                    }, 2000);
+                } else {
+                    throw new Error(result.error || 'Upload failed');
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status-message status-error">❌ ${error.message}</div>`;
+                const btn = document.getElementById('upload-btn');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'Retry';
+                }
+            }
+        });
 
                 const result = await response.json();
 
