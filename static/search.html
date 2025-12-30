@@ -1516,43 +1516,6 @@
             document.getElementById('upload-status').style.display = 'none';
         }
 
-;
-
-            dropZone.ondragleave = () => dropZone.classList.remove('drag-over');
-
-            dropZone.ondrop = (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('drag-over');
-                if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-            };
-
-            fileInput.onchange = (e) => {
-                if (e.target.files.length) handleFile(e.target.files[0]);
-            };
-        }
-
-
-
-            if (file.size > 16 * 1024 * 1024) {
-                alert('File must be less than 16MB');
-                return;
-            }
-
-            selectedFile = file;
-            document.getElementById('drop-zone').style.display = 'none';
-            document.getElementById('file-preview').style.display = 'block';
-            document.getElementById('metadata-fields').style.display = 'block';
-            document.getElementById('file-name').textContent = file.name;
-            document.getElementById('file-size').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-
-            // Enable button for manual upload
-            const btn = document.getElementById('upload-btn');
-            if (btn) {
-                btn.disabled = false;
-                btn.textContent = 'Confirm & Upload Paper';
-            }
-        }
-
                 async function handleUpload(event) {
             event.preventDefault();
 
