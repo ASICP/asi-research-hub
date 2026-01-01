@@ -777,7 +777,17 @@
             gap: 6px;
             transition: transform 0.2s;
         }
+         .google-btn {
+              background: transparent;
+              border: none;
+              padding: 0;
+              cursor: pointer;
+              transition: transform 0.2s;
+          }
 
+          .google-btn:hover {
+              transform: translateY(-2px);
+          }
         .notebook-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(66, 133, 244, 0.3);
@@ -793,6 +803,9 @@
                     style="height: 32px;">Alignment Research Application</h1>
             <div style="display: flex; gap: 8px;">
                 <button class="header-btn" onclick="openUploadModal()" title="Upload Paper">📄</button>
+                  <button class="header-btn google-btn" onclick="window.open('https://notebooklm.google.com/', '_blank')" title="Open NotebookLM">
+                      <div style="width: 24px; height: 24px; background: #4285f4; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">G</div>
+                  </button>
                 <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
                 <button class="theme-toggle" onclick="logout()" title="Logout">⏻</button>
             </div>
