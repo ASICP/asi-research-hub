@@ -1484,9 +1484,8 @@
               document.getElementById('upload-form').reset();
               document.getElementById('upload-status').style.display = 'none';
           }
-
-        // sync function handleUpload UPDATED
-         async function handleUpload(event) {
+          // async function handleUpload UPDATED
+          async function handleUpload(event) {
               event.preventDefault();
 
               const paperUrl = document.getElementById('paper-url').value.trim();
@@ -1517,7 +1516,10 @@
               const abstract = document.getElementById('upload-abstract').value.trim();
               const tagsInput = document.getElementById('upload-tags').value.trim();
 
-              const payload = { url: paperUrl };
+              const payload = {
+                  url: paperUrl
+              };
+
               if (title) payload.title = title;
               if (authors) payload.authors = authors;
               if (year) payload.year = parseInt(year);
@@ -1538,16 +1540,19 @@
 
                   const result = await response.json();
 
-                  if (result.success) {
+                  if (response.ok && result.success) {
                       statusDiv.innerHTML = `<div class="status-message status-success">✅ ${result.message}</div>`;
                       setTimeout(() => {
                           closeUploadModal();
                       }, 2000);
                   } else {
-                      throw new Error(result.error || 'Upload failed');
+                      // Handle error response - backend returns {error: {message: "...", code: "..."}}
+                      const errorMessage = result.error?.message || result.error || result.message || 'Upload failed';
+                      throw new Error(errorMessage);
                   }
               } catch (error) {
-                  statusDiv.innerHTML = `<div class="status-message status-error">❌ ${error.message}</div>`;
+                  const errorMsg = error.message || 'Upload failed';
+                  statusDiv.innerHTML = `<div class="status-message status-error">❌ ${errorMsg}</div>`;
                   const btn = document.getElementById('upload-btn');
                   if (btn) {
                       btn.disabled = false;
@@ -1687,34 +1692,12 @@
                   }
               });
           }
+// DELETE NotebookLM function
 
-        function checkNotebookLMAccess() {
-            const email = localStorage.getItem('user_email');
-            const gmailContainer = document.getElementById('notebook-lm-gmail');
-            const nonGmailContainer = document.getElementById('notebook-lm-non-gmail');
-
-            if (email) {
-                // Check if Gmail user
-                if (email.toLowerCase().endsWith('@gmail.com') || email.toLowerCase().endsWith('@googlemail.com')) {
-                    gmailContainer.style.display = 'block';
-                    nonGmailContainer.style.display = 'none';
-                } else {
-                    // Non-Gmail user (still logged in)
-                    gmailContainer.style.display = 'none';
-                    nonGmailContainer.style.display = 'block';
-                }
-            } else {
-                // Not logged in - hide both
-                gmailContainer.style.display = 'none';
-                nonGmailContainer.style.display = 'none';
-            }
-        }
-
-        // Initialize Metrics
+        // UPDATED: Initialize Metrics
         document.addEventListener('DOMContentLoaded', () => {
-            loadMetrics();
-            checkNotebookLMAccess();
-        });
+              loadMetrics();
+          });
     </script>
     <script src="/static/session-manager.js"></script>
 </body>
