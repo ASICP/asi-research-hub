@@ -73,11 +73,6 @@ def download_pdf_from_url(url: str, save_dir: str) -> str:
         response = requests.get(url, timeout=30, stream=True, allow_redirects=True)
         response.raise_for_status()
 
-        # Check content type
-        content_type = response.headers.get('Content-Type', '').lower()
-        if 'application/pdf' not in content_type and not url.lower().endswith('.pdf'):
-            raise ValidationError('URL does not point to a PDF file')
-
         # Check file size (max 50MB)
         content_length = response.headers.get('Content-Length')
         if content_length and int(content_length) > 50 * 1024 * 1024:
@@ -97,10 +92,22 @@ def download_pdf_from_url(url: str, save_dir: str) -> str:
         with open(filepath, 'wb') as f:
             for chunk in response.iter_content(chunk_size=8192):
                 if chunk:
-                    f.write(chunk)
+  
+                    # Download and save
+                      with open(filepath, 'wb') as f:
+                          for chunk in response.iter_content(chunk_size=8192):
+                              if chunk:
+                                  f.write(chunk)
 
-        return filepath
+                      # Verify it's actually a PDF by checking magic bytes
+                      with open(filepath, 'rb') as f:
+                          header = f.read(4)
+                          if header != b'%PDF':
+                              os.remove(filepath)
+                              raise ValidationError('Downloaded file is not a valid PDF')
 
+                      return filepath
+# Exceptions
     except requests.exceptions.Timeout:
         raise ValidationError('URL request timed out - server did not respond')
     except requests.exceptions.HTTPError as e:
