@@ -842,28 +842,6 @@
                 </ul>
 
                 <!-- NotebookLM for Gmail users -->
-                <div class="notebook-lm-link" id="notebook-lm-gmail" style="display: none;">
-                    <a href="https://notebooklm.google.com/" target="_blank" class="notebook-btn">
-                        📓 Open NotebookLM
-                    </a>
-                    <p style="font-size: 11px; color: var(--text-tertiary); margin-top: 6px;">
-                        Seamlessly research with your Gmail account
-                    </p>
-                </div>
-
-                <!-- NotebookLM for non-Gmail users -->
-                <div class="notebook-lm-link" id="notebook-lm-non-gmail" style="display: none;">
-                    <a href="https://notebooklm.google.com/" target="_blank" class="notebook-btn">
-                        📓 Open NotebookLM
-                </div>
-                    </a>
-                    <p style="font-size: 11px; color: var(--text-tertiary); margin-top: 6px;">
-                        Sign in with any Google account to use AI research tools
-                    </p>
-                </div>
-            </div>
-        </div>
-  
           <!-- Data Rigor: Novelty Scoring Explanation -->
           <div class="data-rigor-section">
               <h3 class="rigor-title">📐 Data Rigor: How We Score Novelty</h3>
@@ -1617,11 +1595,11 @@
                   const novelList = document.getElementById('novel-ideas-list');
                   if (data.novel_ideas && data.novel_ideas.length > 0) {
                       novelList.innerHTML = data.novel_ideas.map(n =>
-                          `<li class="metric-item">
-                              <span title="${n.title}" style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${n.title.substring(0, 60)}${n.title.length > 60 ? '...' : ''}</span>
-                              <span class="metric-score" title="Novelty Score: R:${n.breakdown.recency} I:${n.breakdown.interdisciplinary} T:${n.breakdown.tooling} C:${n.breakdown.contrarian} Impact:${n.breakdown.impact}">${n.score} pts</span>
-                          </li>`
-                      ).join('');
+                            `<li class="metric-item" style="cursor: pointer;" onclick="viewPaperById(${n.id})">
+                                <span title="${n.title}" style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${n.title.substring(0, 60)}${n.title.length > 60 ? '...' : ''}</span>
+                                <span class="metric-score" title="Novelty Score: R:${n.breakdown.recency} I:${n.breakdown.interdisciplinary} T:${n.breakdown.tooling} C:${n.breakdown.contrarian} Impact:${n.breakdown.impact}">${n.score} pts</span>
+                            </li>`
+                        ).join('');
                   } else {
                       novelList.innerHTML = '<li class="metric-item" style="justify-content:center">No novel ideas found</li>';
                   // Render Pie Charts
