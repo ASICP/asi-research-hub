@@ -803,9 +803,25 @@ def upload_paper():
         if tags and isinstance(tags, list):
             from ara_v2.services.tag_assigner import TagAssigner
             tag_assigner = TagAssigner()
-            for tag_name in tags:
-                if tag_name and isinstance(tag_name, str):
-                    tag_assigner.assign_tag_to_paper(paper.id, tag_name.strip())
+            # Helper to assign tags manually
+            valid_tags = [t.strip() for t in tags if t and isinstance(t, str)]
+            if valid_tags:
+                tag_objects = tag_assigner.get_or_create_tags(valid_tags)
+                for tag in tag_objects:
+                    # Check if already assigned
+                    existing = PaperTag.query.filter_by(
+                        paper_id=paper.id,
+                        tag_id=tag.id
+                    ).first()
+                    
+                    if not existing:
+                        paper_tag = PaperTag(
+                            paper_id=paper.id,
+                            tag_id=tag.id,
+                            confidence=1.0,  # User explicitly added this
+                            is_novel_combo=False
+                        )
+                        db.session.add(paper_tag)
 
         db.session.commit()
 
