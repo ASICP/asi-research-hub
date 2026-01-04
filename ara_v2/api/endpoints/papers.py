@@ -73,11 +73,6 @@ def download_pdf_from_url(url: str, save_dir: str) -> str:
         response = requests.get(url, timeout=30, stream=True, allow_redirects=True)
         response.raise_for_status()
 
-        # Check content type
-        content_type = response.headers.get('Content-Type', '').lower()
-        if 'application/pdf' not in content_type and not url.lower().endswith('.pdf'):
-            raise ValidationError('URL does not point to a PDF file')
-
         # Check file size (max 50MB)
         content_length = response.headers.get('Content-Length')
         if content_length and int(content_length) > 50 * 1024 * 1024:
@@ -763,17 +758,12 @@ def upload_paper():
             tags = []
             external_url = None
 
-        # Extract text from PDF
+        # Try to extract text from PDF (optional - not required)
+        pdf_text = ""
         try:
             pdf_text = extract_pdf_text(filepath)
-            if len(pdf_text.strip()) < 100:
-                if filepath and os.path.exists(filepath):
-                    os.remove(filepath)
-                raise ValidationError('Could not extract text from PDF')
-        except Exception as e:
-            if filepath and os.path.exists(filepath):
-                os.remove(filepath)
-            raise ValidationError(f'PDF processing failed: {str(e)}')
+        except Exception:
+            pass  # Ignore PDF extraction failures - metadata is what matters
 
         # Use extracted title if not provided
         if not title:
