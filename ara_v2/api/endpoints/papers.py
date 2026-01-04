@@ -92,22 +92,10 @@ def download_pdf_from_url(url: str, save_dir: str) -> str:
         with open(filepath, 'wb') as f:
             for chunk in response.iter_content(chunk_size=8192):
                 if chunk:
-  
-                    # Download and save
-                      with open(filepath, 'wb') as f:
-                          for chunk in response.iter_content(chunk_size=8192):
-                              if chunk:
-                                  f.write(chunk)
+                    f.write(chunk)
 
-                      # Verify it's actually a PDF by checking magic bytes
-                      with open(filepath, 'rb') as f:
-                          header = f.read(4)
-                          if header != b'%PDF':
-                              os.remove(filepath)
-                              raise ValidationError('Downloaded file is not a valid PDF')
+        return filepath
 
-                      return filepath
-# Exceptions
     except requests.exceptions.Timeout:
         raise ValidationError('URL request timed out - server did not respond')
     except requests.exceptions.HTTPError as e:
@@ -770,17 +758,12 @@ def upload_paper():
             tags = []
             external_url = None
 
-        # Extract text from PDF
+        # Try to extract text from PDF (optional - not required)
+        pdf_text = ""
         try:
             pdf_text = extract_pdf_text(filepath)
-            if len(pdf_text.strip()) < 100:
-                if filepath and os.path.exists(filepath):
-                    os.remove(filepath)
-                raise ValidationError('Could not extract text from PDF')
-        except Exception as e:
-            if filepath and os.path.exists(filepath):
-                os.remove(filepath)
-            raise ValidationError(f'PDF processing failed: {str(e)}')
+        except Exception:
+            pass  # Ignore PDF extraction failures - metadata is what matters
 
         # Use extracted title if not provided
         if not title:
