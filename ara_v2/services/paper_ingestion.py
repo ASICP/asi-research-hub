@@ -220,7 +220,12 @@ class PaperIngestionService:
                 authors=paper_data.get('authors', []),
                 year=paper_data.get('year'),
                 citation_count=paper_data.get('citation_count', 0),
-                raw_data=paper_data.get('raw_data')  # Store source-specific metadata for tag assignment
+                raw_data=paper_data.get('raw_data'),
+                # Critical missing fields for uploads
+                url=paper_data.get('url'),
+                pdf_path=paper_data.get('pdf_path'),
+                pdf_text=paper_data.get('pdf_text'),
+                added_by=paper_data.get('added_by')
             )
 
             db.session.add(paper)
