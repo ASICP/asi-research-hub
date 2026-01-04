@@ -701,6 +701,37 @@ def diamonds():
     }), 200
 
 
+@papers_bp.route('/<int:paper_id>', methods=['DELETE'])
+@require_auth
+def delete_paper(paper_id):
+    """Delete a paper."""
+    try:
+        paper = Paper.query.filter_by(id=paper_id).first()
+        if not paper:
+            raise NotFoundError(f'Paper {paper_id} not found')
+
+        # Remove PDF file if it exists
+        if paper.pdf_path:
+            full_path = os.path.join(current_app.root_path, '..', paper.pdf_path)
+            if os.path.exists(full_path):
+                try:
+                    os.remove(full_path)
+                except Exception as e:
+                    current_app.logger.warning(f"Failed to remove PDF file {full_path}: {e}")
+
+        db.session.delete(paper)
+        db.session.commit()
+
+        return jsonify({'message': 'Paper deleted successfully'}), 200
+
+    except NotFoundError:
+        raise
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Delete paper error: {e}")
+        raise
+
+
 @papers_bp.route('/upload', methods=['POST'])
 @require_auth
 @limiter.limit("10 per hour")
@@ -710,6 +741,9 @@ def upload_paper():
     try:
         upload_folder = os.path.join(current_app.root_path, '..', 'static', 'uploads')
         os.makedirs(upload_folder, exist_ok=True)
+        
+        # Check for force flag
+        force_upload = request.args.get('force', '').lower() == 'true'
 
         # Determine if this is a URL-based or file-based upload
         is_json = request.is_json
@@ -770,10 +804,28 @@ def upload_paper():
             title = filename.replace('.pdf', '')
 
         # Check duplicates
-        if check_duplicate_by_title(title):
-            if filepath and os.path.exists(filepath):
-                os.remove(filepath)
-            raise ConflictError('Paper with similar title already exists')
+        duplicate = check_duplicate_by_title(title)
+        if duplicate:
+            if force_upload:
+                # Delete existing duplicate
+                current_app.logger.info(f"Overwriting duplicate paper: {duplicate.title} (ID: {duplicate.id})")
+                
+                # Delete old PDF to clean up
+                if duplicate.pdf_path:
+                    old_pdf_full = os.path.join(current_app.root_path, '..', duplicate.pdf_path)
+                    if os.path.exists(old_pdf_full) and old_pdf_full != filepath:
+                        try:
+                            # Only delete if it's not the file we just uploaded (edge case)
+                            os.remove(old_pdf_full)
+                        except Exception as e:
+                            current_app.logger.warning(f"Failed to delete old PDF: {e}")
+
+                db.session.delete(duplicate)
+                db.session.flush() # Ensure it's gone before insert
+            else:
+                if filepath and os.path.exists(filepath):
+                    os.remove(filepath)
+                raise ConflictError('Paper with similar title already exists')
 
         # Create paper data
         timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
