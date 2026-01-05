@@ -589,100 +589,96 @@
         }
 
         /* Metrics Dashboard Styles */
-          .metrics-section {
-              display: flex;
-              flex-direction: column;
-              gap: 20px;
-              margin-bottom: 24px;
-          }
-  
-          .metric-box {
-              background: var(--bg-secondary);
-              border: 1px solid var(--border-color);
-              border-radius: 12px;
-              padding: 20px;
-              display: flex;
-              flex-direction: row;
-              gap: 20px;
-              align-items: flex-start;
-          }
-  
-          .metric-content {
-              flex: 1;
-              display: flex;
-              flex-direction: column;
-          }
-  
-          .metric-chart {
-              width: 200px;
-              height: 200px;
-              flex-shrink: 0;
-          }
+        .metrics-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .metric-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .metric-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-chart {
+            width: 200px;
+            height: 200px;
+            flex-shrink: 0;
+        }
+
+
+        /* Data Rigor Section */
+        .data-rigor-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .rigor-title {
+            font-size: 18px;
             font-weight: 600;
-  
-          /* Data Rigor Section */
-          .data-rigor-section {
-              background: var(--bg-secondary);
-              border: 1px solid var(--border-color);
-              border-radius: 12px;
-              padding: 24px;
-              margin-bottom: 24px;
-          }
-  
-          .rigor-title {
-              font-size: 18px;
-              font-weight: 600;
-              margin-bottom: 12px;
-              color: var(--text-primary);
-          }
-  
-          .rigor-intro {
-              font-size: 14px;
-              color: var(--text-secondary);
-              margin-bottom: 20px;
-          }
-  
-          .rigor-criteria {
-              display: flex;
-              flex-direction: column;
-              gap: 16px;
-              margin-bottom: 20px;
-          }
-  
-          .rigor-item {
-              display: flex;
-              flex-direction: column;
-              gap: 6px;
-              padding: 12px;
-              background: var(--bg-primary);
-              border-radius: 8px;
-              border-left: 3px solid var(--accent-primary);
-          }
-  
-          .rigor-label {
-              font-weight: 600;
-              font-size: 14px;
-              color: var(--text-primary);
-          }
-  
-          .rigor-desc {
-              font-size: 13px;
-              color: var(--text-tertiary);
-              line-height: 1.5;
-          }
-  
-          .rigor-footer {
-              font-size: 13px;
-              color: var(--text-secondary);
-              font-style: italic;
-              text-align: center;
-              margin-top: 16px;
-          }
             margin-bottom: 12px;
             color: var(--text-primary);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
         }
+
+        .rigor-intro {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .rigor-criteria {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .rigor-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 12px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-primary);
+        }
+
+        .rigor-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .rigor-desc {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            line-height: 1.5;
+        }
+
+        .rigor-footer {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-style: italic;
+            text-align: center;
+            margin-top: 16px;
+        }
+
 
         .metric-list {
             list-style: none;
@@ -735,17 +731,19 @@
             gap: 6px;
             transition: transform 0.2s;
         }
-         .google-btn {
-              background: transparent;
-              border: none;
-              padding: 0;
-              cursor: pointer;
-              transition: transform 0.2s;
-          }
 
-          .google-btn:hover {
-              transform: translateY(-2px);
-          }
+        .google-btn {
+            background: transparent;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .google-btn:hover {
+            transform: translateY(-2px);
+        }
+
         .notebook-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(66, 133, 244, 0.3);
@@ -761,9 +759,12 @@
                     style="height: 32px;">Alignment Research Application</h1>
             <div style="display: flex; gap: 8px;">
                 <button class="header-btn" onclick="openUploadModal()" title="Upload Paper">📄</button>
-                  <button class="header-btn google-btn" onclick="window.open('https://notebooklm.google.com/', '_blank')" title="Open NotebookLM">
-                      <div style="width: 24px; height: 24px; background: #4285f4; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">G</div>
-                  </button>
+                <button class="header-btn google-btn" onclick="window.open('https://notebooklm.google.com/', '_blank')"
+                    title="Open NotebookLM">
+                    <div
+                        style="width: 24px; height: 24px; background: #4285f4; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">
+                        G</div>
+                </button>
                 <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
                 <button class="theme-toggle" onclick="logout()" title="Logout">⏻</button>
             </div>
@@ -814,283 +815,292 @@
         <div class="metrics-section" id="metrics-section">
             <!-- 1. Tag Frequencies -->
             <div class="metric-box">
-                  <div class="metric-content">
-                      <h3 class="metric-title">Trending Tags</h3>
-                      <ul class="metric-list" id="top-tags-list">
-                          <li class="metric-item" style="justify-content:center">Loading...</li>
-                      </ul>
-                  </div>
-                  <canvas id="tags-chart" class="metric-chart"></canvas>
-              </div>
+                <div class="metric-content">
+                    <h3 class="metric-title">Trending Tags</h3>
+                    <ul class="metric-list" id="top-tags-list">
+                        <li class="metric-item" style="justify-content:center">Loading...</li>
+                    </ul>
+                </div>
+                <canvas id="tags-chart" class="metric-chart"></canvas>
+            </div>
             <!-- 2. Most Cited Papers -->
             <div class="metric-box">
-                  <div class="metric-content">
-                      <h3 class="metric-title">Most Cited (Alignment & Safety)</h3>
-                      <ul class="metric-list" id="top-citations-list">
-                          <li class="metric-item" style="justify-content:center">Loading...</li>
-                      </ul>
-                  </div>
-                  <canvas id="citations-chart" class="metric-chart"></canvas>
-              </div>
+                <div class="metric-content">
+                    <h3 class="metric-title">Most Cited (Alignment & Safety)</h3>
+                    <ul class="metric-list" id="top-citations-list">
+                        <li class="metric-item" style="justify-content:center">Loading...</li>
+                    </ul>
+                </div>
+                <canvas id="citations-chart" class="metric-chart"></canvas>
+            </div>
 
             <!-- 3. Novel Ideas & NotebookLM -->
             <div class="metric-box">
                 <div class="metric-content">
-                <h3 class="metric-title">Novel Ideas & Tools</h3>
-                <ul class="metric-list" id="novel-ideas-list">
-                    <li class="metric-item" style="justify-content:center">Loading...</li>
-                </ul>
+                    <h3 class="metric-title">Novel Ideas & Tools</h3>
+                    <ul class="metric-list" id="novel-ideas-list">
+                        <li class="metric-item" style="justify-content:center">Loading...</li>
+                    </ul>
 
-                <!-- NotebookLM for Gmail users -->
-          <!-- Data Rigor: Novelty Scoring Explanation -->
-          <div class="data-rigor-section">
-              <h3 class="rigor-title">📐 Data Rigor: How We Score Novelty</h3>
-              <p class="rigor-intro">Each paper in <strong>Novel Ideas & Tools</strong> is scored on a 100-point scale across 5 criteria:</p>
-              
-              <div class="rigor-criteria">
-                  <div class="rigor-item">
-                      <span class="rigor-label">1. Recency (0-20 pts)</span>
-                      <span class="rigor-desc">Last 30 days: 20 pts | 31-60 days: 15 pts | 61-90 days: 10 pts</span>
-                  </div>
-                  <div class="rigor-item">
-                      <span class="rigor-label">2. Interdisciplinary Signal (0-25 pts)</span>
-                      <span class="rigor-desc">AI + Neuroscience: 25 pts | AI + Data Governance/Security: 25 pts | AI + Economics/Philosophy/Biology: 20 pts</span>
-                  </div>
-                  <div class="rigor-item">
-                      <span class="rigor-label">3. Tooling/Framework (0-25 pts)</span>
-                      <span class="rigor-desc">Has GitHub/code repo: 15 pts | Contains keywords (framework, toolkit, method, benchmark): 10 pts</span>
-                  </div>
-                  <div class="rigor-item">
-                      <span class="rigor-label">4. Contrarian/Challenge (0-15 pts)</span>
-                      <span class="rigor-desc">Keywords (critique, alternative, rethinking): 15 pts | Low citations but recent (underexplored): 10 pts</span>
-                  </div>
-                  <div class="rigor-item">
-                      <span class="rigor-label">5. Impact (0-25 pts) - Derived Score</span>
-                      <span class="rigor-desc">4 criteria met: 25 pts | 3 met: 15 pts | 2 met: 8 pts | 1 met: 3 pts</span>
-                  </div>
-              </div>
-              
-              <p class="rigor-footer">Papers are ranked by total score. Top 8 papers (from last 90 days) are displayed above.</p>
-          </div>
+                    <!-- NotebookLM for Gmail users -->
+                    <!-- Data Rigor: Novelty Scoring Explanation -->
+                    <div class="data-rigor-section">
+                        <h3 class="rigor-title">📐 Data Rigor: How We Score Novelty</h3>
+                        <p class="rigor-intro">Each paper in <strong>Novel Ideas & Tools</strong> is scored on a
+                            100-point scale across 5 criteria:</p>
 
+                        <div class="rigor-criteria">
+                            <div class="rigor-item">
+                                <span class="rigor-label">1. Recency (0-20 pts)</span>
+                                <span class="rigor-desc">Last 30 days: 20 pts | 31-60 days: 15 pts | 61-90 days: 10
+                                    pts</span>
+                            </div>
+                            <div class="rigor-item">
+                                <span class="rigor-label">2. Interdisciplinary Signal (0-25 pts)</span>
+                                <span class="rigor-desc">AI + Neuroscience: 25 pts | AI + Data Governance/Security: 25
+                                    pts | AI + Economics/Philosophy/Biology: 20 pts</span>
+                            </div>
+                            <div class="rigor-item">
+                                <span class="rigor-label">3. Tooling/Framework (0-25 pts)</span>
+                                <span class="rigor-desc">Has GitHub/code repo: 15 pts | Contains keywords (framework,
+                                    toolkit, method, benchmark): 10 pts</span>
+                            </div>
+                            <div class="rigor-item">
+                                <span class="rigor-label">4. Contrarian/Challenge (0-15 pts)</span>
+                                <span class="rigor-desc">Keywords (critique, alternative, rethinking): 15 pts | Low
+                                    citations but recent (underexplored): 10 pts</span>
+                            </div>
+                            <div class="rigor-item">
+                                <span class="rigor-label">5. Impact (0-25 pts) - Derived Score</span>
+                                <span class="rigor-desc">4 criteria met: 25 pts | 3 met: 15 pts | 2 met: 8 pts | 1 met:
+                                    3 pts</span>
+                            </div>
+                        </div>
 
-
-    </div>
-
-    <!-- Paper Detail Modal -->
-    <div id="paper-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title" id="modal-title"></div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="close-btn" onclick="closeModal()" title="Back to search">←</button>
-                    <button class="close-btn" onclick="closeModal()">×</button>
-                </div>
-            </div>
-            <div class="modal-body">
-                <div class="modal-main">
-                    <div class="paper-meta" id="paper-meta"></div>
-
-                    <div>
-                        <h3 style="color: var(--text-primary); margin-bottom: 12px;">Abstract</h3>
-                        <div class="paper-abstract" id="paper-abstract"></div>
+                        <p class="rigor-footer">Papers are ranked by total score. Top 8 papers (from last 90 days) are
+                            displayed above.</p>
                     </div>
 
-                    <div class="paper-links" id="paper-links"></div>
 
-                    <div class="paper-tags" id="paper-tags"></div>
+
                 </div>
 
-                <div class="modal-sidebar">
-                    <div class="sidebar-title">📚 Reference Papers</div>
-                    <div id="references-list"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+                <!-- Paper Detail Modal -->
+                <div id="paper-modal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="modal-title" id="modal-title"></div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="close-btn" onclick="closeModal()" title="Back to search">←</button>
+                                <button class="close-btn" onclick="closeModal()">×</button>
+                            </div>
+                        </div>
+                        <div class="modal-body">
+                            <div class="modal-main">
+                                <div class="paper-meta" id="paper-meta"></div>
 
-    <!-- Upload Paper Modal -->
-    <div id="upload-modal" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
-            <div class="modal-header">
-                <div class="modal-title">Upload Research Paper</div>
-                <button class="close-btn" onclick="closeUploadModal()">×</button>
-            </div>
-            <div class="modal-body" style="padding: 24px;">
-                <form id="upload-form" onsubmit="handleUpload(event)">
-                    <!-- Drag and drop zone REPLACED-->
-                     <!-- Public Link Input -->
-                      <div class="input-group">
-                          <label for="paper-url">Paper URL (required)</label>
-                          <input type="url" id="paper-url" placeholder="https://example.com/paper.pdf" required
-                                 style="width: 100%; padding: 12px; background: var(--bg-tertiary);
+                                <div>
+                                    <h3 style="color: var(--text-primary); margin-bottom: 12px;">Abstract</h3>
+                                    <div class="paper-abstract" id="paper-abstract"></div>
+                                </div>
+
+                                <div class="paper-links" id="paper-links"></div>
+
+                                <div class="paper-tags" id="paper-tags"></div>
+                            </div>
+
+                            <div class="modal-sidebar">
+                                <div class="sidebar-title">📚 Reference Papers</div>
+                                <div id="references-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Paper Modal -->
+                <div id="upload-modal" class="modal">
+                    <div class="modal-content" style="max-width: 600px;">
+                        <div class="modal-header">
+                            <div class="modal-title">Upload Research Paper</div>
+                            <button class="close-btn" onclick="closeUploadModal()">×</button>
+                        </div>
+                        <div class="modal-body" style="padding: 24px;">
+                            <form id="upload-form" onsubmit="handleUpload(event)">
+                                <!-- Drag and drop zone REPLACED-->
+                                <!-- Public Link Input -->
+                                <div class="input-group">
+                                    <label for="paper-url">Paper URL (required)</label>
+                                    <input type="url" id="paper-url" placeholder="https://example.com/paper.pdf"
+                                        required style="width: 100%; padding: 12px; background: var(--bg-tertiary);
                                         border: 1px solid var(--border-color); border-radius: 8px;
                                         color: var(--text-primary); font-size: 14px;">
-                          <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px;">
-                              Provide a publicly accessible link to your paper (PDF format)
-                          </p>
-                      </div>
+                                    <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px;">
+                                        Provide a publicly accessible link to your paper (PDF format)
+                                    </p>
+                                </div>
 
-                    <!-- File preview (hidden initially: REMOVED) -->
-    
-                    <!-- Optional metadata -->
-                     <div id="metadata-fields" style="margin-top: 20px;">
-                        <div class="input-group">
-                            <label for="upload-title">Title (optional)</label>
-                            <input type="text" id="upload-title" placeholder="Auto-extracted if not provided">
-                        </div>
-                        <div class="input-group">
-                            <label for="upload-authors">Authors (optional)</label>
-                            <input type="text" id="upload-authors" placeholder="e.g., John Doe, Jane Smith">
-                        </div>
-                        <div class="input-group">
-                            <label for="upload-year">Year (optional)</label>
-                            <input type="number" id="upload-year" placeholder="2025" min="1900" max="2100">
-                        </div>
-                        <div class="input-group">
-                            <label for="upload-abstract">Abstract (optional)</label>
-                            <textarea id="upload-abstract" rows="4" placeholder="Brief description"
-                                style="width: 100%; padding: 12px; background: var(--bg-tertiary);
+                                <!-- File preview (hidden initially: REMOVED) -->
+
+                                <!-- Optional metadata -->
+                                <div id="metadata-fields" style="margin-top: 20px;">
+                                    <div class="input-group">
+                                        <label for="upload-title">Title (optional)</label>
+                                        <input type="text" id="upload-title"
+                                            placeholder="Auto-extracted if not provided">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="upload-authors">Authors (optional)</label>
+                                        <input type="text" id="upload-authors" placeholder="e.g., John Doe, Jane Smith">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="upload-year">Year (optional)</label>
+                                        <input type="number" id="upload-year" placeholder="2025" min="1900" max="2100">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="upload-abstract">Abstract (optional)</label>
+                                        <textarea id="upload-abstract" rows="4" placeholder="Brief description"
+                                            style="width: 100%; padding: 12px; background: var(--bg-tertiary);
                                              border: 1px solid var(--border-color); border-radius: 8px;
                                              color: var(--text-primary); font-family: inherit; resize: vertical;"></textarea>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="upload-tags">Tags (optional)</label>
+                                        <input type="text" id="upload-tags"
+                                            placeholder="e.g., alignment, safety, reinforcement-learning">
+                                        <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px;">
+                                            Separate multiple tags with commas
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 24px;">
+                                    <button type="submit" id="upload-btn" class="paper-link-btn"
+                                        style="width:100%; justify-content:center; cursor:pointer;">Add Paper</button>
+                                </div>
+
+                                <div id="upload-status" style="margin-top: 16px; display: none;"></div>
+                            </form>
                         </div>
-                        <div class="input-group">
-                              <label for="upload-tags">Tags (optional)</label>
-                              <input type="text" id="upload-tags" placeholder="e.g., alignment, safety, reinforcement-learning">
-                              <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px;">
-                                  Separate multiple tags with commas
-                              </p>
-                          </div>
                     </div>
+                </div>
 
-                    <div style="margin-top: 24px;">
-                        <button type="submit" id="upload-btn" class="paper-link-btn"
-                            style="width:100%; justify-content:center; cursor:pointer;">Add Paper</button>
-                    </div>
+                <script>
+                    const API_URL = window.location.origin + '/api';
+                    let accessToken = localStorage.getItem('access_token');
 
-                    <div id="upload-status" style="margin-top: 16px; display: none;"></div>
-                </form>
-            </div>
-        </div>
-    </div>
+                    // Theme management
+                    function toggleTheme() {
+                        const html = document.documentElement;
+                        const currentTheme = html.getAttribute('data-theme');
+                        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                        const button = document.querySelector('.theme-toggle');
 
-    <script>
-        const API_URL = window.location.origin + '/api';
-        let accessToken = localStorage.getItem('access_token');
-
-        // Theme management
-        function toggleTheme() {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            const button = document.querySelector('.theme-toggle');
-
-            html.setAttribute('data-theme', newTheme);
-            button.textContent = newTheme === 'dark' ? '🌙' : '☀️';
-            localStorage.setItem('theme', newTheme);
-        }
-
-        // Load saved theme
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            const button = document.querySelector('.theme-toggle');
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            button.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
-        });
-
-        // Logout function
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('user_email');
-                window.location.href = '/static/login.html';
-            }
-        }
-
-        async function search() {
-            if (!accessToken) {
-                showError('Please log in first. Redirecting to login...');
-                setTimeout(() => window.location.href = '/static/login.html', 2000);
-                return;
-            }
-
-            const query = document.getElementById('search-query').value.trim();
-            if (!query) {
-                showError('Please enter a search query');
-                return;
-            }
-
-            const selectedSource = document.querySelector('input[name="source"]:checked')?.value;
-            const sources = [selectedSource || 'internal'];
-
-            showLoading();
-
-            try {
-                const response = await fetch(`${API_URL}/papers/search`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`
-                    },
-                    body: JSON.stringify({ query, sources })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    displayResults(data);
-                } else {
-                    if (response.status === 401) {
-                        showError('Session expired. Please log in again.');
-                        localStorage.removeItem('access_token');
-                        setTimeout(() => window.location.href = '/static/login.html', 2000);
-                    } else {
-                        showError(data.error || 'Search failed');
+                        html.setAttribute('data-theme', newTheme);
+                        button.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+                        localStorage.setItem('theme', newTheme);
                     }
-                }
-            } catch (error) {
-                showError('Network error: ' + error.message);
-            }
-        }
 
-        function displayResults(data) {
-            // Store results for modal access
-            window.lastSearchResults = data;
+                    // Load saved theme
+                    window.addEventListener('DOMContentLoaded', () => {
+                        const savedTheme = localStorage.getItem('theme') || 'dark';
+                        const button = document.querySelector('.theme-toggle');
+                        document.documentElement.setAttribute('data-theme', savedTheme);
+                        button.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+                    });
 
-            const container = document.getElementById('results-container');
-            container.innerHTML = '';  // Clear container first
+                    // Logout function
+                    function logout() {
+                        if (confirm('Are you sure you want to logout?')) {
+                            localStorage.removeItem('access_token');
+                            localStorage.removeItem('user_email');
+                            window.location.href = '/static/login.html';
+                        }
+                    }
 
-            if (data.total_count === 0) {
-                container.innerHTML = `
+                    async function search() {
+                        if (!accessToken) {
+                            showError('Please log in first. Redirecting to login...');
+                            setTimeout(() => window.location.href = '/static/login.html', 2000);
+                            return;
+                        }
+
+                        const query = document.getElementById('search-query').value.trim();
+                        if (!query) {
+                            showError('Please enter a search query');
+                            return;
+                        }
+
+                        const selectedSource = document.querySelector('input[name="source"]:checked')?.value;
+                        const sources = [selectedSource || 'internal'];
+
+                        showLoading();
+
+                        try {
+                            const response = await fetch(`${API_URL}/papers/search`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${accessToken}`
+                                },
+                                body: JSON.stringify({ query, sources })
+                            });
+
+                            const data = await response.json();
+
+                            if (response.ok) {
+                                displayResults(data);
+                            } else {
+                                if (response.status === 401) {
+                                    showError('Session expired. Please log in again.');
+                                    localStorage.removeItem('access_token');
+                                    setTimeout(() => window.location.href = '/static/login.html', 2000);
+                                } else {
+                                    showError(data.error || 'Search failed');
+                                }
+                            }
+                        } catch (error) {
+                            showError('Network error: ' + error.message);
+                        }
+                    }
+
+                    function displayResults(data) {
+                        // Store results for modal access
+                        window.lastSearchResults = data;
+
+                        const container = document.getElementById('results-container');
+                        container.innerHTML = '';  // Clear container first
+
+                        if (data.total_count === 0) {
+                            container.innerHTML = `
                     <div class="status-message status-error">
                         No papers found. Try different keywords or sources.
                     </div>
                 `;
-                return;
-            }
+                            return;
+                        }
 
-            let html = `
+                        let html = `
                 <div class="status-message status-success">
                     ✅ Found ${data.total_count} papers (${data.execution_time}s)
                 </div>
                 <div class="results">
             `;
 
-            const uniquePapers = {};
-            data.papers.forEach(paper => {
-                const key = `${paper.title}-${paper.source}`;
-                if (!uniquePapers[key]) {
-                    uniquePapers[key] = paper;
-                }
-            });
+                        const uniquePapers = {};
+                        data.papers.forEach(paper => {
+                            const key = `${paper.title}-${paper.source}`;
+                            if (!uniquePapers[key]) {
+                                uniquePapers[key] = paper;
+                            }
+                        });
 
-            // Convert to array for processing
-            const papersArray = Object.values(uniquePapers);
-            // Store for access via onclick
-            window.currentPapersArray = papersArray;
+                        // Convert to array for processing
+                        const papersArray = Object.values(uniquePapers);
+                        // Store for access via onclick
+                        window.currentPapersArray = papersArray;
 
-            papersArray.forEach((paper, index) => {
-                html += `
+                        papersArray.forEach((paper, index) => {
+                            html += `
                     <div class="result-card" onclick="viewPaperByIndex(${index})">
                         <div class="result-title">${paper.title}</div>
                         <div class="result-meta">${paper.authors} • ${paper.year}</div>
@@ -1101,320 +1111,320 @@
                         </div>
                     </div>
                 `;
-            });
+                        });
 
-            html += '</div>';
-            container.innerHTML = html;
-        }
+                        html += '</div>';
+                        container.innerHTML = html;
+                    }
 
-        function viewPaperByIndex(index) {
-            const paper = window.currentPapersArray?.[index];
-            if (paper) {
-                showPaperModal(paper);
-            } else {
-                alert('Paper not found.');
-            }
-        }
+                    function viewPaperByIndex(index) {
+                        const paper = window.currentPapersArray?.[index];
+                        if (paper) {
+                            showPaperModal(paper);
+                        } else {
+                            alert('Paper not found.');
+                        }
+                    }
 
 
-        function viewPaper(paperKey) {
-            // Find the paper in the last search results
-            // paperKey format: 'internal_ID' for database papers or 'SOURCE_SOURCE_ID' for external papers
-            let paper;
-            if (paperKey.startsWith('internal_')) {
-                const paperId = parseInt(paperKey.substring(9));
-                paper = window.lastSearchResults?.papers.find(p => p.id === paperId);
-            } else {
-                const [source, ...sourceParts] = paperKey.split('_');
-                const sourceId = sourceParts.join('_');
-                // Try to find paper with exact match
-                paper = window.lastSearchResults?.papers.find(p => p.source === source && p.source_id === sourceId);
+                    function viewPaper(paperKey) {
+                        // Find the paper in the last search results
+                        // paperKey format: 'internal_ID' for database papers or 'SOURCE_SOURCE_ID' for external papers
+                        let paper;
+                        if (paperKey.startsWith('internal_')) {
+                            const paperId = parseInt(paperKey.substring(9));
+                            paper = window.lastSearchResults?.papers.find(p => p.id === paperId);
+                        } else {
+                            const [source, ...sourceParts] = paperKey.split('_');
+                            const sourceId = sourceParts.join('_');
+                            // Try to find paper with exact match
+                            paper = window.lastSearchResults?.papers.find(p => p.source === source && p.source_id === sourceId);
 
-                // If not found, try case-insensitive source match (e.g., 'google_scholar' vs 'Google Scholar')
-                if (!paper) {
-                    paper = window.lastSearchResults?.papers.find(p =>
-                        p.source?.toLowerCase() === source.toLowerCase() && p.source_id === sourceId
-                    );
-                }
-            }
-        }
+                            // If not found, try case-insensitive source match (e.g., 'google_scholar' vs 'Google Scholar')
+                            if (!paper) {
+                                paper = window.lastSearchResults?.papers.find(p =>
+                                    p.source?.toLowerCase() === source.toLowerCase() && p.source_id === sourceId
+                                );
+                            }
+                        }
+                    }
 
-        // Show paper modal with given paper object
-        function showPaperModal(paper) {
-            if (!paper) {
-                alert('Paper not found. Please try searching again.');
-                return;
-            }
+                    // Show paper modal with given paper object
+                    function showPaperModal(paper) {
+                        if (!paper) {
+                            alert('Paper not found. Please try searching again.');
+                            return;
+                        }
 
-            // Store current paper for keyword highlighting
-            window.currentPaper = paper;
+                        // Store current paper for keyword highlighting
+                        window.currentPaper = paper;
 
-            // Populate modal
-            document.getElementById('modal-title').textContent = paper.title;
+                        // Populate modal
+                        document.getElementById('modal-title').textContent = paper.title;
 
-            // Meta information
-            let metaHTML = '';
-            if (paper.authors) {
-                metaHTML += `
+                        // Meta information
+                        let metaHTML = '';
+                        if (paper.authors) {
+                            metaHTML += `
                     <div class="paper-meta-item">
                         <div class="paper-meta-label">Authors:</div>
                         <div class="paper-meta-value">${paper.authors}</div>
                     </div>
                 `;
-            }
-            if (paper.year) {
-                metaHTML += `
+                        }
+                        if (paper.year) {
+                            metaHTML += `
                     <div class="paper-meta-item">
                         <div class="paper-meta-label">Year:</div>
                         <div class="paper-meta-value">${paper.year}</div>
                     </div>
                 `;
-            }
-            if (paper.venue) {
-                metaHTML += `
+                        }
+                        if (paper.venue) {
+                            metaHTML += `
                     <div class="paper-meta-item">
                         <div class="paper-meta-label">Venue:</div>
                         <div class="paper-meta-value">${paper.venue}</div>
                     </div>
                 `;
-            }
-            if (paper.citation_count) {
-                metaHTML += `
+                        }
+                        if (paper.citation_count) {
+                            metaHTML += `
                     <div class="paper-meta-item">
                         <div class="paper-meta-label">Citations:</div>
                         <div class="paper-meta-value">${paper.citation_count}</div>
                     </div>
                 `;
-            }
-            document.getElementById('paper-meta').innerHTML = metaHTML;
+                        }
+                        document.getElementById('paper-meta').innerHTML = metaHTML;
 
-            // Abstract
-            document.getElementById('paper-abstract').innerHTML = paper.abstract || 'No abstract available.';
+                        // Abstract
+                        document.getElementById('paper-abstract').innerHTML = paper.abstract || 'No abstract available.';
 
-            // Links with Explore Paper button
-            let linksHTML = '';
-            if (paper.arxiv_id) {
-                linksHTML += `<a href="https://arxiv.org/abs/${paper.arxiv_id}" target="_blank" class="paper-link-btn">📄 View on arXiv</a>`;
-            }
-            if (paper.doi) {
-                linksHTML += `<a href="https://doi.org/${paper.doi}" target="_blank" class="paper-link-btn">🔗 View DOI</a>`;
-            }
+                        // Links with Explore Paper button
+                        let linksHTML = '';
+                        if (paper.arxiv_id) {
+                            linksHTML += `<a href="https://arxiv.org/abs/${paper.arxiv_id}" target="_blank" class="paper-link-btn">📄 View on arXiv</a>`;
+                        }
+                        if (paper.doi) {
+                            linksHTML += `<a href="https://doi.org/${paper.doi}" target="_blank" class="paper-link-btn">🔗 View DOI</a>`;
+                        }
 
-            // Explore Paper button - for Google Scholar, use the URL; otherwise use PDF
-            let exploreUrl = null;
-            if (paper.source === 'google_scholar' && paper.url) {
-                exploreUrl = paper.url;
-            } else {
-                // exploreUrl = paper.pdf_url || paper.url || (paper.arxiv_id ? `https://arxiv.org/pdf/${paper.arxiv_id}.pdf` : null);
-                exploreUrl = paper.url || paper.pdf_url || paper.pdf_path || (paper.arxiv_id ? `https://arxiv.org/pdf/${paper.arxiv_id}.pdf` : null);
-            }
+                        // Explore Paper button - for Google Scholar, use the URL; otherwise use PDF
+                        let exploreUrl = null;
+                        if (paper.source === 'google_scholar' && paper.url) {
+                            exploreUrl = paper.url;
+                        } else {
+                            // exploreUrl = paper.pdf_url || paper.url || (paper.arxiv_id ? `https://arxiv.org/pdf/${paper.arxiv_id}.pdf` : null);
+                            exploreUrl = paper.url || paper.pdf_url || paper.pdf_path || (paper.arxiv_id ? `https://arxiv.org/pdf/${paper.arxiv_id}.pdf` : null);
+                        }
 
-            if (exploreUrl) {
-                linksHTML += `<a href="${exploreUrl}" target="_blank" class="paper-link-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🔬 Explore Paper</a>`;
-            }
+                        if (exploreUrl) {
+                            linksHTML += `<a href="${exploreUrl}" target="_blank" class="paper-link-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🔬 Explore Paper</a>`;
+                        }
 
-            document.getElementById('paper-links').innerHTML = linksHTML;
+                        document.getElementById('paper-links').innerHTML = linksHTML;
 
-            // Tags - make them clickable
-            let tagsHTML = '';
-            if (paper.tags && paper.tags.length > 0) {
-                paper.tags.forEach(tag => {
-                    tagsHTML += `<span class="tag" onclick="loadPapersByTag('${tag.replace(/'/g, "\\'")}', event)">${tag}</span>`;
-                });
-            }
-            if (paper.asip_funded) {
-                tagsHTML += `<span class="tag" style="background: rgba(102, 126, 234, 0.2); color: var(--accent-primary); border-color: var(--accent-primary);">⭐ ASI Featured</span>`;
-            }
-            document.getElementById('paper-tags').innerHTML = tagsHTML;
+                        // Tags - make them clickable
+                        let tagsHTML = '';
+                        if (paper.tags && paper.tags.length > 0) {
+                            paper.tags.forEach(tag => {
+                                tagsHTML += `<span class="tag" onclick="loadPapersByTag('${tag.replace(/'/g, "\\'")}', event)">${tag}</span>`;
+                            });
+                        }
+                        if (paper.asip_funded) {
+                            tagsHTML += `<span class="tag" style="background: rgba(102, 126, 234, 0.2); color: var(--accent-primary); border-color: var(--accent-primary);">⭐ ASI Featured</span>`;
+                        }
+                        document.getElementById('paper-tags').innerHTML = tagsHTML;
 
-            // For Google Scholar papers, auto-load related papers from Internal Database
-            if (paper.source === 'google_scholar' || !paper.id) {
-                loadRelatedPapersForGoogleScholar(paper.title);
-            } else {
-                // For Internal Database papers, show placeholder
-                displayReferences([]);
-            }
+                        // For Google Scholar papers, auto-load related papers from Internal Database
+                        if (paper.source === 'google_scholar' || !paper.id) {
+                            loadRelatedPapersForGoogleScholar(paper.title);
+                        } else {
+                            // For Internal Database papers, show placeholder
+                            displayReferences([]);
+                        }
 
-            // Show modal
-            document.getElementById('paper-modal').style.display = 'block';
-        }
-
-        async function loadRelatedPapersForGoogleScholar(title) {
-            const container = document.getElementById('references-list');
-            container.innerHTML = '<div class="no-references">Loading related papers...</div>';
-
-            try {
-                const response = await fetch(`${API_URL}/papers/search`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`
-                    },
-                    body: JSON.stringify({
-                        query: title,
-                        sources: ['internal']
-                    })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const relatedPapers = data.papers || [];
-
-                    if (relatedPapers.length > 0) {
-                        displayReferences(relatedPapers.slice(0, 5));
-                    } else {
-                        container.innerHTML = '<div class="no-references">No related papers found in Internal Database</div>';
+                        // Show modal
+                        document.getElementById('paper-modal').style.display = 'block';
                     }
-                } else {
-                    container.innerHTML = '<div class="no-references">No related papers found in Internal Database</div>';
-                }
-            } catch (error) {
-                console.error('Error loading related papers:', error);
-                container.innerHTML = '<div class="no-references">No related papers found in Internal Database</div>';
-            }
-        }
 
-        // New function to fetch and display a paper by ID (used for reference clicks)
-        async function viewPaperById(paperId) {
-            try {
-                const response = await fetch(`${API_URL}/papers/${paperId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
+                    async function loadRelatedPapersForGoogleScholar(title) {
+                        const container = document.getElementById('references-list');
+                        container.innerHTML = '<div class="no-references">Loading related papers...</div>';
+
+                        try {
+                            const response = await fetch(`${API_URL}/papers/search`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${accessToken}`
+                                },
+                                body: JSON.stringify({
+                                    query: title,
+                                    sources: ['internal']
+                                })
+                            });
+
+                            if (response.ok) {
+                                const data = await response.json();
+                                const relatedPapers = data.papers || [];
+
+                                if (relatedPapers.length > 0) {
+                                    displayReferences(relatedPapers.slice(0, 5));
+                                } else {
+                                    container.innerHTML = '<div class="no-references">No related papers found in Internal Database</div>';
+                                }
+                            } else {
+                                container.innerHTML = '<div class="no-references">No related papers found in Internal Database</div>';
+                            }
+                        } catch (error) {
+                            console.error('Error loading related papers:', error);
+                            container.innerHTML = '<div class="no-references">No related papers found in Internal Database</div>';
+                        }
                     }
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    // Populate modal using the same logic as viewPaper but with fetched data
-                    // Store current paper
-                    window.currentPaper = data;
-                    // Populate modal fields
-                    document.getElementById('modal-title').textContent = data.title;
-                    // Meta
-                    let metaHTML = '';
-                    if (data.authors) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Authors:</div><div class="paper-meta-value">${data.authors}</div></div>`;
-                    if (data.year) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Year:</div><div class="paper-meta-value">${data.year}</div></div>`;
-                    if (data.venue) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Venue:</div><div class="paper-meta-value">${data.venue}</div></div>`;
-                    if (data.citation_count) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Citations:</div><div class="paper-meta-value">${data.citation_count}</div></div>`;
-                    document.getElementById('paper-meta').innerHTML = metaHTML;
-                    // Abstract
-                    document.getElementById('paper-abstract').innerHTML = data.abstract || 'No abstract available.';
-                    // Links
-                    let linksHTML = '';
-                    if (data.arxiv_id) linksHTML += `<a href="https://arxiv.org/abs/${data.arxiv_id}" target="_blank" class="paper-link-btn">📄 View on arXiv</a>`;
-                    if (data.doi) linksHTML += `<a href="https://doi.org/${data.doi}" target="_blank" class="paper-link-btn">🔗 View DOI</a>`;
-                    const pdfUrl = data.pdf_url || (data.arxiv_id ? `https://arxiv.org/pdf/${data.arxiv_id}.pdf` : null);
-                    if (pdfUrl) linksHTML += `<a href="${pdfUrl}" target="_blank" class="paper-link-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🔬 Explore Paper</a>`;
-                    document.getElementById('paper-links').innerHTML = linksHTML;
-                    // Tags
-                    let tagsHTML = '';
-                    if (data.tags && data.tags.length > 0) {
-                        data.tags.forEach(tag => {
-                              const tagName = typeof tag === 'string' ? tag : tag.name;
-                              tagsHTML += `<span class="tag" onclick="loadPapersByTag('${tagName.replace(/'/g, "\\'")}', event)">${tagName}</span>`;
-                          });
+
+                    // New function to fetch and display a paper by ID (used for reference clicks)
+                    async function viewPaperById(paperId) {
+                        try {
+                            const response = await fetch(`${API_URL}/papers/${paperId}`, {
+                                headers: {
+                                    'Authorization': `Bearer ${accessToken}`
+                                }
+                            });
+                            if (response.ok) {
+                                const data = await response.json();
+                                // Populate modal using the same logic as viewPaper but with fetched data
+                                // Store current paper
+                                window.currentPaper = data;
+                                // Populate modal fields
+                                document.getElementById('modal-title').textContent = data.title;
+                                // Meta
+                                let metaHTML = '';
+                                if (data.authors) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Authors:</div><div class="paper-meta-value">${data.authors}</div></div>`;
+                                if (data.year) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Year:</div><div class="paper-meta-value">${data.year}</div></div>`;
+                                if (data.venue) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Venue:</div><div class="paper-meta-value">${data.venue}</div></div>`;
+                                if (data.citation_count) metaHTML += `<div class="paper-meta-item"><div class="paper-meta-label">Citations:</div><div class="paper-meta-value">${data.citation_count}</div></div>`;
+                                document.getElementById('paper-meta').innerHTML = metaHTML;
+                                // Abstract
+                                document.getElementById('paper-abstract').innerHTML = data.abstract || 'No abstract available.';
+                                // Links
+                                let linksHTML = '';
+                                if (data.arxiv_id) linksHTML += `<a href="https://arxiv.org/abs/${data.arxiv_id}" target="_blank" class="paper-link-btn">📄 View on arXiv</a>`;
+                                if (data.doi) linksHTML += `<a href="https://doi.org/${data.doi}" target="_blank" class="paper-link-btn">🔗 View DOI</a>`;
+                                const pdfUrl = data.pdf_url || (data.arxiv_id ? `https://arxiv.org/pdf/${data.arxiv_id}.pdf` : null);
+                                if (pdfUrl) linksHTML += `<a href="${pdfUrl}" target="_blank" class="paper-link-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🔬 Explore Paper</a>`;
+                                document.getElementById('paper-links').innerHTML = linksHTML;
+                                // Tags
+                                let tagsHTML = '';
+                                if (data.tags && data.tags.length > 0) {
+                                    data.tags.forEach(tag => {
+                                        const tagName = typeof tag === 'string' ? tag : tag.name;
+                                        tagsHTML += `<span class="tag" onclick="loadPapersByTag('${tagName.replace(/'/g, "\\'")}', event)">${tagName}</span>`;
+                                    });
+                                }
+                                if (data.asip_funded) tagsHTML += `<span class="tag" style="background: rgba(102, 126, 234, 0.2); color: var(--accent-primary); border-color: var(--accent-primary);">⭐ ASI Featured</span>`;
+                                document.getElementById('paper-tags').innerHTML = tagsHTML;
+                                // Clear keyword search
+                                // document.getElementById('keyword-input').value = ''; // This element doesn't exist in the provided HTML
+                                // Show modal
+                                document.getElementById('paper-modal').style.display = 'block';
+                            } else {
+                                alert('Failed to load paper details');
+                            }
+                        } catch (err) {
+                            console.error('Error fetching paper:', err);
+                            alert('Error loading paper');
+                        }
                     }
-                    if (data.asip_funded) tagsHTML += `<span class="tag" style="background: rgba(102, 126, 234, 0.2); color: var(--accent-primary); border-color: var(--accent-primary);">⭐ ASI Featured</span>`;
-                    document.getElementById('paper-tags').innerHTML = tagsHTML;
-                    // Clear keyword search
-                    // document.getElementById('keyword-input').value = ''; // This element doesn't exist in the provided HTML
-                    // Show modal
-                    document.getElementById('paper-modal').style.display = 'block';
-                } else {
-                    alert('Failed to load paper details');
-                }
-            } catch (err) {
-                console.error('Error fetching paper:', err);
-                alert('Error loading paper');
-            }
-        }
 
-        async function loadPapersByTag(tag, event) {
-            event.stopPropagation(); // Prevent modal from closing
+                    async function loadPapersByTag(tag, event) {
+                        event.stopPropagation(); // Prevent modal from closing
 
-            const container = document.getElementById('references-list');
-            container.innerHTML = '<div class="no-references">Loading papers with tag: ' + tag + '...</div>';
+                        const container = document.getElementById('references-list');
+                        container.innerHTML = '<div class="no-references">Loading papers with tag: ' + tag + '...</div>';
 
-            try {
-                const response = await fetch(`${API_URL}/papers/search`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`
-                    },
-                    body: JSON.stringify({
-                        query: tag,
-                        sources: ['internal'],
-                        tags: [tag]
-                    })
-                });
+                        try {
+                            const response = await fetch(`${API_URL}/papers/search`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${accessToken}`
+                                },
+                                body: JSON.stringify({
+                                    query: tag,
+                                    sources: ['internal'],
+                                    tags: [tag]
+                                })
+                            });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    // Filter out the current paper
-                    const currentPaperId = window.currentPaper?.id;
-                    const filteredPapers = data.papers.filter(p => p.id !== currentPaperId).slice(0, 5);
-                    displayReferences(filteredPapers);
-                } else {
-                    displayReferences([]);
-                }
-            } catch (error) {
-                console.error('Error loading papers by tag:', error);
-                displayReferences([]);
-            }
-        }
-
-        async function loadReferences(paperId) {
-            const container = document.getElementById('references-list');
-            container.innerHTML = '<div class="no-references">Loading...</div>';
-
-            try {
-                const response = await fetch(`${API_URL}/papers/${paperId}/references`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
+                            if (response.ok) {
+                                const data = await response.json();
+                                // Filter out the current paper
+                                const currentPaperId = window.currentPaper?.id;
+                                const filteredPapers = data.papers.filter(p => p.id !== currentPaperId).slice(0, 5);
+                                displayReferences(filteredPapers);
+                            } else {
+                                displayReferences([]);
+                            }
+                        } catch (error) {
+                            console.error('Error loading papers by tag:', error);
+                            displayReferences([]);
+                        }
                     }
-                });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    displayReferences(data.references || []);
-                } else {
-                    // If endpoint doesn't exist or fails, show placeholder
-                    displayReferences([]);
-                }
-            } catch (error) {
-                // Show placeholder for now
-                displayReferences([]);
-            }
-        }
+                    async function loadReferences(paperId) {
+                        const container = document.getElementById('references-list');
+                        container.innerHTML = '<div class="no-references">Loading...</div>';
 
-        function displayReferences(references) {
-            const container = document.getElementById('references-list');
+                        try {
+                            const response = await fetch(`${API_URL}/papers/${paperId}/references`, {
+                                headers: {
+                                    'Authorization': `Bearer ${accessToken}`
+                                }
+                            });
 
-            if (!references || references.length === 0) {
-                container.innerHTML = '<div class="no-references" style="text-align: center; padding: 30px 10px; line-height: 1.6;">👇<br><br>CLICK A TAG BELOW TO VIEW RELATED PAPERS</div>';
-                return;
-            }
+                            if (response.ok) {
+                                const data = await response.json();
+                                displayReferences(data.references || []);
+                            } else {
+                                // If endpoint doesn't exist or fails, show placeholder
+                                displayReferences([]);
+                            }
+                        } catch (error) {
+                            // Show placeholder for now
+                            displayReferences([]);
+                        }
+                    }
 
-            let html = '';
-            references.forEach((ref, index) => {
-                const snippet = ref.abstract ? ref.abstract.substring(0, 100) + '...' : 'No abstract available.';
+                    function displayReferences(references) {
+                        const container = document.getElementById('references-list');
 
-                // Build reference link
-                let refLink = '';
-                if (ref.arxiv_id) {
-                    refLink = `<a href="https://arxiv.org/abs/${ref.arxiv_id}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
-                } else if (ref.doi) {
-                    refLink = `<a href="https://doi.org/${ref.doi}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
-                } else if (ref.pdf_url) {
-                    refLink = `<a href="${ref.pdf_url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
-                } else if (ref.url) {
-                    refLink = `<a href="${ref.url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
-                }
+                        if (!references || references.length === 0) {
+                            container.innerHTML = '<div class="no-references" style="text-align: center; padding: 30px 10px; line-height: 1.6;">👇<br><br>CLICK A TAG BELOW TO VIEW RELATED PAPERS</div>';
+                            return;
+                        }
 
-                // Create proper paper key for clicking
-                const paperKey = ref.id ? `internal_${ref.id}` : `${ref.source}_${ref.source_id}`;
+                        let html = '';
+                        references.forEach((ref, index) => {
+                            const snippet = ref.abstract ? ref.abstract.substring(0, 100) + '...' : 'No abstract available.';
 
-                html += `
+                            // Build reference link
+                            let refLink = '';
+                            if (ref.arxiv_id) {
+                                refLink = `<a href="https://arxiv.org/abs/${ref.arxiv_id}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
+                            } else if (ref.doi) {
+                                refLink = `<a href="https://doi.org/${ref.doi}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
+                            } else if (ref.pdf_url) {
+                                refLink = `<a href="${ref.pdf_url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
+                            } else if (ref.url) {
+                                refLink = `<a href="${ref.url}" target="_blank" style="font-size: 11px; color: var(--accent-primary); text-decoration: none; margin-top: 6px; display: inline-block;" data-external-link>🔗 View Paper</a>`;
+                            }
+
+                            // Create proper paper key for clicking
+                            const paperKey = ref.id ? `internal_${ref.id}` : `${ref.source}_${ref.source_id}`;
+
+                            html += `
                     <div class="reference-item" data-ref-index="${index}">
                         <div class="reference-title">${ref.title}</div>
                         <div class="reference-meta">${ref.authors || 'Unknown'} • ${ref.year || 'N/A'}</div>
@@ -1422,196 +1432,197 @@
                         ${refLink}
                     </div>
                 `;
-            });
-            container.innerHTML = html;
+                        });
+                        container.innerHTML = html;
 
-            // Add click event listeners - capture ref data in closure
-            container.querySelectorAll('.reference-item').forEach((item, idx) => {
-                const ref = references[idx]; // Capture reference in closure
-                item.addEventListener('click', function (e) {
-                    if (e.target.hasAttribute('data-external-link')) return;
-                    if (ref) {
-                        showPaperModal(ref);
+                        // Add click event listeners - capture ref data in closure
+                        container.querySelectorAll('.reference-item').forEach((item, idx) => {
+                            const ref = references[idx]; // Capture reference in closure
+                            item.addEventListener('click', function (e) {
+                                if (e.target.hasAttribute('data-external-link')) return;
+                                if (ref) {
+                                    showPaperModal(ref);
+                                }
+                            });
+                        });
                     }
-                });
-            });
-        }
 
-        function closeModal() {
-            document.getElementById('paper-modal').style.display = 'none';
-            window.currentPaper = null;
-        }
+                    function closeModal() {
+                        document.getElementById('paper-modal').style.display = 'none';
+                        window.currentPaper = null;
+                    }
 
-        // Close modal when clicking outside
-        window.onclick = function (event) {
-            const modal = document.getElementById('paper-modal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
+                    // Close modal when clicking outside
+                    window.onclick = function (event) {
+                        const modal = document.getElementById('paper-modal');
+                        if (event.target === modal) {
+                            closeModal();
+                        }
+                    }
 
-        // Close modal on Escape key
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape') {
-                closeModal();
-            }
-        });
+                    // Close modal on Escape key
+                    document.addEventListener('keydown', function (event) {
+                        if (event.key === 'Escape') {
+                            closeModal();
+                        }
+                    });
 
-        function showLoading() {
-            document.getElementById('results-container').innerHTML = `
+                    function showLoading() {
+                        document.getElementById('results-container').innerHTML = `
                 <div class="loading">🔍 Searching...</div>
             `;
-        }
+                    }
 
-        function showError(message) {
-            document.getElementById('results-container').innerHTML = `
+                    function showError(message) {
+                        document.getElementById('results-container').innerHTML = `
                 <div class="status-message status-error">❌ ${message}</div>
             `;
-        }
+                    }
 
-        // Allow search on Enter key
-        document.getElementById('search-query').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') search();
-        });
+                    // Allow search on Enter key
+                    document.getElementById('search-query').addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') search();
+                    });
 
-        // Upload functionality
+                    // Upload functionality
 
-         function openUploadModal() {
-              document.getElementById('upload-modal').style.display = 'block';
-          }
+                    function openUploadModal() {
+                        document.getElementById('upload-modal').style.display = 'block';
+                    }
 
-          function closeUploadModal() {
-              document.getElementById('upload-modal').style.display = 'none';
-              document.getElementById('upload-form').reset();
-              document.getElementById('upload-status').style.display = 'none';
-          }
-          // async function handleUpload UPDATED
-          async function handleUpload(event) {
-              event.preventDefault();
+                    function closeUploadModal() {
+                        document.getElementById('upload-modal').style.display = 'none';
+                        document.getElementById('upload-form').reset();
+                        document.getElementById('upload-status').style.display = 'none';
+                    }
+                    // async function handleUpload UPDATED
+                    async function handleUpload(event) {
+                        event.preventDefault();
 
-              const paperUrl = document.getElementById('paper-url').value.trim();
-              if (!paperUrl) {
-                  alert('Please provide a paper URL');
-                  return;
-              }
+                        const paperUrl = document.getElementById('paper-url').value.trim();
+                        if (!paperUrl) {
+                            alert('Please provide a paper URL');
+                            return;
+                        }
 
-              if (!accessToken) {
-                  alert('Please log in to upload papers');
-                  window.location.href = '/static/login.html';
-                  return;
-              }
+                        if (!accessToken) {
+                            alert('Please log in to upload papers');
+                            window.location.href = '/static/login.html';
+                            return;
+                        }
 
-              const statusDiv = document.getElementById('upload-status');
-              statusDiv.style.display = 'block';
-              statusDiv.innerHTML = '<div class="status-message">⏳ Validating URL and processing...</div>';
+                        const statusDiv = document.getElementById('upload-status');
+                        statusDiv.style.display = 'block';
+                        statusDiv.innerHTML = '<div class="status-message">⏳ Validating URL and processing...</div>';
 
-              const btn = document.getElementById('upload-btn');
-              if (btn) {
-                  btn.disabled = true;
-                  btn.textContent = 'Processing...';
-              }
+                        const btn = document.getElementById('upload-btn');
+                        if (btn) {
+                            btn.disabled = true;
+                            btn.textContent = 'Processing...';
+                        }
 
-              const title = document.getElementById('upload-title').value.trim();
-              const authors = document.getElementById('upload-authors').value.trim();
-              const year = document.getElementById('upload-year').value;
-              const abstract = document.getElementById('upload-abstract').value.trim();
-              const tagsInput = document.getElementById('upload-tags').value.trim();
+                        const title = document.getElementById('upload-title').value.trim();
+                        const authors = document.getElementById('upload-authors').value.trim();
+                        const year = document.getElementById('upload-year').value;
+                        const abstract = document.getElementById('upload-abstract').value.trim();
+                        const tagsInput = document.getElementById('upload-tags').value.trim();
 
-              const payload = {
-                  url: paperUrl
-              };
+                        const payload = {
+                            url: paperUrl
+                        };
 
-              if (title) payload.title = title;
-              if (authors) payload.authors = authors;
-              if (year) payload.year = parseInt(year);
-              if (abstract) payload.abstract = abstract;
-              if (tagsInput) {
-                  payload.tags = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
-              }
+                        if (title) payload.title = title;
+                        if (authors) payload.authors = authors;
+                        if (year) payload.year = parseInt(year);
+                        if (abstract) payload.abstract = abstract;
+                        if (tagsInput) {
+                            payload.tags = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+                        }
 
-              try {
-                  const response = await fetch(`${API_URL}/papers/upload`, {
-                      method: 'POST',
-                      headers: {
-                          'Authorization': `Bearer ${accessToken}`,
-                          'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify(payload)
-                  });
+                        try {
+                            const response = await fetch(`${API_URL}/papers/upload`, {
+                                method: 'POST',
+                                headers: {
+                                    'Authorization': `Bearer ${accessToken}`,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(payload)
+                            });
 
-                  const result = await response.json();
+                            const result = await response.json();
 
-                  if (response.ok && result.success) {
-                      statusDiv.innerHTML = `<div class="status-message status-success">✅ ${result.message}</div>`;
-                      setTimeout(() => {
-                          closeUploadModal();
-                      }, 2000);
-                  } else {
-                      // Handle error response - backend returns {error: {message: "...", code: "..."}}
-                      const errorMessage = result.error?.message || result.error || result.message || 'Upload failed';
-                      throw new Error(errorMessage);
-                  }
-              } catch (error) {
-                  const errorMsg = error.message || 'Upload failed';
-                  statusDiv.innerHTML = `<div class="status-message status-error">❌ ${errorMsg}</div>`;
-                  const btn = document.getElementById('upload-btn');
-                  if (btn) {
-                      btn.disabled = false;
-                      btn.textContent = 'Retry';
-                  }
-              }
-          }
+                            if (response.ok && result.success) {
+                                statusDiv.innerHTML = `<div class="status-message status-success">✅ ${result.message}</div>`;
+                                setTimeout(() => {
+                                    closeUploadModal();
+                                }, 2000);
+                            } else {
+                                // Handle error response - backend returns {error: {message: "...", code: "..."}}
+                                const errorMessage = result.error?.message || result.error || result.message || 'Upload failed';
+                                throw new Error(errorMessage);
+                            }
+                        } catch (error) {
+                            const errorMsg = error.message || 'Upload failed';
+                            statusDiv.innerHTML = `<div class="status-message status-error">❌ ${errorMsg}</div>`;
+                            const btn = document.getElementById('upload-btn');
+                            if (btn) {
+                                btn.disabled = false;
+                                btn.textContent = 'Retry';
+                            }
+                        }
+                    }
 
-        // Metrics & NotebookLM Logic
-        async function loadMetrics() {
-            try {
-                const response = await fetch(`${API_URL}/metrics/dashboard`);
-                if (!response.ok) throw new Error('Failed to load metrics');
-                const data = await response.json();
+                    // Metrics & NotebookLM Logic
+                    async function loadMetrics() {
+                        try {
+                            const response = await fetch(`${API_URL}/metrics/dashboard`);
+                            if (!response.ok) throw new Error('Failed to load metrics');
+                            const data = await response.json();
 
-                // Render Top Tags
-                const tagsList = document.getElementById('top-tags-list');
-                if (data.top_tags && data.top_tags.length > 0) {
-                    tagsList.innerHTML = data.top_tags.map(t =>
-                        `<li class="metric-item">
+                            // Render Top Tags
+                            const tagsList = document.getElementById('top-tags-list');
+                            if (data.top_tags && data.top_tags.length > 0) {
+                                tagsList.innerHTML = data.top_tags.map(t =>
+                                    `<li class="metric-item">
                             <span>#${t.name}</span> 
                             <span class="metric-score">${t.frequency}</span>
                         </li>`
-                    ).join('');
-                } else {
-                    tagsList.innerHTML = '<li class="metric-item" style="justify-content:center">No data yet</li>';
-                }
+                                ).join('');
+                            } else {
+                                tagsList.innerHTML = '<li class="metric-item" style="justify-content:center">No data yet</li>';
+                            }
 
-                // Render Top Cited
-                const citedList = document.getElementById('top-citations-list');
-                if (data.top_cited_papers && data.top_cited_papers.length > 0) {
-                    citedList.innerHTML = data.top_cited_papers.map(p =>
-                        `<li class="metric-item" style="display:block; cursor:pointer" onclick="viewPaperById('${p.id}'); return false;"> <!-- Opens modal -->
+                            // Render Top Cited
+                            const citedList = document.getElementById('top-citations-list');
+                            if (data.top_cited_papers && data.top_cited_papers.length > 0) {
+                                citedList.innerHTML = data.top_cited_papers.map(p =>
+                                    `<li class="metric-item" style="display:block; cursor:pointer" onclick="viewPaperById('${p.id}'); return false;"> <!-- Opens modal -->
                             <div style="font-weight:500; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--accent-primary)">${p.title}</div>
                             <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-tertiary)">
                                 <span>${p.year || 'N/A'}</span>
                                 <span style="color:var(--text-secondary)">${p.citations} citations</span>
                             </div>
                         </li>`
-                    ).join('');
-                } else {
-                    citedList.innerHTML = '<li class="metric-item" style="justify-content:center">No citations yet</li>';
-                }
-                  // Render Novel Ideas (now shows top scored papers)
-                  const novelList = document.getElementById('novel-ideas-list');
-                  if (data.novel_ideas && data.novel_ideas.length > 0) {
-                      novelList.innerHTML = data.novel_ideas.map(n =>
-                            `<li class="metric-item" style="cursor: pointer;" onclick="viewPaperById(${n.id})">
+                                ).join('');
+                            } else {
+                                citedList.innerHTML = '<li class="metric-item" style="justify-content:center">No citations yet</li>';
+                            }
+                            // Render Novel Ideas (now shows top scored papers)
+                            const novelList = document.getElementById('novel-ideas-list');
+                            if (data.novel_ideas && data.novel_ideas.length > 0) {
+                                novelList.innerHTML = data.novel_ideas.map(n =>
+                                    `<li class="metric-item" style="cursor: pointer;" onclick="viewPaperById('${n.id}')">
                                 <span title="${n.title}" style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${n.title.substring(0, 60)}${n.title.length > 60 ? '...' : ''}</span>
                                 <span class="metric-score" title="Novelty Score: R:${n.breakdown.recency} I:${n.breakdown.interdisciplinary} T:${n.breakdown.tooling} C:${n.breakdown.contrarian} Impact:${n.breakdown.impact}">${n.score} pts</span>
                             </li>`
-                        ).join('');
-                  } else {
-                      novelList.innerHTML = '<li class="metric-item" style="justify-content:center">No novel ideas found</li>';
-                  // Render Pie Charts
-                  renderTagsChart(data.top_tags);
-                  renderCitationsChart(data.top_cited_papers);
-                  }
+                                ).join('');
+                            } else {
+                                novelList.innerHTML = '<li class="metric-item" style="justify-content:center">No novel ideas found</li>';
+                            }
+
+                            // Render Pie Charts
+                            renderTagsChart(data.top_tags);
+                            renderCitationsChart(data.top_cited_papers);
 
 
 
@@ -1626,81 +1637,81 @@
 
 
 
-            } catch (e) {
-                console.error("Failed to load metrics", e);
-                // Show error state in all three boxes
-                document.getElementById('top-tags-list').innerHTML =
-                    '<li class="metric-item" style="justify-content:center; color: var(--text-tertiary);">Unable to load</li>';
-                document.getElementById('top-citations-list').innerHTML =
-                    '<li class="metric-item" style="justify-content:center; color: var(--text-tertiary);">Unable to load</li>';
-                document.getElementById('novel-ideas-list').innerHTML =
-                    '<li class="metric-item" style="justify-content:center; color: var(--text-tertiary);">Unable to load</li>';
-            }
-        }
-  
-          // Chart rendering functions
-          let tagsChart = null;
-          let citationsChart = null;
-  
-          function renderTagsChart(tags) {
-              const canvas = document.getElementById('tags-chart');
-              if (!canvas) return;
-  
-              if (tagsChart) tagsChart.destroy();
-  
-              const ctx = canvas.getContext('2d');
-              tagsChart = new Chart(ctx, {
-                  type: 'pie',
-                  data: {
-                      labels: tags.map(t => t.name),
-                      datasets: [{
-                          data: tags.map(t => t.frequency),
-                          backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#6366f1', '#ef4444', '#14b8a6', '#f97316', '#a855f7']
-                      }]
-                  },
-                  options: {
-                      responsive: true,
-                      maintainAspectRatio: true,
-                      plugins: {
-                          legend: { display: false }
-                      }
-                  }
-              });
-          }
-  
-          function renderCitationsChart(papers) {
-              const canvas = document.getElementById('citations-chart');
-              if (!canvas) return;
-  
-              if (citationsChart) citationsChart.destroy();
-  
-              const ctx = canvas.getContext('2d');
-              citationsChart = new Chart(ctx, {
-                  type: 'pie',
-                  data: {
-                      labels: papers.map(p => p.title.substring(0, 30) + '...'),
-                      datasets: [{
-                          data: papers.map(p => p.citations),
-                          backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981']
-                      }]
-                  },
-                  options: {
-                      responsive: true,
-                      maintainAspectRatio: true,
-                      plugins: {
-                          legend: { display: false }
-                      }
-                  }
-              });
-          }
-// DELETE NotebookLM function
+                        } catch (e) {
+                            console.error("Failed to load metrics", e);
+                            // Show error state in all three boxes
+                            document.getElementById('top-tags-list').innerHTML =
+                                '<li class="metric-item" style="justify-content:center; color: var(--text-tertiary);">Unable to load</li>';
+                            document.getElementById('top-citations-list').innerHTML =
+                                '<li class="metric-item" style="justify-content:center; color: var(--text-tertiary);">Unable to load</li>';
+                            document.getElementById('novel-ideas-list').innerHTML =
+                                '<li class="metric-item" style="justify-content:center; color: var(--text-tertiary);">Unable to load</li>';
+                        }
+                    }
 
-        // UPDATED: Initialize Metrics
-        document.addEventListener('DOMContentLoaded', () => {
-              loadMetrics();
-          });
-    </script>
-    <script src="/static/session-manager.js"></script>
+                    // Chart rendering functions
+                    let tagsChart = null;
+                    let citationsChart = null;
+
+                    function renderTagsChart(tags) {
+                        const canvas = document.getElementById('tags-chart');
+                        if (!canvas) return;
+
+                        if (tagsChart) tagsChart.destroy();
+
+                        const ctx = canvas.getContext('2d');
+                        tagsChart = new Chart(ctx, {
+                            type: 'pie',
+                            data: {
+                                labels: tags.map(t => t.name),
+                                datasets: [{
+                                    data: tags.map(t => t.frequency),
+                                    backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#6366f1', '#ef4444', '#14b8a6', '#f97316', '#a855f7']
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                plugins: {
+                                    legend: { display: false }
+                                }
+                            }
+                        });
+                    }
+
+                    function renderCitationsChart(papers) {
+                        const canvas = document.getElementById('citations-chart');
+                        if (!canvas) return;
+
+                        if (citationsChart) citationsChart.destroy();
+
+                        const ctx = canvas.getContext('2d');
+                        citationsChart = new Chart(ctx, {
+                            type: 'pie',
+                            data: {
+                                labels: papers.map(p => p.title.substring(0, 30) + '...'),
+                                datasets: [{
+                                    data: papers.map(p => p.citations),
+                                    backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981']
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                plugins: {
+                                    legend: { display: false }
+                                }
+                            }
+                        });
+                    }
+                    // DELETE NotebookLM function
+
+                    // UPDATED: Initialize Metrics
+                    document.addEventListener('DOMContentLoaded', () => {
+                        loadMetrics();
+                    });
+                </script>
+                <script src="/static/session-manager.js"></script>
 </body>
 
 </html>
