@@ -428,9 +428,14 @@ class PaperIngestionService:
                 confidence=confidence
             )
             db.session.add(paper_tag)
-        # Flush to ensure PaperTag records are in the database before counting
-        db.session.flush()
-
+        
+        # Sync tags to JSON column for internal API efficiency
+        import json
+        tag_names = [t.name for t, _ in tag_assignments]
+        paper.tags = json.dumps(tag_names)
+        db.session.add(paper)
+        current_app.logger.info(f"Synced {len(tag_names)} tags to paper.tags json for paper {paper.id}")
+        
         # Flush to ensure PaperTag records are in the database before counting
         db.session.flush()
 
