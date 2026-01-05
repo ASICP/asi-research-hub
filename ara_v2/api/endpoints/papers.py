@@ -733,10 +733,11 @@ def delete_paper(paper_id):
 
 
 @papers_bp.route('/upload', methods=['POST'])
-@require_auth
+# @require_auth
 @limiter.limit("10 per hour")
 def upload_paper():
     """Upload PDF paper from URL or file with automatic tagging."""
+    current_app.logger.info("DEBUG: UPLOAD ENDPOINT HIT")
     filepath = None
     try:
         upload_folder = os.path.join(current_app.root_path, '..', 'static', 'uploads')
