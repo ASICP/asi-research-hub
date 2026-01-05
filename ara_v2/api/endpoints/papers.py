@@ -839,7 +839,7 @@ def upload_paper():
             'pdf_path': f'static/uploads/{os.path.basename(filepath)}',
             'pdf_text': pdf_text,
             'url': external_url or f'/static/uploads/{os.path.basename(filepath)}',
-            'added_by': g.current_user.email
+            'added_by': g.current_user.id
         }
 
         # Ingest with auto-tagging
