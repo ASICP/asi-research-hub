@@ -85,34 +85,12 @@ def init_extensions(app):
 
     # Security Headers (only in production)
     if not app.debug:
-        csp = {
-            'default-src': "'self'",
-            'script-src': [
-                "'self'",
-                "'unsafe-inline'",
-                "'unsafe-eval'",  # Required for Google reCAPTCHA and d3.js
-                "https://d3js.org",
-                "https://www.google.com",
-                "https://www.gstatic.com"
-            ],
-            'style-src': ["'self'", "'unsafe-inline'"],
-            'img-src': ["'self'", "data:", "https:"],
-            'connect-src': [
-                "'self'",
-                "https://www.google.com",
-                "https://www.gstatic.com"
-            ],
-            'frame-src': [
-                "https://www.google.com"  # Required for reCAPTCHA
-            ],
-        }
-
+        # Disable CSP for now to allow legacy frontend scripts
         Talisman(
             app,
             force_https=True,
             strict_transport_security=True,
-            content_security_policy=csp,
-            content_security_policy_nonce_in=['script-src']
+            content_security_policy=None
         )
 
     # Rate Limiting (import here to avoid circular dependency)
