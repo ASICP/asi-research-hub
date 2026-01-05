@@ -611,7 +611,7 @@ def get_paper_novel_combos(paper_id):
         raise
 
 
-@papers_bp.route('/<int:paper_id>/citations', methods=['POST'])
+@papers_bp.route('/<int:paper_id>/citations', methods=['POST', 'OPTIONS'])
 @require_auth
 @limiter.limit("10 per hour")
 def build_citations(paper_id):
@@ -701,7 +701,7 @@ def diamonds():
     }), 200
 
 
-@papers_bp.route('/<int:paper_id>', methods=['DELETE'])
+@papers_bp.route('/<int:paper_id>', methods=['DELETE', 'OPTIONS'])
 @require_auth
 def delete_paper(paper_id):
     """Delete a paper."""
@@ -732,14 +732,16 @@ def delete_paper(paper_id):
         raise
 
 
-@papers_bp.route('/upload', methods=['POST'])
-# @require_auth
+@papers_bp.route('/upload', methods=['POST', 'OPTIONS'])
+@require_auth
 @limiter.limit("10 per hour")
 def upload_paper():
     """Upload PDF paper from URL or file with automatic tagging."""
-    current_app.logger.info("DEBUG: UPLOAD ENDPOINT HIT")
     filepath = None
     try:
+        current_app.logger.info(f"UPLOAD ATTEMPT: Method={request.method}, Content-Type={request.headers.get('Content-Type')}")
+        current_app.logger.info(f"UPLOAD USER: {g.get('current_user')}")
+        
         upload_folder = os.path.join(current_app.root_path, '..', 'static', 'uploads')
         os.makedirs(upload_folder, exist_ok=True)
         

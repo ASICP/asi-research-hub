@@ -26,24 +26,33 @@ def require_auth(f):
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # Allow OPTIONS requests for CORS preflight
+        if request.method == 'OPTIONS':
+            return current_app.response_class('', status=200)
+
         try:
             # Get token from Authorization header
             auth_header = request.headers.get('Authorization')
+            current_app.logger.info(f"Auth check for {request.path}: Header present? {bool(auth_header)}")
+            
             token = get_token_from_header(auth_header)
-
+            
             # Verify token
             payload = verify_token(token, expected_type='access')
+            current_app.logger.info(f"Token verified for user {payload.get('user_id')}")
 
             # Get user from database
             user_id = payload.get('user_id')
             user = User.query.get(user_id)
 
             if not user:
+                current_app.logger.warning(f"User {user_id} not found in DB")
                 raise AuthenticationError('User not found')
 
             # Store user in Flask g object for access in route
             g.current_user = user
             g.user_id = user.id
+            g.is_admin = getattr(user, 'is_admin', False)
 
             # Update last active timestamp
             user.update_last_active()
@@ -53,6 +62,9 @@ def require_auth(f):
         except AuthenticationError as e:
             current_app.logger.warning(f"Authentication failed: {e.message}")
             raise
+        except Exception as e:
+            current_app.logger.error(f"Auth middleware error: {e}")
+            raise AuthenticationError(str(e))
 
         return f(*args, **kwargs)
 
