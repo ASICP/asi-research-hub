@@ -859,7 +859,7 @@
                 let tagsHTML = '';
                 if (paper.tags && paper.tags.length > 0) {
                     paper.tags.forEach(tag => {
-                        tagsHTML += `<span class="tag" onclick="loadPapersByTag('${tag.replace(/'/g, "\\'")}', event)">${tag}</span>`;
+                        tagsHTML += `<span class="tag" onclick="window.loadPapersByTag('${tag.replace(/'/g, "\\'")}', event)">${tag}</span>`;
                     });
                 }
                 if (paper.asip_funded) {
