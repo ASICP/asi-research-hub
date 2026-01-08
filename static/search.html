@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -396,6 +396,39 @@
             background: var(--accent-primary);
             border-radius: 4px;
         }
+
+        /* Paper detail styles - fix spacing and visibility */
+        .paper-abstract {
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .paper-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .paper-link-btn {
+            background: var(--accent-primary) !important;
+            color: white !important;
+            padding: 12px 24px !important;
+            border-radius: 8px !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            transition: all 0.2s ease !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
+        }
+
+        .paper-link-btn:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5) !important;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -412,7 +445,7 @@
                 <button class="header-btn" onclick="openUploadModal()" title="Upload Paper">📤</button>
                 <button class="header-btn" onclick="window.open('https://notebooklm.google.com/', '_blank')"
                     title="Open NotebookLM">G</button>
-                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+                <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
                 <button class="theme-toggle" onclick="logout()" title="Logout">⏻</button>
             </div>
         </header>
@@ -621,21 +654,30 @@
             // Theme management
             function toggleTheme() {
                 const html = document.documentElement;
-                const currentTheme = html.getAttribute('data-theme');
+                const currentTheme = html.getAttribute('data-theme') || 'dark';
                 const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                const button = document.querySelector('.theme-toggle');
+                const button = document.getElementById('theme-toggle-btn');
 
                 html.setAttribute('data-theme', newTheme);
-                button.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+                if (button) {
+                    button.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+                }
                 localStorage.setItem('theme', newTheme);
             }
 
-            // Load saved theme
+            // Initialize theme immediately (before DOM loads to prevent flash)
+            (function() {
+                const savedTheme = localStorage.getItem('theme') || 'dark';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            })();
+
+            // Update button when DOM is ready
             window.addEventListener('DOMContentLoaded', () => {
                 const savedTheme = localStorage.getItem('theme') || 'dark';
-                const button = document.querySelector('.theme-toggle');
-                document.documentElement.setAttribute('data-theme', savedTheme);
-                button.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+                const button = document.getElementById('theme-toggle-btn');
+                if (button) {
+                    button.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+                }
             });
 
             // Logout function
